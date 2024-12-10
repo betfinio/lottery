@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	darkMode: ['class'],
-	important: '.template',
+	important: '.lottery',
 	presets: [require('@betfinio/components/tailwind-config')],
 	content: ['./src/**/*.{ts,tsx}'],
 	theme: {

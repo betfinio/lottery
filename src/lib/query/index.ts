@@ -1,5 +1,6 @@
-import { fetchBalance } from '@/src/lib/api';
-import { useQuery } from '@tanstack/react-query';
+import { fetchBalance, fetchTicketPrice } from '@/src/lib/api';
+import type { ITicket } from '@/src/lib/types.ts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Address } from 'viem';
 import { useConfig } from 'wagmi';
 
@@ -13,4 +14,26 @@ export const useBalance = (address: Address) => {
 		queryKey: ['template', 'balance', address],
 		queryFn: () => fetchBalance(address, config),
 	});
+};
+
+export const useTicketPrice = (round: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'ticketPrice', round],
+		queryFn: () => fetchTicketPrice(round, config),
+	});
+};
+
+export const useDraftTickets = () => {
+	const queryClient = useQueryClient();
+	const setTickets = (tickets: ITicket[]) => {
+		queryClient.setQueryData(['lottery', 'tickets', 'draft'], tickets);
+	};
+	return {
+		...useQuery<ITicket[]>({
+			queryKey: ['lottery', 'tickets', 'draft'],
+			initialData: [],
+		}),
+		setTickets,
+	};
 };

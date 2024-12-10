@@ -11,20 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TemplateImport } from './routes/template'
 import { Route as IndexImport } from './routes/index'
+import { Route as LotteryLottoRoundImport } from './routes/lottery/lotto/$round'
 
 // Create/Update Routes
-
-const TemplateRoute = TemplateImport.update({
-  id: '/template',
-  path: '/template',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LotteryLottoRoundRoute = LotteryLottoRoundImport.update({
+  id: '/lottery/lotto/$round',
+  path: '/lottery/lotto/$round',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/template': {
-      id: '/template'
-      path: '/template'
-      fullPath: '/template'
-      preLoaderRoute: typeof TemplateImport
+    '/lottery/lotto/$round': {
+      id: '/lottery/lotto/$round'
+      path: '/lottery/lotto/$round'
+      fullPath: '/lottery/lotto/$round'
+      preLoaderRoute: typeof LotteryLottoRoundImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/template': typeof TemplateRoute
+  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/template': typeof TemplateRoute
+  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/template': typeof TemplateRoute
+  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/template'
+  fullPaths: '/' | '/lottery/lotto/$round'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/template'
-  id: '__root__' | '/' | '/template'
+  to: '/' | '/lottery/lotto/$round'
+  id: '__root__' | '/' | '/lottery/lotto/$round'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TemplateRoute: typeof TemplateRoute
+  LotteryLottoRoundRoute: typeof LotteryLottoRoundRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TemplateRoute: TemplateRoute,
+  LotteryLottoRoundRoute: LotteryLottoRoundRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/template"
+        "/lottery/lotto/$round"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/template": {
-      "filePath": "template.tsx"
+    "/lottery/lotto/$round": {
+      "filePath": "lottery/lotto/$round.tsx"
     }
   }
 }
