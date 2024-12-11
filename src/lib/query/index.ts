@@ -32,7 +32,7 @@ export const useDraftTickets = () => {
 	return {
 		...useQuery<ITicket[]>({
 			queryKey: ['lottery', 'tickets', 'draft'],
-			initialData: [],
+			initialData: [{ numbers: [0, 0, 0, 0, 0], symbol: 0 }],
 		}),
 		setTickets,
 	};
