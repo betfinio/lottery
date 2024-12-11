@@ -25,3 +25,14 @@ export const fetchTicketPrice = async (round: Address, config: Config): Promise<
 		args: [],
 	});
 };
+
+export const fetchRoundFinish = async (round: Address, config: Config) => {
+	return Number(
+		await readContract(config, {
+			address: round,
+			abi: LotteryRoundABI,
+			functionName: 'getFinish',
+			args: [],
+		}),
+	);
+};

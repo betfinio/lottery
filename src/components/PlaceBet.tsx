@@ -21,18 +21,20 @@ const PlaceBet = () => {
 		setBuyAnother(checked);
 	};
 	return (
-		<div className={'w-full h-full bg-background-light rounded-xl col-span-3 md:col-span-1 flex flex-col'}>
+		<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'}>
 			<div className={'p-3 flex flex-col items-center gap-2'}>
 				<h2 className={'text-lg'}>When would you like to participate?</h2>
 				<div className={'text-secondary-foreground flex flex-row gap-1 items-center'}>
 					<BetValue value={amount} withIcon /> / ticket / draw
 				</div>
 				<ToggleGroup type={'multiple'} defaultValue={dates.map((e) => e.toString())} className={'w-2/3'} variant={'outline'} onValueChange={handleChange}>
-					<ToggleGroupItem value={dates[0].toString()} className={'w-1/2 text-xs'}>
-						{DateTime.fromSeconds(dates[0]).toFormat('cccc, DD')}
+					<ToggleGroupItem value={dates[0].toString()} className={'w-1/2 text-xs flex flex-col'}>
+						<span>{DateTime.fromSeconds(dates[0]).toFormat('cccc')}</span>
+						<span>{DateTime.fromSeconds(dates[0]).toFormat('DD')}</span>
 					</ToggleGroupItem>
-					<ToggleGroupItem value={dates[1].toString()} className={'w-1/2 text-xs'}>
-						{DateTime.fromSeconds(dates[1]).toFormat('cccc, DD')}
+					<ToggleGroupItem value={dates[1].toString()} className={'w-1/2 text-xs flex flex-col'}>
+						<span>{DateTime.fromSeconds(dates[1]).toFormat('cccc')}</span>
+						<span>{DateTime.fromSeconds(dates[1]).toFormat('DD')}</span>
 					</ToggleGroupItem>
 				</ToggleGroup>
 			</div>

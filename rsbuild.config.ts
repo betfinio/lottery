@@ -1,6 +1,7 @@
 import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
+import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
 import { dependencies } from './package.json';
 
@@ -26,6 +27,7 @@ export default defineConfig({
 	},
 	plugins: [
 		pluginReact(),
+		pluginSvgr(),
 		pluginModuleFederation({
 			name: 'betfinio_lottery',
 			remotes: {

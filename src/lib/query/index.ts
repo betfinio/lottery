@@ -1,4 +1,4 @@
-import { fetchBalance, fetchTicketPrice } from '@/src/lib/api';
+import { fetchBalance, fetchRoundFinish, fetchTicketPrice } from '@/src/lib/api';
 import type { ITicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Address } from 'viem';
@@ -36,4 +36,13 @@ export const useDraftTickets = () => {
 		}),
 		setTickets,
 	};
+};
+
+export const useRoundFinish = (round: Address) => {
+	const config = useConfig();
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'finish'],
+		queryFn: () => fetchRoundFinish(round, config),
+		refetchOnMount: false,
+	});
 };

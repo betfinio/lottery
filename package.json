@@ -42,6 +42,7 @@
 		"@commitlint/config-conventional": "^19.6.0",
 		"@rsbuild/core": "^1.1.8",
 		"@rsbuild/plugin-react": "^1.0.7",
+		"@rsbuild/plugin-svgr": "^1.0.6",
 		"@tanstack/router-plugin": "^1.85.3",
 		"@types/bun": "^1.1.14",
 		"@types/luxon": "^3.4.2",
