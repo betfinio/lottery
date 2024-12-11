@@ -1,5 +1,6 @@
-import { fetchBalance, fetchRoundFinish, fetchTicketPrice } from '@/src/lib/api';
-import type { ITicket } from '@/src/lib/types.ts';
+import { fetchBalance, fetchBetsCount, fetchRoundFinish, fetchTicketPrice, fetchTicketsCount } from '@/src/lib/api';
+import { fetchActiveRounds } from '@/src/lib/gql';
+import type { IRound, ITicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Address } from 'viem';
 import { useConfig } from 'wagmi';
@@ -21,6 +22,29 @@ export const useTicketPrice = (round: Address) => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'ticketPrice', round],
 		queryFn: () => fetchTicketPrice(round, config),
+	});
+};
+
+export const useTicketsCount = (round: Address) => {
+	const config = useConfig();
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'ticketsCount'],
+		queryFn: () => fetchTicketsCount(round, config),
+	});
+};
+
+export const useActiveRounds = () => {
+	return useQuery<IRound[]>({
+		queryKey: ['lottery', 'rounds'],
+		queryFn: () => fetchActiveRounds(),
+	});
+};
+
+export const useBetsCount = (round: Address) => {
+	const config = useConfig();
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'betsCount'],
+		queryFn: () => fetchBetsCount(round, config),
 	});
 };
 

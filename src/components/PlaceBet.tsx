@@ -1,3 +1,4 @@
+import { useActiveRounds } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, Input, ScrollArea, Separator, SwitchComponent, ToggleGroup, ToggleGroupItem } from '@betfinio/components/ui';
@@ -7,7 +8,11 @@ import { useState } from 'react';
 
 const PlaceBet = () => {
 	const amount = 50000;
-	const dates = [1733875200, 1734393600];
+
+	const { data: rounds = [] } = useActiveRounds();
+
+	const dates = rounds.slice(0, 2).map((e) => e.finish);
+
 	const [selectedDates, setSelectedDates] = useState<number[]>(dates);
 	const [buyAnother, setBuyAnother] = useState(false);
 
@@ -20,6 +25,13 @@ const PlaceBet = () => {
 	const handleBuyAnother = (checked: boolean) => {
 		setBuyAnother(checked);
 	};
+	const removeDate = (date: number) => {
+		setSelectedDates(selectedDates.filter((e) => e !== date));
+	};
+
+	if (rounds.length < 2) {
+		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
+	}
 	return (
 		<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'}>
 			<div className={'p-3 flex flex-col items-center gap-2'}>
@@ -27,7 +39,14 @@ const PlaceBet = () => {
 				<div className={'text-secondary-foreground flex flex-row gap-1 items-center'}>
 					<BetValue value={amount} withIcon /> / ticket / draw
 				</div>
-				<ToggleGroup type={'multiple'} defaultValue={dates.map((e) => e.toString())} className={'w-2/3'} variant={'outline'} onValueChange={handleChange}>
+				<ToggleGroup
+					type={'multiple'}
+					value={selectedDates.filter((e) => dates.includes(e)).map((e) => e.toString())}
+					defaultValue={dates.map((e) => e.toString())}
+					className={'w-2/3'}
+					variant={'outline'}
+					onValueChange={handleChange}
+				>
 					<ToggleGroupItem value={dates[0].toString()} className={'w-1/2 text-xs flex flex-col'}>
 						<span>{DateTime.fromSeconds(dates[0]).toFormat('cccc')}</span>
 						<span>{DateTime.fromSeconds(dates[0]).toFormat('DD')}</span>
@@ -52,7 +71,7 @@ const PlaceBet = () => {
 						{selectedDates.map((date) => (
 							<div key={date} className={'flex flex-row justify-between items-center w-full p-1 px-2 bg-secondary text-secondary-foreground rounded-lg'}>
 								<div className={'text-sm'}>{DateTime.fromSeconds(date).toFormat('cccc, DD')}</div>
-								<Button variant={'ghost'} size={'sm'} className={'text-error text-destructive'}>
+								<Button variant={'ghost'} size={'sm'} className={'text-error text-destructive'} onClick={() => removeDate(date)}>
 									Remove
 								</Button>
 							</div>

@@ -1,0 +1,14 @@
+sources:
+  - name: lottery
+    handler:
+      graphql:
+        endpoint: ${PUBLIC_LOTTERY_GRAPH_URL}
+
+
+codegen:
+  scalars:
+    BigInt: bigint
+    Bytes: string
+
+documents:
+  - ./src/schema.graphql

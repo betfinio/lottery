@@ -76,6 +76,8 @@ export default defineConfig({
 			output: {
 				uniqueName: 'betfinio_lottery',
 			},
+			ignoreWarnings: [/Critical dependency: the request of a dependency is an expression/],
+
 			plugins: [TanStackRouterRspack()],
 		},
 	},

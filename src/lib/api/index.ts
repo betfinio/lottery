@@ -26,6 +26,27 @@ export const fetchTicketPrice = async (round: Address, config: Config): Promise<
 	});
 };
 
+export const fetchTicketsCount = async (round: Address, config: Config): Promise<number> => {
+	return Number(
+		await readContract(config, {
+			address: round,
+			abi: LotteryRoundABI,
+			functionName: 'getTicketsCount',
+			args: [],
+		}),
+	);
+};
+export const fetchBetsCount = async (round: Address, config: Config): Promise<number> => {
+	return Number(
+		await readContract(config, {
+			address: round,
+			abi: LotteryRoundABI,
+			functionName: 'getBetsCount',
+			args: [],
+		}),
+	);
+};
+
 export const fetchRoundFinish = async (round: Address, config: Config) => {
 	return Number(
 		await readContract(config, {

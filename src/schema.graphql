@@ -1,0 +1,8 @@
+query GetActiveRounds($now: BigInt) {
+    rounds: roundCreateds(first: 100, where: {timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
+        id
+        round
+        timestamp
+        blockNumber
+    }
+}

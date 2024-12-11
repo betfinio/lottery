@@ -5,11 +5,14 @@
 	"scripts": {
 		"build": "rsbuild build",
 		"check": "biome check --write",
-		"dev": "rsbuild dev --env-mode development --open",
-		"prod": "rsbuild dev --env-mode production --open",
+		"dev": "bun run build:schema:dev && rsbuild dev --open",
+		"prod": "bun run build:schema:prod && rsbuild dev --env-mode production --open",
 		"format": "biome format --write",
 		"secret:dev": "bun run secret.ts -- development dev",
-		"secret:prod": "bun run secret.ts -- production prod/io"
+		"secret:prod": "bun run secret.ts -- production prod/io",
+		"build:schema:local": "dotenv -e .env.localhost.local -- graphclient build",
+		"build:schema:dev": "dotenv -e .env.development.local -- graphclient build",
+		"build:schema:prod": "dotenv -e .env.production.local -- graphclient build"
 	},
 	"dependencies": {
 		"@betfinio/abi": "^2.3.0",
@@ -21,6 +24,7 @@
 		"@tanstack/react-table": "^8.20.5",
 		"consola": "^3.2.3",
 		"framer-motion": "^11.13.1",
+		"graphql": "^16.9.0",
 		"i18next": "^24.0.5",
 		"i18next-browser-languagedetector": "^8.0.0",
 		"i18next-icu": "^2.3.0",
@@ -40,6 +44,7 @@
 		"@biomejs/biome": "^1.9.4",
 		"@commitlint/cli": "^19.6.0",
 		"@commitlint/config-conventional": "^19.6.0",
+		"@graphprotocol/client-cli": "^3.0.7",
 		"@rsbuild/core": "^1.1.8",
 		"@rsbuild/plugin-react": "^1.0.7",
 		"@rsbuild/plugin-svgr": "^1.0.6",
@@ -49,6 +54,7 @@
 		"@types/react": "^18.3.13",
 		"@types/react-dom": "^18.3.1",
 		"add": "^2.0.6",
+		"dotenv-cli": "^7.4.4",
 		"lefthook": "^1.8.5",
 		"typescript": "^5.7.2"
 	}

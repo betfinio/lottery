@@ -1,7 +1,7 @@
 // @ts-ignore
 import Jackpot from '@/src/assets/jackpot.svg?react';
 import { MAX_SHARES } from '@/src/globals.ts';
-import { useRoundFinish, useTicketPrice } from '@/src/lib/query';
+import { useBetsCount, useRoundFinish, useTicketPrice, useTicketsCount } from '@/src/lib/query';
 import { type TimeDiff, getDiff } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
@@ -13,8 +13,8 @@ import type { Address } from 'viem';
 const CurrentRound: FC<{ round: Address }> = ({ round }) => {
 	const { data: finish = 0 } = useRoundFinish(round);
 	const { data: ticketPrice = 0n } = useTicketPrice(round);
-
-	const ticketsCount = 23423;
+	const { data: ticketsCount = 0 } = useTicketsCount(round);
+	const { data: betsCount = 0 } = useBetsCount(round);
 	const [diff, setDiff] = useState<TimeDiff>({
 		days: 0,
 		hours: 0,
@@ -75,7 +75,7 @@ const CurrentRound: FC<{ round: Address }> = ({ round }) => {
 				<div className={'bg-secondary text-secondary-foreground rounded-xl flex items-center justify-between p-4 py-2 flex-col'}>
 					<span className={'text-muted-foreground text-sm'}>Players</span>
 					<div className={'flex flex-row items-center gap-1'}>
-						293 <UserIcon className={'w-4 h-4'} />
+						{betsCount} <UserIcon className={'w-4 h-4'} />
 					</div>
 				</div>
 				<div className={'bg-secondary text-secondary-foreground rounded-xl flex items-center justify-between p-4 py-2 flex-col'}>
