@@ -5,10 +5,6 @@ import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
 import { dependencies } from './package.json';
 
-const getApp = () => {
-	return `betfinio_app@${process.env.PUBLIC_APP_URL}/mf-manifest.json`;
-};
-
 const PORT = 4007;
 
 export default defineConfig({
@@ -19,7 +15,7 @@ export default defineConfig({
 		assetPrefix: `http://localhost:${PORT}`,
 	},
 	html: {
-		title: 'BetFin Lottery',
+		title: 'Betfin Lottery',
 		favicon: './src/assets/favicon.svg',
 	},
 	output: {
@@ -31,10 +27,10 @@ export default defineConfig({
 		pluginModuleFederation({
 			name: 'betfinio_lottery',
 			remotes: {
-				betfinio_app: getApp(),
+				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
 			},
-			manifest: false,
-			dts: false,
+			manifest: true,
+			dts: true,
 			shared: {
 				react: {
 					singleton: true,
@@ -63,10 +59,6 @@ export default defineConfig({
 				wagmi: {
 					singleton: true,
 					requiredVersion: dependencies.wagmi,
-				},
-				'i18next-browser-languagedetector': {
-					singleton: true,
-					requiredVersion: dependencies['i18next-browser-languagedetector'],
 				},
 			},
 		}),

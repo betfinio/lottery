@@ -12,7 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
-import { Route as LotteryLottoRoundImport } from './routes/lottery/lotto/$round'
+import { Route as GamesLotteryLottoIndexImport } from './routes/games/lottery/lotto/index'
 
 // Create/Update Routes
 
@@ -22,9 +22,9 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LotteryLottoRoundRoute = LotteryLottoRoundImport.update({
-  id: '/lottery/lotto/$round',
-  path: '/lottery/lotto/$round',
+const GamesLotteryLottoIndexRoute = GamesLotteryLottoIndexImport.update({
+  id: '/games/lottery/lotto/',
+  path: '/games/lottery/lotto/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/lottery/lotto/$round': {
-      id: '/lottery/lotto/$round'
-      path: '/lottery/lotto/$round'
-      fullPath: '/lottery/lotto/$round'
-      preLoaderRoute: typeof LotteryLottoRoundImport
+    '/games/lottery/lotto/': {
+      id: '/games/lottery/lotto/'
+      path: '/games/lottery/lotto'
+      fullPath: '/games/lottery/lotto'
+      preLoaderRoute: typeof GamesLotteryLottoIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
+  '/games/lottery/lotto': typeof GamesLotteryLottoIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
+  '/games/lottery/lotto': typeof GamesLotteryLottoIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/lottery/lotto/$round': typeof LotteryLottoRoundRoute
+  '/games/lottery/lotto/': typeof GamesLotteryLottoIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lottery/lotto/$round'
+  fullPaths: '/' | '/games/lottery/lotto'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lottery/lotto/$round'
-  id: '__root__' | '/' | '/lottery/lotto/$round'
+  to: '/' | '/games/lottery/lotto'
+  id: '__root__' | '/' | '/games/lottery/lotto/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LotteryLottoRoundRoute: typeof LotteryLottoRoundRoute
+  GamesLotteryLottoIndexRoute: typeof GamesLotteryLottoIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LotteryLottoRoundRoute: LotteryLottoRoundRoute,
+  GamesLotteryLottoIndexRoute: GamesLotteryLottoIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/lottery/lotto/$round"
+        "/games/lottery/lotto/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/lottery/lotto/$round": {
-      "filePath": "lottery/lotto/$round.tsx"
+    "/games/lottery/lotto/": {
+      "filePath": "games/lottery/lotto/index.tsx"
     }
   }
 }

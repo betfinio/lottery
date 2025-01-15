@@ -17,8 +17,10 @@ export interface TicketProps {
 const Ticket: FC<TicketProps> = ({ ticket, order, onEdit, onDelete }) => {
 	const [editMode, setEditMode] = useState(false);
 	const handleRandomize = () => {
-		// select 5 random unique numbers out of 25
-		const numbers = Array.from({ length: 5 }, () => Math.floor(Math.random() * 25) + 1);
+		// generate 5 uniques numbers from 1 to 25
+		const numbers = Array.from({ length: 25 }, (_, i) => i + 1) // [1, 2, ..., 25]
+			.sort(() => Math.random() - 0.5)
+			.slice(0, 5);
 		// select a random symbol
 		const symbol = Math.floor(Math.random() * 5) + 1;
 		onEdit?.({ numbers, symbol });
@@ -95,9 +97,11 @@ const ViewMode: FC<TicketProps & { onRandomize: () => void; onEditMode: () => vo
 				{order}
 			</div>
 			<div className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}>
-				{ticket.numbers.map((number, index) => (
-					<NumberComponent key={index}>{number || '-'}</NumberComponent>
-				))}
+				{ticket.numbers
+					.sort((a, b) => a - b)
+					.map((number, index) => (
+						<NumberComponent key={index}>{number || '-'}</NumberComponent>
+					))}
 				+
 				<NumberComponent isSymbol>
 					<SymbolElement symbol={ticket.symbol} />
@@ -137,7 +141,7 @@ const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITic
 		if (numbers.includes(number)) {
 			setNumbers(numbers.filter((n) => n !== number));
 		} else {
-			setNumbers([...new Set([...numbers, number])]);
+			setNumbers([...new Set([...numbers, number])].filter((e) => e >= 1 && e <= 25));
 		}
 	};
 	const handleRandomize = () => {
@@ -148,9 +152,10 @@ const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITic
 		setSymbol(0);
 	};
 	const handleSave = () => {
-		onSave?.({ numbers, symbol });
+		onSave?.({ numbers: numbers.sort(), symbol });
 	};
 	const validation: string = useMemo(() => {
+		console.log(symbol, numbers);
 		// validate symbol is 1-5
 		if (symbol < 1 || symbol > 5) return t('symbol');
 		// validate numbers are 5
@@ -241,7 +246,7 @@ const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITic
 	);
 };
 
-const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ children, isSymbol = false }) => {
+export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ children, isSymbol = false }) => {
 	return (
 		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
 		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol })}>
@@ -250,7 +255,7 @@ const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ childr
 				23 32, 10 32, 1 23, 1 10"
 				fill="currentColor"
 				stroke="currentStroke"
-				stroke-width="1"
+				strokeWidth="1"
 			/>
 
 			<foreignObject width={33} height={30} x={0} y={4.5}>
@@ -260,7 +265,7 @@ const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ childr
 	);
 };
 
-const SymbolElement: FC<{ symbol: number }> = ({ symbol }) => {
+export const SymbolElement: FC<{ symbol: number }> = ({ symbol }) => {
 	switch (symbol) {
 		case 1:
 			return '🍒';

@@ -1,6 +1,5 @@
-import { useDraftTickets, useTicketPrice } from '@/src/lib/query';
+import { useDraftLines, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import type { ITicket } from '@/src/lib/types.ts';
-import { Route } from '@/src/routes/lottery/lotto/$round.tsx';
 import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
@@ -13,25 +12,15 @@ import Ticket from './Ticket';
 
 const CreateTicket = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create' });
-	const { round } = Route.useParams();
-
-	const { data: price = 1000, isLoading, isFetching } = useTicketPrice(round);
-	const { data: draftTickets = [], setTickets } = useDraftTickets();
+	const { data: round } = useSelectedRound();
+	const { data: price = 1000, isLoading, isFetching } = useTicketPrice(round?.address);
+	const { data: draftTickets = [] } = useDraftLines();
 
 	const symbolUnlocked = draftTickets.length >= 3;
 
-	const handleAddLine = () => {
-		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
-	};
-	const soon = () => {
-		toast({
-			title: 'Coming soon',
-			description: 'This feature is not available yet',
-			variant: 'soon',
-		});
-	};
 	return (
 		<section className={'w-full h-full border-2 border-primary/70 rounded-xl p-3 bg-background-light col-span-3 md:col-span-1 create-shadow relative'}>
+			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>New ticket</div>
 			<nav className={'flex justify-between'}>
 				<div className={cn('flex flex-row items-center gap-1', { 'animate-pulse blur-sm': isLoading || isFetching })}>
 					<BetValue value={price} withIcon withMillify={false} /> / {t('line')}
@@ -51,20 +40,12 @@ const CreateTicket = () => {
 			<div className={'flex flex-col'}>
 				<TicketList />
 			</div>
-			<footer className={cn('grid grid-cols-2 gap-2')}>
-				<Button variant={'secondary'} className={'cursor-not-allowed'} onClick={soon}>
-					New ticket
-				</Button>
-				<Button variant={'outline'} className={'border-primary text-secondary-foreground'} onClick={handleAddLine}>
-					Add line
-				</Button>
-			</footer>
 		</section>
 	);
 };
 
 const TicketList = () => {
-	const { data: draftTickets = [], setTickets } = useDraftTickets();
+	const { data: draftTickets = [], setTickets } = useDraftLines();
 	const [offset, setOffset] = useState(0);
 
 	const handleNext = () => {
@@ -82,17 +63,38 @@ const TicketList = () => {
 		updatedTickets[index] = newTicket;
 		setTickets(updatedTickets);
 	};
-	const newTicket = (nt: ITicket) => {
-		setTickets([...draftTickets, nt]);
-	};
 	const deleteTicket = (index: number) => {
+		if (draftTickets.length === 1)
+			return toast({
+				title: 'Error',
+				description: 'You cannot delete the only ticket',
+				variant: 'destructive',
+			});
 		const updatedTickets = draftTickets.filter((_, i) => i !== index);
 		setTickets(updatedTickets);
 	};
 
+	const handleAddLine = () => {
+		if (draftTickets.length >= 9)
+			return toast({
+				title: 'Error',
+				description: 'You cannot add more lines',
+				variant: 'destructive',
+			});
+		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
+		setOffset(Math.floor(draftTickets.length / 3) * 3);
+	};
+	const soon = () => {
+		toast({
+			title: 'Coming soon',
+			description: 'This feature is not available yet',
+			variant: 'soon',
+		});
+	};
+
 	return (
 		<AnimatePresence mode={'popLayout'}>
-			<div className={'grid grid-rows-3 gap-2 py-4'} key={'list'}>
+			<div className={'grid grid-rows-3 gap-2'} key={'list'}>
 				{draftTickets.slice(offset, offset + 3).map((ticket, index) => (
 					<Ticket
 						key={index + offset}
@@ -120,6 +122,14 @@ const TicketList = () => {
 				</div>
 				<ChevronRight className={cn('w-5 h-5 cursor-pointer', offset + 3 >= draftTickets.length && 'text-muted-foreground')} onClick={handleNext} />
 			</div>
+			<footer className={cn('grid grid-cols-2 gap-2')}>
+				<Button variant={'secondary'} className={'cursor-not-allowed'} onClick={soon}>
+					New ticket
+				</Button>
+				<Button variant={'outline'} className={'border-primary text-secondary-foreground'} onClick={handleAddLine}>
+					Add line
+				</Button>
+			</footer>
 		</AnimatePresence>
 	);
 };

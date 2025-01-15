@@ -1,7 +1,8 @@
-import { fetchBalance, fetchBetsCount, fetchRoundFinish, fetchTicketPrice, fetchTicketsCount } from '@/src/lib/api';
-import { fetchActiveRounds } from '@/src/lib/gql';
-import type { IRound, ITicket } from '@/src/lib/types.ts';
+import { fetchBalance, fetchBetsCount, fetchMultiAllowance, fetchRoundFinish, fetchRoundStatus, fetchTicketPrice, fetchTicketsCount } from '@/src/lib/api';
+import { fetchActiveRounds, fetchActiveTickets } from '@/src/lib/gql';
+import type { IRound, IRoundTicket, ITicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import type { Address } from 'viem';
 import { useConfig } from 'wagmi';
 
@@ -25,6 +26,14 @@ export const useTicketPrice = (round: Address) => {
 	});
 };
 
+export const useMultiAllowance = (address?: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'allowance', address],
+		queryFn: () => fetchMultiAllowance(address, config),
+	});
+};
+
 export const useTicketsCount = (round: Address) => {
 	const config = useConfig();
 	return useQuery<number>({
@@ -33,10 +42,24 @@ export const useTicketsCount = (round: Address) => {
 	});
 };
 
+export const useRoundStatus = (round: Address) => {
+	const config = useConfig();
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'status'],
+		queryFn: () => fetchRoundStatus(round, config),
+	});
+};
+
 export const useActiveRounds = () => {
 	return useQuery<IRound[]>({
 		queryKey: ['lottery', 'rounds'],
 		queryFn: () => fetchActiveRounds(),
+	});
+};
+export const useActiveTicket = (address?: Address) => {
+	return useQuery<IRoundTicket[]>({
+		queryKey: ['lottery', 'tickets', 'active', address],
+		queryFn: () => fetchActiveTickets(address),
 	});
 };
 
@@ -48,14 +71,28 @@ export const useBetsCount = (round: Address) => {
 	});
 };
 
-export const useDraftTickets = () => {
+export const useSelectedRound = () => {
+	const { data: rounds = [] } = useActiveRounds();
+	const queryClient = useQueryClient();
+	useEffect(() => {
+		if (rounds.length > 0) {
+			queryClient.setQueryData(['lottery', 'round', 'selected'], rounds[0]);
+		}
+	}, [rounds]);
+	return useQuery({
+		queryKey: ['lottery', 'round', 'selected'],
+		initialData: rounds[0],
+	});
+};
+
+export const useDraftLines = () => {
 	const queryClient = useQueryClient();
 	const setTickets = (tickets: ITicket[]) => {
-		queryClient.setQueryData(['lottery', 'tickets', 'draft'], tickets);
+		queryClient.setQueryData(['lottery', 'lines', 'draft'], tickets);
 	};
 	return {
 		...useQuery<ITicket[]>({
-			queryKey: ['lottery', 'tickets', 'draft'],
+			queryKey: ['lottery', 'lines', 'draft'],
 			initialData: [{ numbers: [0, 0, 0, 0, 0], symbol: 0 }],
 		}),
 		setTickets,

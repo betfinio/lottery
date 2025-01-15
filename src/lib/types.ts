@@ -5,7 +5,21 @@ export interface ITicket {
 	numbers: number[];
 }
 
+export interface GTicket {
+	symbol: number;
+	numbers: number;
+}
+
 export interface IRound {
 	address: Address;
 	finish: number;
 }
+
+export interface IRoundTicket {
+	round: Address;
+	player: Address;
+	token: number;
+	tickets: ITicket[];
+}
+
+export type ActiveTicketMode = 'full' | 'compact' | 'minimal';

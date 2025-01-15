@@ -1,8 +1,32 @@
 query GetActiveRounds($now: BigInt) {
-    rounds: roundCreateds(first: 100, where: {timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
+    rounds(first: 100, where: {timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
         id
         round
         timestamp
         blockNumber
+    }
+}
+query GetActiveTickets($player: Bytes, $now: BigInt) {
+    tickets(where: {owner: $player, round_: {timestamp_gt: $now }}, orderBy: round__timestamp, orderDirection: asc) {
+        id
+        owner
+        tokenId
+        round {
+            id
+            round
+            timestamp
+            blockNumber
+        }
+        betAddress
+        lines {
+            id
+            numbers
+            symbol
+        }
+        linesCount
+        created
+        updated
+        amount
+        symbolUnlocked
     }
 }
