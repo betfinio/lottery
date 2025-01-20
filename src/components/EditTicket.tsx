@@ -30,7 +30,7 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 		}
 	}, [isSuccess, data]);
 	const onSave = () => {
-		edit({ ticket: { ...ticket, tickets: newLines } });
+		edit({ ticket: { ...ticket, lines: newLines } });
 	};
 	return (
 		<div className={'max-w-[384px] w-[98vw] mx-auto p-2 md:p-3 lg:p-4 flex flex-col gap-2 md:gap-3 lg:gap-4'}>
