@@ -1,4 +1,13 @@
-import { GetActiveRoundsDocument, type GetActiveRoundsQuery, GetActiveTicketsDocument, type GetActiveTicketsQuery, execute } from '@/.graphclient';
+import {
+	GetActiveRoundsDocument,
+	type GetActiveRoundsQuery,
+	GetTicketsDocument,
+	type GetTicketsQuery,
+	type Line,
+	type Round,
+	type Ticket,
+	execute,
+} from '@/.graphclient';
 import logger from '@/src/config/logger';
 import type { IRound, IRoundTicket } from '@/src/lib/types.ts';
 import { decodeLines } from '@/src/lib/utils';
@@ -17,25 +26,32 @@ export const fetchActiveRounds = async (): Promise<IRound[]> => {
 	return [];
 };
 
-export const fetchActiveTickets = async (address?: Address): Promise<IRoundTicket[]> => {
+export const fetchTickets = async (address?: Address): Promise<{ active: IRoundTicket[]; old: IRoundTicket[] }> => {
 	if (!address || address === ZeroAddress) {
-		return [];
+		return { active: [], old: [] };
 	}
-	logger.start('fetching active tickets');
+	logger.start('fetching tickets');
 	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetActiveTicketsQuery> = await execute(GetActiveTicketsDocument, { now: now.toString(), player: address });
+	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
 	if (result.data) {
-		return result.data.tickets.map((ticket) => {
-			const round = ticket.round.round.toLowerCase() as Address;
-			const player = address;
-			return {
-				round,
-				player,
-				betAddress: ticket.betAddress.toLowerCase() as Address,
-				token: Number(ticket.tokenId),
-				tickets: decodeLines(ticket.lines.map((e) => ({ numbers: Number(e.numbers), symbol: Number(e.symbol) }))),
-			};
-		});
+		return { active: result.data.active.map(populateTickets), old: result.data.old.map(populateTickets) };
 	}
-	return [];
+	return { active: [], old: [] };
+};
+
+const populateTickets = (
+	ticket: Pick<Ticket, 'id' | 'owner' | 'tokenId' | 'betAddress' | 'linesCount' | 'created' | 'updated' | 'amount' | 'symbolUnlocked'> & {
+		round: Pick<Round, 'id' | 'round' | 'timestamp' | 'blockNumber'>;
+		lines: Array<Pick<Line, 'id' | 'numbers' | 'symbol'>>;
+	},
+): IRoundTicket => {
+	const round = ticket.round.round.toLowerCase() as Address;
+	const player = ticket.owner as Address;
+	return {
+		round,
+		player,
+		betAddress: ticket.betAddress.toLowerCase() as Address,
+		token: Number(ticket.tokenId),
+		lines: decodeLines(ticket.lines.map((e) => ({ numbers: Number(e.numbers), symbol: Number(e.symbol) }))),
+	};
 };

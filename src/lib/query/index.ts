@@ -1,6 +1,6 @@
 import { fetchBalance, fetchBetsCount, fetchMultiAllowance, fetchRoundFinish, fetchRoundStatus, fetchTicketPrice, fetchTicketsCount } from '@/src/lib/api';
-import { fetchActiveRounds, fetchActiveTickets } from '@/src/lib/gql';
-import type { IRound, IRoundTicket, ITicket } from '@/src/lib/types.ts';
+import { fetchActiveRounds, fetchTickets } from '@/src/lib/gql';
+import type { ILine, IRound, IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { Address } from 'viem';
@@ -56,11 +56,31 @@ export const useActiveRounds = () => {
 		queryFn: () => fetchActiveRounds(),
 	});
 };
-export const useActiveTicket = (address?: Address) => {
+export const useOldTickets = (address?: Address) => {
+	const { data: tickets = { active: [], old: [] } } = useTickets(address);
 	return useQuery<IRoundTicket[]>({
-		queryKey: ['lottery', 'tickets', 'active', address],
-		queryFn: () => fetchActiveTickets(address),
+		queryKey: ['lottery', 'tickets', 'old', address],
+		queryFn: () => tickets.old,
 	});
+};
+export const useTickets = (address?: Address) => {
+	return useQuery<{ active: IRoundTicket[]; old: IRoundTicket[] }>({
+		queryKey: ['lottery', 'tickets', 'all', address],
+		queryFn: () => fetchTickets(address),
+	});
+};
+export const useActiveTickets = (address?: Address) => {
+	const { data: tickets = { active: [], old: [] } } = useTickets(address);
+	const query = useQuery({
+		queryKey: ['lottery', 'tickets', 'active', address],
+		queryFn: () => tickets.active,
+	});
+
+	useEffect(() => {
+		query.refetch();
+	}, [tickets]);
+
+	return query;
 };
 
 export const useBetsCount = (round: Address) => {
@@ -87,11 +107,11 @@ export const useSelectedRound = () => {
 
 export const useDraftLines = () => {
 	const queryClient = useQueryClient();
-	const setTickets = (tickets: ITicket[]) => {
+	const setTickets = (tickets: ILine[]) => {
 		queryClient.setQueryData(['lottery', 'lines', 'draft'], tickets);
 	};
 	return {
-		...useQuery<ITicket[]>({
+		...useQuery<ILine[]>({
 			queryKey: ['lottery', 'lines', 'draft'],
 			initialData: [{ numbers: [0, 0, 0, 0, 0], symbol: 0 }],
 		}),

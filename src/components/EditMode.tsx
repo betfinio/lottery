@@ -1,5 +1,5 @@
-import { SymbolElement } from '@/src/components/Ticket.tsx';
-import type { ITicket } from '@/src/lib/types.ts';
+import { SymbolElement } from '@/src/components/Line.tsx';
+import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
@@ -7,7 +7,7 @@ import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITicket) => void; order: number; editMode: boolean; onRandomize: () => void }> = ({
+const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean; onRandomize: () => void }> = ({
 	order,
 	onBack,
 	ticket,
@@ -78,7 +78,7 @@ const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITic
 				<div className={'shiny-gold w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground font-semibold'}>{order}</div>
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full '}>
-				<h2 className={'uppercase text-secondary-foreground font-semibold text-lg'}>LOTTO ticket</h2>
+				<h2 className={'uppercase text-secondary-foreground font-semibold text-lg'}>LOTTO line</h2>
 				<span className={'text-sm text-muted-foreground'}>Select 5 lucky numbers and 1 symbol</span>
 				<div className={'w-full'}>
 					<div className={'grid grid-cols-5 w-full gap-2'}>

@@ -1,5 +1,5 @@
 import { buyTicket, manualRequest, unlockMultibet, updateTicket } from '@/src/lib/api';
-import type { IRoundTicket, ITicket } from '@/src/lib/types.ts';
+import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { toast } from '@betfinio/components/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import { getTransactionLink } from 'betfinio_context/lib/helpers';
@@ -10,7 +10,7 @@ import { useConfig } from 'wagmi';
 import { useMutation } from 'wagmi/query';
 
 interface BuyTicketProps {
-	lines: ITicket[];
+	lines: ILine[];
 	rounds: Address[];
 	recipient: Address;
 }
@@ -91,7 +91,7 @@ export const useUpdateTicket = () => {
 					hash: data,
 				});
 				await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
-				await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'active'] });
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'all'] });
 				update({
 					title: t('editTicket.sent.title'),
 					description: t('editTicket.sent.description'),
@@ -141,6 +141,7 @@ export const useBuyTicket = () => {
 					hash: data,
 				});
 				await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'all'] });
 				update({
 					title: t('buyTicket.sent.title'),
 					description: t('buyTicket.sent.description'),

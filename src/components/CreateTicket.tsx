@@ -1,5 +1,5 @@
 import { useDraftLines, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import type { ITicket } from '@/src/lib/types.ts';
+import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
@@ -8,7 +8,7 @@ import { AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CircleCheck, CircleHelp } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Ticket from './Ticket';
+import Line from './Line.tsx';
 
 const CreateTicket = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create' });
@@ -58,7 +58,7 @@ const TicketList = () => {
 		setOffset((prev) => prev - 3);
 	};
 
-	const updateTicket = (index: number, newTicket: ITicket) => {
+	const updateTicket = (index: number, newTicket: ILine) => {
 		const updatedTickets = [...draftTickets];
 		updatedTickets[index] = newTicket;
 		setTickets(updatedTickets);
@@ -96,7 +96,7 @@ const TicketList = () => {
 		<AnimatePresence mode={'popLayout'}>
 			<div className={'grid grid-rows-3 gap-2'} key={'list'}>
 				{draftTickets.slice(offset, offset + 3).map((ticket, index) => (
-					<Ticket
+					<Line
 						key={index + offset}
 						ticket={ticket}
 						order={index + 1 + offset}

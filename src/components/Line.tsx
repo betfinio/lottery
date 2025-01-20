@@ -1,0 +1,151 @@
+import EditMode from '@/src/components/EditMode.tsx';
+import type { ILine } from '@/src/lib/types.ts';
+import { randomize } from '@/src/lib/utils';
+import { cn } from '@betfinio/components';
+import { Button } from '@betfinio/components/ui';
+import { motion } from 'framer-motion';
+import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { type FC, type PropsWithChildren, useState } from 'react';
+
+export interface LineProps {
+	ticket: ILine;
+	onDelete?: () => void;
+	onEdit?: (ticket: ILine) => void;
+	order: number;
+	isNew?: boolean;
+}
+
+const Line: FC<LineProps> = ({ ticket, order, onEdit, onDelete }) => {
+	const [editMode, setEditMode] = useState(false);
+	const handleRandomize = () => {
+		onEdit?.(randomize());
+	};
+
+	const handleDelete = () => {
+		onDelete?.();
+	};
+	const handleEdit = () => {
+		setEditMode((prev) => !prev);
+	};
+	const handleSave = (ticket: ILine) => {
+		onEdit?.(ticket);
+		setEditMode(false);
+	};
+	const isNew = ticket.numbers.every((n) => n === 0) && ticket.symbol === 0;
+
+	return (
+		<>
+			<motion.div
+				initial={{ opacity: 0, scale: 0.7 }}
+				animate={{ opacity: 1, scale: 1, rotateX: editMode ? 90 : 0 }}
+				exit={{ opacity: 0, scale: 0.7 }}
+				transition={{ duration: 0.2, ease: 'easeInOut', delay: editMode ? 0 : 0.2 }}
+				style={{ transformStyle: 'preserve-3d' }}
+				className={'overflow-x-hidden'}
+			>
+				<ViewMode ticket={ticket} isNew={isNew} onEditMode={handleEdit} order={order} onDelete={handleDelete} onRandomize={handleRandomize} />
+			</motion.div>
+			<EditMode ticket={ticket} onBack={handleEdit} onSave={handleSave} order={order} editMode={editMode} onRandomize={handleRandomize} />
+		</>
+	);
+};
+
+const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void }> = ({ ticket, isNew, onEditMode, order, onRandomize, onDelete }) => {
+	const renderNewFooter = () => {
+		return (
+			<div className={'flex flex-row px-4 justify-between'}>
+				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto'} onClick={onEditMode}>
+					Fill line
+				</Button>
+				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
+					<ShuffleIcon className={'w-3.5 h-3.5'} />
+					Quick pick
+				</Button>
+			</div>
+		);
+	};
+	const renderRegularFooter = () => {
+		return (
+			<div className={'flex flex-row  justify-between'}>
+				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
+					<TrashIcon className={'w-3.5 h-3.5'} />
+					Delete
+				</Button>
+				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
+					<PencilIcon className={'w-3.5 h-3.5'} />
+					Edit
+				</Button>
+				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
+					<ShuffleIcon className={'w-3.5 h-3.5'} />
+					Quick pick
+				</Button>
+			</div>
+		);
+	};
+	return (
+		<div className={'bg-secondary border border-purple-box rounded-lg mt-4 py-2 '}>
+			<div
+				className={
+					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8'
+				}
+			>
+				{order}
+			</div>
+			<div className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}>
+				{ticket.numbers
+					.sort((a, b) => a - b)
+					.map((number, index) => (
+						<NumberComponent key={index}>{number || '-'}</NumberComponent>
+					))}
+				+
+				<NumberComponent isSymbol>
+					<SymbolElement symbol={ticket.symbol} />
+				</NumberComponent>
+			</div>
+			<div className={'relative h-5 z-[1]'}>
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-[2]'} />
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-[2]'} />
+				<div className={'border border-dashed border-t-0 w-full top-2 border-purple-box absolute'} />
+			</div>
+			{isNew ? renderNewFooter() : renderRegularFooter()}
+		</div>
+	);
+};
+
+export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ children, isSymbol = false }) => {
+	return (
+		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
+		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol })}>
+			<polygon
+				points="10 1, 23 1, 32 10, 32 22,
+				23 32, 10 32, 1 23, 1 10"
+				fill="currentColor"
+				stroke="currentStroke"
+				strokeWidth="1"
+			/>
+
+			<foreignObject width={33} height={30} x={0} y={4.5}>
+				<div className={'text-foreground flex items-center justify-center'}>{children}</div>
+			</foreignObject>
+		</svg>
+	);
+};
+
+export const SymbolElement: FC<{ symbol: number }> = ({ symbol }) => {
+	switch (symbol) {
+		case 1:
+			return '🍒';
+		case 2:
+			return '🍊';
+		case 3:
+			return '🍋';
+		case 4:
+			return '🍉';
+		case 5:
+			return '🍇';
+		default:
+			return '-';
+	}
+};
+
+export default Line;

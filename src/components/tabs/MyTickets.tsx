@@ -1,5 +1,6 @@
 import ActiveTicketsList from '@/src/components/tabs/ActiveTicketsList.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
+import OldTicketsList from './OldTicketsList';
 
 function MyTickets() {
 	return (
@@ -19,8 +20,12 @@ function MyTickets() {
 				<TabsContent value="active" className={'h-full'}>
 					<ActiveTicketsList />
 				</TabsContent>
-				<TabsContent value="giveaway">giveaway tickets</TabsContent>
-				<TabsContent value="old">old tickets</TabsContent>
+				<TabsContent value="giveaway">
+					<div className={'border border-purple-box p-4 rounded-lg text-center'}>This feature is coming soon</div>
+				</TabsContent>
+				<TabsContent value="old" className={'h-full'}>
+					<OldTicketsList />
+				</TabsContent>
 			</Tabs>
 		</div>
 	);

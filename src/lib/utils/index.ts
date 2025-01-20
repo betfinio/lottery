@@ -1,4 +1,4 @@
-import type { GTicket, ITicket } from '@/src/lib/types.ts';
+import type { GTicket, ILine } from '@/src/lib/types.ts';
 
 export interface TimeDiff {
 	days: number;
@@ -15,14 +15,14 @@ export const getDiff = (start: number, end: number): TimeDiff => {
 	return { days, hours, minutes, seconds };
 };
 
-export const encodeLines = (lines: ITicket[]): GTicket[] => {
+export const encodeLines = (lines: ILine[]): GTicket[] => {
 	return lines.map((line) => ({
 		symbol: line.symbol,
 		numbers: Number(line.numbers.reduce((acc, num) => acc + 2n ** BigInt(num), BigInt(0))),
 	}));
 };
 
-export const decodeLines = (lines: GTicket[]): ITicket[] => {
+export const decodeLines = (lines: GTicket[]): ILine[] => {
 	return lines.map((line) => ({
 		symbol: line.symbol,
 		numbers: line.numbers
@@ -34,7 +34,7 @@ export const decodeLines = (lines: GTicket[]): ITicket[] => {
 	}));
 };
 
-export const randomize = (): ITicket => {
+export const randomize = (): ILine => {
 	// generate 5 uniques numbers from 1 to 25
 	const numbers = Array.from({ length: 25 }, (_, i) => i + 1) // [1, 2, ..., 25]
 		.sort(() => Math.random() - 0.5)
@@ -44,6 +44,6 @@ export const randomize = (): ITicket => {
 	return { symbol, numbers };
 };
 
-export const equals = (a: ITicket, b: ITicket): boolean => {
+export const equals = (a: ILine, b: ILine): boolean => {
 	return a.symbol === b.symbol && a.numbers.length === b.numbers.length && a.numbers.every((n, i) => n === b.numbers[i]);
 };

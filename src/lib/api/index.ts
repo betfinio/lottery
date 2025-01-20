@@ -1,6 +1,6 @@
 import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
-import type { IRoundTicket, ITicket } from '@/src/lib/types.ts';
+import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { encodeLines } from '@/src/lib/utils';
 import { LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
@@ -85,7 +85,7 @@ export const fetchMultiAllowance = async (address: Address | undefined, config: 
 	return value;
 };
 
-export const buyTicket = async (options: { lines: ITicket[]; rounds: Address[]; recipient: Address }, config: Config) => {
+export const buyTicket = async (options: { lines: ILine[]; rounds: Address[]; recipient: Address }, config: Config) => {
 	const { lines, rounds, recipient } = options;
 	const datas: Address[] = [];
 	const amounts: bigint[] = [];
@@ -143,7 +143,7 @@ export const manualRequest = async (round: Address, config: Config) => {
 
 export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
 	console.log(ticket);
-	const encodedLines = encodeLines(ticket.tickets);
+	const encodedLines = encodeLines(ticket.lines);
 	await simulateContract(config, {
 		abi: LotteryABI,
 		address: LOTTERY_ADDRESS,

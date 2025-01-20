@@ -1,151 +1,134 @@
+import Countdown from '@/src/components/Countdown.tsx';
 import EditMode from '@/src/components/EditMode.tsx';
-import type { ITicket } from '@/src/lib/types.ts';
+import EditTicket from '@/src/components/EditTicket.tsx';
+import { useRoundFinish } from '@/src/lib/query';
+import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
-import { Button } from '@betfinio/components/ui';
-import { motion } from 'framer-motion';
-import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
-import { type FC, type PropsWithChildren, useState } from 'react';
+import { Badge, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, PencilLineIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import logger from '../config/logger';
+import { NumberComponent, SymbolElement } from './Line.tsx';
 
 export interface TicketProps {
-	ticket: ITicket;
-	onDelete?: () => void;
-	onEdit?: (ticket: ITicket) => void;
-	order: number;
-	isNew?: boolean;
+	ticket: IRoundTicket;
+	mode?: ActiveTicketMode;
+	onToggleExpand?: () => void;
+	onUpdate?: (ticket: IRoundTicket) => void;
+	old?: boolean;
 }
 
-const Ticket: FC<TicketProps> = ({ ticket, order, onEdit, onDelete }) => {
-	const [editMode, setEditMode] = useState(false);
-	const handleRandomize = () => {
-		onEdit?.(randomize());
+function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false }: TicketProps) {
+	const { data: finish = 0 } = useRoundFinish(ticket.round);
+	const [editing, setEditing] = useState(-1);
+	const [open, setOpen] = useState(false);
+	const [lines, setLines] = useState(ticket.lines);
+	useEffect(() => {
+		setLines(ticket.lines);
+	}, [ticket.lines]);
+	const handleOpenEditMode = () => {
+		logger.log('edit');
 	};
-
-	const handleDelete = () => {
-		onDelete?.();
+	const handleFullMode = () => {
+		onToggleExpand?.();
 	};
-	const handleEdit = () => {
-		setEditMode((prev) => !prev);
+	const handleRandomize = (index: number) => {
+		logger.log('randomize', index);
+		const random = randomize();
+		changeLine(random, index);
 	};
-	const handleSave = (ticket: ITicket) => {
-		onEdit?.(ticket);
-		setEditMode(false);
+	const changeLine = (line: ILine, index: number) => {
+		const newLines = [...lines];
+		newLines[index] = line;
+		setLines(newLines);
 	};
-	const isNew = ticket.numbers.every((n) => n === 0) && ticket.symbol === 0;
-
+	const handleEdit = (line: ILine, index: number) => {
+		changeLine(line, index);
+		setEditing(-1);
+	};
+	const handleClose = () => {
+		setEditing(-1);
+		setOpen(false);
+	};
+	useEffect(() => {
+		onUpdate?.({ ...ticket, lines: lines });
+	}, [lines, ticket.lines]);
 	return (
-		<>
-			<motion.div
-				initial={{ opacity: 0, scale: 0.7 }}
-				animate={{ opacity: 1, scale: 1, rotateX: editMode ? 90 : 0 }}
-				exit={{ opacity: 0, scale: 0.7 }}
-				transition={{ duration: 0.2, ease: 'easeInOut', delay: editMode ? 0 : 0.2 }}
-				style={{ transformStyle: 'preserve-3d' }}
-				className={'overflow-x-hidden'}
-			>
-				<ViewMode ticket={ticket} isNew={isNew} onEditMode={handleEdit} order={order} onDelete={handleDelete} onRandomize={handleRandomize} />
-			</motion.div>
-			<EditMode ticket={ticket} onBack={handleEdit} onSave={handleSave} order={order} editMode={editMode} onRandomize={handleRandomize} />
-		</>
+		<motion.div
+			animate={{ height: editing === -1 ? 'auto' : 450 }}
+			className={cn('border border-purple-box rounded-xl p-2 ', {
+				'bg-gradient-to-b from-background to-background via-primary/20 via-60%': mode === 'full' || mode === 'expanded',
+			})}
+		>
+			<Dialog open={open} onOpenChange={setOpen}>
+				<motion.div
+					animate={{ height: mode === 'minimal' ? 0 : 'auto', opacity: mode === 'minimal' ? 0 : 1 }}
+					className={'flex flex-row items-center justify-between'}
+				>
+					<div className={'flex flex-row items-center gap-2'}>
+						#{ticket.token}
+						{mode !== 'expanded' && !old && (
+							<DialogTrigger>
+								<PencilLineIcon className={'w-4 h-4 text-secondary-foreground cursor-pointer'} onClick={handleOpenEditMode} />
+							</DialogTrigger>
+						)}
+						<div className={'text text-muted-foreground'}>{lines.length} lines</div>
+					</div>
+					{old ? <Badge>Ended</Badge> : <Countdown size={30} finish={finish} className={cn('text-muted-foreground')} />}
+				</motion.div>
+				<motion.div className={'flex flex-col py-2'}>
+					<div className={cn('overflow-y-scroll', { 'max-h-[115px]': mode !== 'expanded' })}>
+						<AnimatePresence>
+							{lines.slice(0, mode === 'full' || mode === 'expanded' ? lines.length : 1).map((line, index) => (
+								<motion.div
+									initial={{ opacity: 0, height: 0, margin: 0 }}
+									key={index}
+									animate={{ opacity: 1, height: 33, margin: 4 }}
+									exit={{ height: 0, opacity: 0, margin: 0 }}
+									className={'flex flex-row gap-2 items-center justify-center'}
+								>
+									{line.numbers
+										.sort((a, b) => a - b)
+										.map((number, index) => (
+											<NumberComponent key={index}>{number || '-'}</NumberComponent>
+										))}
+									+
+									<NumberComponent isSymbol>
+										<SymbolElement symbol={line.symbol} />
+									</NumberComponent>
+									<div onClick={() => setEditing(index)} className={cn({ hidden: mode !== 'expanded' }, 'cursor-pointer')}>
+										<PencilLineIcon className={'w-4 h-4 text-secondary-foreground'} />
+									</div>
+									{lines.length > 1 && mode !== 'expanded' && (
+										<motion.div
+											animate={{ rotate: mode === 'full' ? 180 : 0 }}
+											className={cn('cursor-pointer', index > 0 && 'opacity-0')}
+											onClick={handleFullMode}
+										>
+											<ChevronDown className={'w-6 h-6'} />
+										</motion.div>
+									)}
+									<EditMode
+										ticket={line}
+										editMode={editing === index}
+										onSave={(e) => handleEdit(e, index)}
+										onBack={() => setEditing(-1)}
+										order={index}
+										onRandomize={() => handleRandomize(index)}
+									/>
+								</motion.div>
+							))}
+						</AnimatePresence>
+					</div>
+				</motion.div>
+				<DialogContent className={'lottery'}>
+					<EditTicket ticket={ticket} onClose={handleClose} />
+				</DialogContent>
+			</Dialog>
+		</motion.div>
 	);
-};
-
-const ViewMode: FC<TicketProps & { onRandomize: () => void; onEditMode: () => void }> = ({ ticket, isNew, onEditMode, order, onRandomize, onDelete }) => {
-	const renderNewFooter = () => {
-		return (
-			<div className={'flex flex-row px-4 justify-between'}>
-				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto'} onClick={onEditMode}>
-					Fill ticket
-				</Button>
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
-					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
-				</Button>
-			</div>
-		);
-	};
-	const renderRegularFooter = () => {
-		return (
-			<div className={'flex flex-row  justify-between'}>
-				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
-					<TrashIcon className={'w-3.5 h-3.5'} />
-					Delete
-				</Button>
-				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
-					<PencilIcon className={'w-3.5 h-3.5'} />
-					Edit
-				</Button>
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
-					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
-				</Button>
-			</div>
-		);
-	};
-	return (
-		<div className={'bg-secondary border border-purple-box rounded-lg mt-4 py-2 '}>
-			<div
-				className={
-					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8'
-				}
-			>
-				{order}
-			</div>
-			<div className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}>
-				{ticket.numbers
-					.sort((a, b) => a - b)
-					.map((number, index) => (
-						<NumberComponent key={index}>{number || '-'}</NumberComponent>
-					))}
-				+
-				<NumberComponent isSymbol>
-					<SymbolElement symbol={ticket.symbol} />
-				</NumberComponent>
-			</div>
-			<div className={'relative h-5 z-[1]'}>
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-[2]'} />
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-[2]'} />
-				<div className={'border border-dashed border-t-0 w-full top-2 border-purple-box absolute'} />
-			</div>
-			{isNew ? renderNewFooter() : renderRegularFooter()}
-		</div>
-	);
-};
-
-export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({ children, isSymbol = false }) => {
-	return (
-		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
-		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol })}>
-			<polygon
-				points="10 1, 23 1, 32 10, 32 22,
-				23 32, 10 32, 1 23, 1 10"
-				fill="currentColor"
-				stroke="currentStroke"
-				strokeWidth="1"
-			/>
-
-			<foreignObject width={33} height={30} x={0} y={4.5}>
-				<div className={'text-foreground flex items-center justify-center'}>{children}</div>
-			</foreignObject>
-		</svg>
-	);
-};
-
-export const SymbolElement: FC<{ symbol: number }> = ({ symbol }) => {
-	switch (symbol) {
-		case 1:
-			return '🍒';
-		case 2:
-			return '🍊';
-		case 3:
-			return '🍋';
-		case 4:
-			return '🍉';
-		case 5:
-			return '🍇';
-		default:
-			return '-';
-	}
-};
+}
 
 export default Ticket;

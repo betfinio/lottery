@@ -1,6 +1,6 @@
 import type { Address } from 'viem';
 
-export interface ITicket {
+export interface ILine {
 	symbol: number;
 	numbers: number[];
 }
@@ -20,7 +20,7 @@ export interface IRoundTicket {
 	player: Address;
 	token: number;
 	betAddress: Address;
-	tickets: ITicket[];
+	lines: ILine[];
 }
 
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';
