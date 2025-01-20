@@ -10,8 +10,8 @@ export const fetchActiveRounds = async (): Promise<IRound[]> => {
 	logger.start('fetching active rounds');
 	const now = BigInt(Math.floor(Date.now() / 1000));
 	const result: ExecutionResult<GetActiveRoundsQuery> = await execute(GetActiveRoundsDocument, { now: now.toString() });
+	logger.success('fetched active rounds', result.data?.rounds);
 	if (result.data?.rounds) {
-		logger.success('fetching active rounds');
 		return result.data.rounds.map((round) => ({ address: round.round.toLowerCase() as Address, finish: Number(round.timestamp) }) as IRound);
 	}
 	return [];
@@ -31,6 +31,7 @@ export const fetchActiveTickets = async (address?: Address): Promise<IRoundTicke
 			return {
 				round,
 				player,
+				betAddress: ticket.betAddress.toLowerCase() as Address,
 				token: Number(ticket.tokenId),
 				tickets: decodeLines(ticket.lines.map((e) => ({ numbers: Number(e.numbers), symbol: Number(e.symbol) }))),
 			};

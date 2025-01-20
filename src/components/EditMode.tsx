@@ -1,0 +1,139 @@
+import { SymbolElement } from '@/src/components/Ticket.tsx';
+import type { ITicket } from '@/src/lib/types.ts';
+import { cn } from '@betfinio/components';
+import { Button } from '@betfinio/components/ui';
+import { motion } from 'framer-motion';
+import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
+import { type FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+const EditMode: FC<{ ticket: ITicket; onBack: () => void; onSave?: (ticket: ITicket) => void; order: number; editMode: boolean; onRandomize: () => void }> = ({
+	order,
+	onBack,
+	ticket,
+	onSave,
+	onRandomize,
+	editMode,
+}) => {
+	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
+	const [symbol, setSymbol] = useState(ticket.symbol);
+	const [numbers, setNumbers] = useState(ticket.numbers);
+
+	useEffect(() => {
+		setNumbers(ticket.numbers);
+		setSymbol(ticket.symbol);
+	}, [ticket]);
+
+	const changeSymbol = (symbol: number) => {
+		setSymbol(symbol);
+	};
+	const toggleNumber = (number: number) => {
+		if (numbers.includes(number)) {
+			setNumbers(numbers.filter((n) => n !== number));
+		} else {
+			setNumbers([...new Set([...numbers, number])].filter((e) => e >= 1 && e <= 25));
+		}
+	};
+	const handleRandomize = () => {
+		onRandomize();
+	};
+	const handleClear = () => {
+		setNumbers([]);
+		setSymbol(0);
+	};
+	const handleSave = () => {
+		onSave?.({ numbers: numbers.sort(), symbol });
+	};
+	const validation: string = useMemo(() => {
+		// validate symbol is 1-5
+		if (symbol < 1 || symbol > 5) return t('symbol');
+		// validate numbers are 5
+		if (numbers.length !== 5) return t('5numbers');
+		// validate numbers are unique
+		if (new Set(numbers).size !== numbers.length) return t('unique');
+		// validate numbers are 1-25
+		if (numbers.some((n) => n < 1 || n > 25)) return t('1to25');
+		return '';
+	}, [symbol, numbers]);
+
+	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
+
+	return (
+		<motion.div
+			initial={{ rotateX: 90, top: 0 }}
+			animate={{ rotateX: editMode ? 0 : 90, top: editMode ? 0 : cardPosition }}
+			transition={{
+				delay: editMode ? 0.2 : 0,
+				duration: 0.3,
+				ease: 'easeInOut',
+			}}
+			style={{ transformStyle: 'preserve-3d', pointerEvents: 'auto' }}
+			className={'left-0 absolute inset-0 p-4 bg-background-light rounded-xl z-[100] w-full h-full flex flex-col'}
+		>
+			<nav className={'flex justify-between w-full items-center'}>
+				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={onBack}>
+					<ChevronLeft className={'w-5 h-5'} />
+					Back to all lines
+				</Button>
+				<div className={'shiny-gold w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground font-semibold'}>{order}</div>
+			</nav>
+			<section className={'flex flex-col items-center justify-between h-full '}>
+				<h2 className={'uppercase text-secondary-foreground font-semibold text-lg'}>LOTTO ticket</h2>
+				<span className={'text-sm text-muted-foreground'}>Select 5 lucky numbers and 1 symbol</span>
+				<div className={'w-full'}>
+					<div className={'grid grid-cols-5 w-full gap-2'}>
+						{Array.from({ length: 5 }).map((_, index) => (
+							<div
+								key={index}
+								onClick={() => changeSymbol(index + 1)}
+								className={cn('aspect-[4/3] cursor-pointer bg-foreground/50 rounded-lg flex items-center justify-center transition-all', {
+									'border-2': symbol === index + 1,
+								})}
+							>
+								<SymbolElement symbol={index + 1} />
+							</div>
+						))}
+						{Array.from({ length: 5 }).map((_, index) => (
+							<div
+								key={index}
+								onClick={() => changeSymbol(index + 1)}
+								className={cn('cursor-pointer text-muted-foreground flex items-center justify-center transition-all')}
+							>
+								{index + 1}
+							</div>
+						))}
+					</div>
+					<div className={'grid grid-cols-5 grid-rows-5 grid-flow-col w-full gap-2'}>
+						{Array.from({ length: 25 }).map((_, index) => (
+							<div
+								key={index}
+								onClick={() => toggleNumber(index + 1)}
+								className={cn('aspect-[4/3] cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all', {
+									'border-2 bg-white/10': numbers.includes(index + 1),
+								})}
+							>
+								{index + 1}
+							</div>
+						))}
+					</div>
+				</div>
+				<div className={'text-destructive/50 h-6'}>{validation}</div>
+				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
+					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleClear}>
+						<XCircle className={'w-3.5 h-3.5'} />
+						Clear
+					</Button>
+					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleRandomize}>
+						<ShuffleIcon className={'w-3.5 h-3.5'} />
+						Quick pick
+					</Button>
+					<Button variant={'success'} className={' gap-1 font-light '} shape={'pill'} size={'sm'} onClick={handleSave} disabled={validation !== ''}>
+						<CheckCircle className={'w-3.5 h-3.5'} />
+						Save
+					</Button>
+				</footer>
+			</section>
+		</motion.div>
+	);
+};
+export default EditMode;

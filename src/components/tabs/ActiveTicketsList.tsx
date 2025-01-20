@@ -40,7 +40,7 @@ function ActiveTicketsList() {
 			{tickets.slice(offset, offset + 4).map((ticket, index) => (
 				<ActiveTicket ticket={ticket} key={index + offset} mode={getMode(index + offset)} onToggleExpand={() => handleToggleExpand(index + offset)} />
 			))}
-			<div className={'flex absolute w-full bottom-2 left-0 p-2 flex-row justify-between py-2 items-center h-10'} key={'navigation'}>
+			<div className={'flex absolute w-full bottom-0 left-0 p-2 flex-row justify-between py-2 items-center h-10'} key={'navigation'}>
 				<ChevronLeft className={cn('w-5 h-5 cursor-pointer', offset === 0 && 'text-muted-foreground')} onClick={handlePrev} />
 				<div className={'flex flex-row gap-1'}>
 					{Array.from({ length: Math.ceil(tickets.length / 4) }).map((_, i) => (

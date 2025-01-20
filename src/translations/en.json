@@ -19,6 +19,12 @@
 				"description": "Transaction was submitted"
 			}
 		},
+		"editTicket": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
 		"manualRequest": {
 			"sent": {
 				"title": "Transaction pending",
@@ -30,6 +36,10 @@
 				"title": "Transaction pending",
 				"description": "Transaction was submitted"
 			}
+		},
+		"errors": {
+			"title": "Transaction failed",
+			"LR01": "Ticket with selected combination already exists!"
 		}
 	}
 }

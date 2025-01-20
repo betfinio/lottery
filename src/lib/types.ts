@@ -19,7 +19,8 @@ export interface IRoundTicket {
 	round: Address;
 	player: Address;
 	token: number;
+	betAddress: Address;
 	tickets: ITicket[];
 }
 
-export type ActiveTicketMode = 'full' | 'compact' | 'minimal';
+export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';

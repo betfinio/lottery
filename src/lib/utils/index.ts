@@ -33,3 +33,17 @@ export const decodeLines = (lines: GTicket[]): ITicket[] => {
 			.filter((num) => num !== -1),
 	}));
 };
+
+export const randomize = (): ITicket => {
+	// generate 5 uniques numbers from 1 to 25
+	const numbers = Array.from({ length: 25 }, (_, i) => i + 1) // [1, 2, ..., 25]
+		.sort(() => Math.random() - 0.5)
+		.slice(0, 5);
+	// select a random symbol
+	const symbol = Math.floor(Math.random() * 5) + 1;
+	return { symbol, numbers };
+};
+
+export const equals = (a: ITicket, b: ITicket): boolean => {
+	return a.symbol === b.symbol && a.numbers.length === b.numbers.length && a.numbers.every((n, i) => n === b.numbers[i]);
+};
