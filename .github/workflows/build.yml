@@ -39,7 +39,7 @@ jobs:
           BUN_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build
         env:
-          PUBLIC_OUTPUT_URL: https://{{secrets.AWS_BUCKET}}
+          PUBLIC_OUTPUT_URL: https://${{ secrets.AWS_BUCKET }}
         run: bun run build --env-mode ${{ secrets.AWS_ENVIRONMENT }}
       - name: Deploy
         run: |
