@@ -17,6 +17,9 @@ export default defineConfig({
 	html: {
 		title: 'Betfin Lottery',
 		favicon: './src/assets/favicon.svg',
+		meta: {
+			'og:image': 'https://picsum.photos/200/300',
+		},
 	},
 	output: {
 		assetPrefix: process.env.PUBLIC_OUTPUT_URL,
