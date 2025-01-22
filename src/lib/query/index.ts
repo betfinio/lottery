@@ -1,5 +1,5 @@
-import { fetchBalance, fetchBetsCount, fetchMultiAllowance, fetchRoundFinish, fetchRoundStatus, fetchTicketPrice, fetchTicketsCount } from '@/src/lib/api';
-import { fetchActiveRounds, fetchTickets } from '@/src/lib/gql';
+import { fetchMultiAllowance, fetchRoundFinish, fetchRoundStatus, fetchTicketPrice, fetchWinningLine } from '@/src/lib/api';
+import { fetchActiveRounds, fetchOldRounds, fetchTickets } from '@/src/lib/gql';
 import type { ILine, IRound, IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -9,14 +9,6 @@ import { useConfig } from 'wagmi';
 /**
  *  Example of hook that reads data from fetcher(api
  */
-
-export const useBalance = (address: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['template', 'balance', address],
-		queryFn: () => fetchBalance(address, config),
-	});
-};
 
 export const useTicketPrice = (round: Address) => {
 	const config = useConfig();
@@ -34,14 +26,6 @@ export const useMultiAllowance = (address?: Address) => {
 	});
 };
 
-export const useTicketsCount = (round: Address) => {
-	const config = useConfig();
-	return useQuery<number>({
-		queryKey: ['lottery', 'round', round, 'ticketsCount'],
-		queryFn: () => fetchTicketsCount(round, config),
-	});
-};
-
 export const useRoundStatus = (round: Address) => {
 	const config = useConfig();
 	return useQuery<number>({
@@ -52,8 +36,14 @@ export const useRoundStatus = (round: Address) => {
 
 export const useActiveRounds = () => {
 	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'rounds'],
+		queryKey: ['lottery', 'active', 'rounds'],
 		queryFn: () => fetchActiveRounds(),
+	});
+};
+export const useOldRounds = () => {
+	return useQuery<IRound[]>({
+		queryKey: ['lottery', 'old', 'rounds'],
+		queryFn: () => fetchOldRounds(),
 	});
 };
 export const useOldTickets = (address?: Address) => {
@@ -83,19 +73,12 @@ export const useActiveTickets = (address?: Address) => {
 	return query;
 };
 
-export const useBetsCount = (round: Address) => {
-	const config = useConfig();
-	return useQuery<number>({
-		queryKey: ['lottery', 'round', round, 'betsCount'],
-		queryFn: () => fetchBetsCount(round, config),
-	});
-};
-
 export const useSelectedRound = () => {
 	const { data: rounds = [] } = useActiveRounds();
 	const queryClient = useQueryClient();
 	useEffect(() => {
 		if (rounds.length > 0) {
+			console.log(rounds[0]);
 			queryClient.setQueryData(['lottery', 'round', 'selected'], rounds[0]);
 		}
 	}, [rounds]);
@@ -117,6 +100,14 @@ export const useDraftLines = () => {
 		}),
 		setTickets,
 	};
+};
+
+export const useWinningLine = (round: Address) => {
+	const config = useConfig();
+	return useQuery({
+		queryKey: ['lottery', 'round', round, 'winningLine'],
+		queryFn: () => fetchWinningLine(round, config),
+	});
 };
 
 export const useRoundFinish = (round: Address) => {

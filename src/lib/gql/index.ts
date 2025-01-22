@@ -1,6 +1,8 @@
 import {
 	GetActiveRoundsDocument,
 	type GetActiveRoundsQuery,
+	GetOldRoundsDocument,
+	type GetOldRoundsQuery,
 	GetTicketsDocument,
 	type GetTicketsQuery,
 	type Line,
@@ -21,11 +23,21 @@ export const fetchActiveRounds = async (): Promise<IRound[]> => {
 	const result: ExecutionResult<GetActiveRoundsQuery> = await execute(GetActiveRoundsDocument, { now: now.toString() });
 	logger.success('fetched active rounds', result.data?.rounds);
 	if (result.data?.rounds) {
-		return result.data.rounds.map((round) => ({ address: round.round.toLowerCase() as Address, finish: Number(round.timestamp) }) as IRound);
+		return result.data.rounds.map(populateRound);
 	}
 	return [];
 };
 
+export const fetchOldRounds = async (): Promise<IRound[]> => {
+	logger.start('fetching old rounds');
+	const now = BigInt(Math.floor(Date.now() / 1000));
+	const result: ExecutionResult<GetOldRoundsQuery> = await execute(GetOldRoundsDocument, { now: now.toString() });
+	logger.success('fetched old rounds', result.data?.rounds);
+	if (result.data?.rounds) {
+		return result.data.rounds.map(populateRound);
+	}
+	return [];
+};
 export const fetchTickets = async (address?: Address): Promise<{ active: IRoundTicket[]; old: IRoundTicket[] }> => {
 	if (!address || address === ZeroAddress) {
 		return { active: [], old: [] };
@@ -33,10 +45,22 @@ export const fetchTickets = async (address?: Address): Promise<{ active: IRoundT
 	logger.start('fetching tickets');
 	const now = BigInt(Math.floor(Date.now() / 1000));
 	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
+	logger.success('fetched tickets', result.data?.active, result.data?.old);
 	if (result.data) {
 		return { active: result.data.active.map(populateTickets), old: result.data.old.map(populateTickets) };
 	}
 	return { active: [], old: [] };
+};
+
+const populateRound = (round: Pick<Round, 'id' | 'round' | 'timestamp' | 'bank' | 'blockNumber' | 'ticketPrice' | 'ticketsCount' | 'linesCount'>): IRound => {
+	return {
+		address: round.round.toLowerCase() as Address,
+		finish: Number(round.timestamp),
+		ticketCount: Number(round.ticketsCount),
+		linesCount: Number(round.linesCount),
+		bank: BigInt(round.bank),
+		ticketPrice: BigInt(round.ticketPrice),
+	};
 };
 
 const populateTickets = (

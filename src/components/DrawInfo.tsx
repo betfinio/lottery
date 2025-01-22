@@ -14,7 +14,7 @@ const DrawInfo = () => {
 					<TabsTrigger value={'tickets'}>My tickets</TabsTrigger>
 				</TabsList>
 				<TabsContent value={'draw'} className={'w-full flex-grow border border-border bg-background-light rounded-xl  overflow-hidden'}>
-					<CurrentRound round={round.address} />
+					<CurrentRound round={round} />
 				</TabsContent>
 				<TabsContent value={'tickets'} className={'w-full flex-grow border border-border bg-background-light rounded-xl  overflow-hidden'}>
 					<MyTickets />

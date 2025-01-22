@@ -13,6 +13,10 @@ export interface GTicket {
 export interface IRound {
 	address: Address;
 	finish: number;
+	ticketCount: number;
+	linesCount: number;
+	bank: bigint;
+	ticketPrice: bigint;
 }
 
 export interface IRoundTicket {

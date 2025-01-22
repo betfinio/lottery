@@ -94,7 +94,6 @@ const PlaceBet = () => {
 	if (rounds.length < 2) {
 		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
 	}
-
 	if (status === 5 || status === 0) {
 		return (
 			<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'}>

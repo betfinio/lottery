@@ -12,6 +12,14 @@
 			"1to25": "Numbers must be between 1 and 25"
 		}
 	},
+	"tables": {
+		"headers": {
+			"round": "Draw",
+			"finish": "Draw Date",
+			"linesCount": "Lines Sold",
+			"winTicket": "Winning Line"
+		}
+	},
 	"toasts": {
 		"buyTicket": {
 			"sent": {

@@ -2,6 +2,7 @@ import CreateTicket from '@/src/components/CreateTicket.tsx';
 import DrawInfo from '@/src/components/DrawInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import Header from '@/src/components/shared/Header.tsx';
+import TablesWrapper from '@/src/components/tables/TablesWrapper';
 import { Toaster } from '@betfinio/components/ui';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -19,6 +20,7 @@ function RouteComponent() {
 					<PlaceBet />
 					<DrawInfo />
 				</div>
+				<TablesWrapper />
 			</div>
 			<Toaster />
 		</div>

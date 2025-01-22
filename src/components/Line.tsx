@@ -124,8 +124,8 @@ export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean }>> = ({
 				strokeWidth="1"
 			/>
 
-			<foreignObject width={33} height={30} x={0} y={4.5}>
-				<div className={'text-foreground flex items-center justify-center'}>{children}</div>
+			<foreignObject width={33} height={33} x={0} y={0}>
+				<div className={'text-foreground flex items-center h-[33px] justify-center'}>{children}</div>
 			</foreignObject>
 		</svg>
 	);

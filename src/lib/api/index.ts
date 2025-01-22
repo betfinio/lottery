@@ -1,7 +1,7 @@
 import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
 import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { encodeLines } from '@/src/lib/utils';
+import { decodeLines, encodeLines } from '@/src/lib/utils';
 import { LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, readContract, simulateContract, writeContract } from '@wagmi/core';
@@ -10,15 +10,6 @@ import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 /**
  *  Example of function that reads data from blockchain
  */
-
-export const fetchBalance = async (address: Address, config: Config): Promise<bigint> => {
-	return (await readContract(config, {
-		address: TOKEN,
-		abi: TokenABI,
-		functionName: 'balanceOf',
-		args: [address],
-	})) as bigint;
-};
 
 export const fetchTicketPrice = async (round: Address, config: Config): Promise<bigint> => {
 	return await readContract(config, {
@@ -30,32 +21,13 @@ export const fetchTicketPrice = async (round: Address, config: Config): Promise<
 };
 
 export const fetchRoundStatus = async (round: Address, config: Config) => {
+	if (round === ZeroAddress) return 0;
+	logger.start('fetchRoundStatus:', round);
 	return Number(
 		await readContract(config, {
 			address: round,
 			abi: LotteryRoundABI,
 			functionName: 'getStatus',
-			args: [],
-		}),
-	);
-};
-
-export const fetchTicketsCount = async (round: Address, config: Config): Promise<number> => {
-	return Number(
-		await readContract(config, {
-			address: round,
-			abi: LotteryRoundABI,
-			functionName: 'getTicketsCount',
-			args: [],
-		}),
-	);
-};
-export const fetchBetsCount = async (round: Address, config: Config): Promise<number> => {
-	return Number(
-		await readContract(config, {
-			address: round,
-			abi: LotteryRoundABI,
-			functionName: 'getBetsCount',
 			args: [],
 		}),
 	);
@@ -156,4 +128,16 @@ export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
 		functionName: 'editTicket',
 		args: [BigInt(ticket.token), encodedLines.map(({ symbol, numbers }) => ({ symbol, numbers }))],
 	});
+};
+
+export const fetchWinningLine = async (round: Address, config: Config): Promise<ILine | null> => {
+	logger.start('fetchWinningLine:', round);
+	const line = await readContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'winTicket',
+		args: [],
+	});
+	if (line[0] === 0 && line[1] === 0) return null;
+	return decodeLines([{ symbol: line[0], numbers: line[1] }])[0];
 };
