@@ -38,18 +38,32 @@ export const fetchOldRounds = async (): Promise<IRound[]> => {
 	}
 	return [];
 };
-export const fetchTickets = async (address?: Address): Promise<{ active: IRoundTicket[]; old: IRoundTicket[] }> => {
+export const fetchActiveTickets = async (address?: Address): Promise<IRoundTicket[]> => {
 	if (!address || address === ZeroAddress) {
-		return { active: [], old: [] };
+		return [];
 	}
 	logger.start('fetching tickets');
 	const now = BigInt(Math.floor(Date.now() / 1000));
 	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
 	logger.success('fetched tickets', result.data?.active, result.data?.old);
 	if (result.data) {
-		return { active: result.data.active.map(populateTickets), old: result.data.old.map(populateTickets) };
+		return result.data.active.map(populateTickets);
 	}
-	return { active: [], old: [] };
+	return [];
+};
+
+export const fetchOldTickets = async (address?: Address): Promise<IRoundTicket[]> => {
+	if (!address || address === ZeroAddress) {
+		return [];
+	}
+	logger.start('fetching tickets');
+	const now = BigInt(Math.floor(Date.now() / 1000));
+	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
+	logger.success('fetched tickets', result.data?.active, result.data?.old);
+	if (result.data) {
+		return result.data.old.map(populateTickets);
+	}
+	return [];
 };
 
 const populateRound = (round: Pick<Round, 'id' | 'round' | 'timestamp' | 'bank' | 'blockNumber' | 'ticketPrice' | 'ticketsCount' | 'linesCount'>): IRound => {

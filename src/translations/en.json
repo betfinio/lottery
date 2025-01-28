@@ -17,8 +17,23 @@
 			"round": "Draw",
 			"finish": "Draw Date",
 			"linesCount": "Lines Sold",
-			"winTicket": "Winning Line"
+			"result": "Result",
+			"bank": "Total bets"
 		}
+	},
+	"placeBet": {
+		"title": "Place Bet",
+		"ticketPrice": "per line/draw",
+		"selectedDraws": "Selected draws",
+		"openCalendar": "Open calendar",
+		"remove": "Remove",
+		"noDraws": "No draws selected",
+		"recipientPlaceholder": "Enter recipient address",
+		"buyForSomeone": "Buy for someone else",
+		"proceedFor": "Proceed for",
+		"unlockMultiBet": "Unlock MultiBet",
+		"waitingForResult": "Waiting for result",
+		"manualRequest": "Manual Request"
 	},
 	"toasts": {
 		"buyTicket": {
@@ -34,6 +49,18 @@
 			}
 		},
 		"manualRequest": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
+		"manualRefund": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
+		"manualDistributeRefund": {
 			"sent": {
 				"title": "Transaction pending",
 				"description": "Transaction was submitted"

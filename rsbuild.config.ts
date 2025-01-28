@@ -13,6 +13,9 @@ export default defineConfig({
 	},
 	dev: {
 		assetPrefix: `http://localhost:${PORT}`,
+		watchFiles: {
+			paths: ['src/translations/**/*.json'],
+		},
 	},
 	html: {
 		title: 'Betfin Lottery',
@@ -65,11 +68,7 @@ export default defineConfig({
 	],
 	tools: {
 		rspack: {
-			output: {
-				uniqueName: 'betfinio_lottery',
-			},
 			ignoreWarnings: [/Critical dependency: the request of a dependency is an expression/],
-
 			plugins: [TanStackRouterRspack()],
 		},
 	},

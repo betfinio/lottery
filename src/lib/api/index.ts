@@ -23,7 +23,14 @@ export const fetchTicketPrice = async (round: Address, config: Config): Promise<
 export const fetchRoundStatus = async (round: Address, config: Config) => {
 	if (round === ZeroAddress) return 0;
 	logger.start('fetchRoundStatus:', round);
-	return Number(
+	const finish: bigint = await readContract(config, {
+		address: round,
+		abi: LotteryRoundABI,
+		functionName: 'getFinish',
+		args: [],
+	});
+
+	const status: number = Number(
 		await readContract(config, {
 			address: round,
 			abi: LotteryRoundABI,
@@ -31,6 +38,23 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 			args: [],
 		}),
 	);
+
+	const balance = await readContract(config, {
+		address: TOKEN,
+		abi: TokenABI,
+		functionName: 'balanceOf',
+		args: [round],
+	});
+
+	if (status === 5 && finish + BigInt(60 * 60) < BigInt(Math.floor(Date.now() / 1000))) {
+		return 7; // ready for refund;
+	}
+
+	if (status === 6 && balance > 0n) {
+		return 8; // refunding
+	}
+
+	return status;
 };
 
 export const fetchRoundFinish = async (round: Address, config: Config) => {
@@ -140,4 +164,28 @@ export const fetchWinningLine = async (round: Address, config: Config): Promise<
 	});
 	if (line[0] === 0 && line[1] === 0) return null;
 	return decodeLines([{ symbol: line[0], numbers: line[1] }])[0];
+};
+
+export const manualRefund = async (round: Address, config: Config) => {
+	return writeContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'startRefund',
+		args: [],
+	});
+};
+
+export const manualDistributeRefund = async (round: Address, config: Config) => {
+	const betsCount = await readContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'getBetsCount',
+		args: [],
+	});
+	return writeContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'refund',
+		args: [0n, betsCount],
+	});
 };

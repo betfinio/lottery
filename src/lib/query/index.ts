@@ -1,5 +1,5 @@
 import { fetchMultiAllowance, fetchRoundFinish, fetchRoundStatus, fetchTicketPrice, fetchWinningLine } from '@/src/lib/api';
-import { fetchActiveRounds, fetchOldRounds, fetchTickets } from '@/src/lib/gql';
+import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets } from '@/src/lib/gql';
 import type { ILine, IRound, IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -40,37 +40,26 @@ export const useActiveRounds = () => {
 		queryFn: () => fetchActiveRounds(),
 	});
 };
+
 export const useOldRounds = () => {
 	return useQuery<IRound[]>({
 		queryKey: ['lottery', 'old', 'rounds'],
 		queryFn: () => fetchOldRounds(),
 	});
 };
+
 export const useOldTickets = (address?: Address) => {
-	const { data: tickets = { active: [], old: [] } } = useTickets(address);
 	return useQuery<IRoundTicket[]>({
 		queryKey: ['lottery', 'tickets', 'old', address],
-		queryFn: () => tickets.old,
+		queryFn: () => fetchOldTickets(address),
 	});
 };
-export const useTickets = (address?: Address) => {
-	return useQuery<{ active: IRoundTicket[]; old: IRoundTicket[] }>({
-		queryKey: ['lottery', 'tickets', 'all', address],
-		queryFn: () => fetchTickets(address),
-	});
-};
+
 export const useActiveTickets = (address?: Address) => {
-	const { data: tickets = { active: [], old: [] } } = useTickets(address);
-	const query = useQuery({
+	return useQuery({
 		queryKey: ['lottery', 'tickets', 'active', address],
-		queryFn: () => tickets.active,
+		queryFn: () => fetchActiveTickets(address),
 	});
-
-	useEffect(() => {
-		query.refetch();
-	}, [tickets]);
-
-	return query;
 };
 
 export const useSelectedRound = () => {

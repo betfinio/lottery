@@ -25,36 +25,46 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 	const [editing, setEditing] = useState(-1);
 	const [open, setOpen] = useState(false);
 	const [lines, setLines] = useState(ticket.lines);
+
+	// Update lines when ticket changes
 	useEffect(() => {
 		setLines(ticket.lines);
 	}, [ticket.lines]);
-	const handleOpenEditMode = () => {
-		logger.log('edit');
-	};
-	const handleFullMode = () => {
-		onToggleExpand?.();
-	};
+
+	// Handlers
+	const handleOpenEditMode = () => logger.log('edit');
+	const handleFullMode = () => onToggleExpand?.();
+
 	const handleRandomize = (index: number) => {
-		logger.log('randomize', index);
 		const random = randomize();
 		changeLine(random, index);
+		logger.log('randomize', index);
 	};
+
 	const changeLine = (line: ILine, index: number) => {
-		const newLines = [...lines];
-		newLines[index] = line;
-		setLines(newLines);
+		setLines((prev) => {
+			const newLines = [...prev];
+			newLines[index] = line;
+			return newLines;
+		});
 	};
+
 	const handleEdit = (line: ILine, index: number) => {
 		changeLine(line, index);
 		setEditing(-1);
 	};
+
 	const handleClose = () => {
 		setEditing(-1);
 		setOpen(false);
 	};
+
+	// Update parent when lines change
 	useEffect(() => {
-		onUpdate?.({ ...ticket, lines: lines });
-	}, [lines, ticket.lines]);
+		if (onUpdate) {
+			onUpdate({ ...ticket, lines });
+		}
+	}, [lines, ticket, onUpdate]);
 	return (
 		<motion.div
 			animate={{ height: editing === -1 ? 'auto' : 450 }}
