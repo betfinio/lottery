@@ -104,7 +104,7 @@ export const useDraftLines = () => {
 
 export const useWinningLine = (round: Address) => {
 	const config = useConfig();
-	return useQuery({
+	return useQuery<ILine | null>({
 		queryKey: ['lottery', 'round', round, 'winningLine'],
 		queryFn: () => fetchWinningLine(round, config),
 	});

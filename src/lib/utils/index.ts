@@ -54,3 +54,41 @@ export const equals = (a: ILine, b: ILine): boolean => {
 export const partlyEquals = (a: ILine, b: ILine, numberIndex: number): boolean => {
 	return a.numbers.sort((a, b) => a - b)[numberIndex] === b.numbers.sort((a, b) => a - b)[numberIndex];
 };
+
+export const compareLines = (a: ILine, b: ILine): number => {
+	// count same numbers
+	const sameBits = a.numbers.filter((n) => b.numbers.includes(n)).length;
+	// check if 5 numbers are same
+	if (sameBits === 5) {
+		// check if symbol is same
+		if (a.symbol === b.symbol) {
+			return 40_000; // COMBINATION: 5+1
+		}
+		return 15_000; // COMBINATION: 5
+	}
+	// check if 4 numbers are same
+	if (sameBits === 4) {
+		// check if symbol is same
+		if (a.symbol === b.symbol) {
+			return 400; // COMBINATION: 4+1
+		}
+		return 50; // COMBINATION: 4
+	}
+	// check if 3 numbers are same
+	if (sameBits === 3) {
+		// check if symbol is same
+		if (a.symbol === b.symbol) {
+			return 5; // COMBINATION: 3+1
+		}
+		return 1; // COMBINATION: 3
+	}
+	// check if 2 numbers are same
+	if (sameBits === 2) {
+		// check if symbol is same
+		if (a.symbol === b.symbol) {
+			return 1; // COMBINATION: 2+1
+		}
+	}
+	// return 0 if no combination
+	return 0;
+};
