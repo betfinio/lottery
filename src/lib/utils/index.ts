@@ -16,22 +16,25 @@ export const getDiff = (start: number, end: number): TimeDiff => {
 };
 
 export const encodeLines = (lines: ILine[]): GTicket[] => {
-	return lines.map((line) => ({
+	return lines.map(encodeLine);
+};
+
+export const encodeLine = (line: ILine): GTicket => {
+	return {
 		symbol: line.symbol,
 		numbers: Number(line.numbers.reduce((acc, num) => acc + 2n ** BigInt(num), BigInt(0))),
-	}));
+	};
+};
+
+export const decodeLine = (line: GTicket): ILine => {
+	return {
+		symbol: line.symbol,
+		numbers: Array.from({ length: 25 }, (_, i) => i + 1).filter((num) => (line.numbers & (2 ** num)) !== 0),
+	};
 };
 
 export const decodeLines = (lines: GTicket[]): ILine[] => {
-	return lines.map((line) => ({
-		symbol: line.symbol,
-		numbers: line.numbers
-			.toString(2)
-			.split('')
-			.reverse()
-			.map((num, index) => (num === '1' ? index : -1))
-			.filter((num) => num !== -1),
-	}));
+	return lines.map(decodeLine);
 };
 
 export const randomize = (): ILine => {
@@ -46,4 +49,8 @@ export const randomize = (): ILine => {
 
 export const equals = (a: ILine, b: ILine): boolean => {
 	return a.symbol === b.symbol && a.numbers.length === b.numbers.length && a.numbers.every((n, i) => n === b.numbers[i]);
+};
+
+export const partlyEquals = (a: ILine, b: ILine, numberIndex: number): boolean => {
+	return a.numbers.sort((a, b) => a - b)[numberIndex] === b.numbers.sort((a, b) => a - b)[numberIndex];
 };

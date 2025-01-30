@@ -30,10 +30,7 @@
 				"noExplicitAny": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "off",
-				"noLabelWithoutControl": "off",
-				"useSemanticElements": "off",
-				"useFocusableInteractive": "off"
+				"useKeyWithClickEvents": "off"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off"

@@ -5,7 +5,6 @@ import { useAccount } from 'wagmi';
 function OldTicketsList() {
 	const { address } = useAccount();
 	const { data: tickets = [] } = useOldTickets(address);
-	console.log('old tickets', tickets);
 	return <TicketsList tickets={tickets} old={true} />;
 }
 

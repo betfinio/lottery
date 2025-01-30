@@ -11,58 +11,25 @@ function Result({ round }: { round: Address }) {
 	const { mutate: refund } = useManualRefund();
 	const { mutate: distributeRefund } = useManualDistributeRefund();
 
-	const handleRequest = () => {
-		const result = confirm('Are you sure you want to request the result?');
-		if (result) {
-			request({ round });
-		}
-	};
-	const handleRefund = () => {
-		const result = confirm('Are you sure you want to refund the round?');
-		if (result) {
-			refund({ round });
-		}
-	};
-	const handleDistributeRefund = () => {
-		const result = confirm('Are you sure you want to distribute the refund?');
-		if (result) {
-			distributeRefund({ round });
-		}
-	};
-
-	if (data === 7) {
-		return (
-			<div className={'text-muted-foreground'}>
-				<Button className="w-[80px]" onClick={handleRefund}>
-					Refund
-				</Button>
-			</div>
-		);
+	if (data === 9) {
+		return <div className={'text-muted-foreground'}>Ended</div>;
 	}
 
-	if (data === 5) {
-		return (
-			<div className={'text-muted-foreground'}>
-				<Button className="w-[80px]" onClick={handleRequest}>
-					Request
-				</Button>
-			</div>
-		);
+	if (data === 2) {
+		return <div className={'text-muted-foreground'}>Waiting for result</div>;
 	}
 
-	if (data === 8) {
-		return (
-			<div className={'text-muted-foreground'}>
-				<Button onClick={handleDistributeRefund}>Distribute refund</Button>
-			</div>
-		);
+	if (data === 1) {
+		return <div className={'text-muted-foreground'}>Betting</div>;
 	}
-	if (data === 4) {
+
+	if (data === 4 || data === 3) {
 		return <WinningLine round={round} />;
 	}
 	if (data === 6) {
 		return <div className={'text-muted-foreground'}>Refunded</div>;
 	}
+	return <div className={'text-muted-foreground'}>Waiting</div>;
 }
 
 export default Result;

@@ -1,21 +1,9 @@
 import { useActiveRounds, useDraftLines, useMultiAllowance, useRoundStatus, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { useBuyTicket, useManualRequest, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
+import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import type { IRound } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
-import {
-	Button,
-	Calendar,
-	Input,
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-	ScrollArea,
-	Separator,
-	SwitchComponent,
-	ToggleGroup,
-	ToggleGroupItem,
-} from '@betfinio/components/ui';
+import { Button, Calendar, Checkbox, Input, Popover, PopoverContent, PopoverTrigger, ScrollArea, Separator, SwitchComponent } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
 import { CalendarIcon, LoaderIcon, LockIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -32,30 +20,29 @@ const PlaceBet = () => {
 	const { data: lines = [] } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
-	const { data: status = 0 } = useRoundStatus(round?.address);
 	const { address } = useAccount();
 	const { data: multiAllowance = 0n } = useMultiAllowance(address);
 
 	// Mutations
 	const { mutate: buyTicket, isPending } = useBuyTicket();
-	const { mutate: manualRequest } = useManualRequest();
 	const { mutate: unlock, isPending: isPendingUnlock } = useUnlockMultibet();
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(address);
-	const [selectedRounds, setSelectedRounds] = useState<IRound[]>(rounds.slice(0, 2));
+	const [selectedRounds, setSelectedRounds] = useState<IRound[]>([]);
 	const [buyAnother, setBuyAnother] = useState(false);
-
-	// Effects
-	useEffect(() => {
-		setRecipient(address);
-	}, [address]);
 
 	useEffect(() => {
 		if (!buyAnother) {
 			setRecipient(address);
 		}
-	}, [buyAnother]);
+	}, [buyAnother, address]);
+
+	useEffect(() => {
+		if (rounds.length > 0) {
+			setSelectedRounds(rounds.slice(0, 1));
+		}
+	}, [rounds]);
 
 	// Computed values
 	const totalAmount = BigInt(lines.length * selectedRounds.length) * ticketPrice;
@@ -64,20 +51,19 @@ const PlaceBet = () => {
 	const selectedDates = selectedRounds.map((e) => new Date(e.finish * 1000));
 
 	// Handlers
-	const handleChange = (value: string[]) => {
-		setSelectedRounds(rounds.filter((e) => value.includes(e.address)));
+	const handleToggle = (value: Address[]) => {
+		const toggleRoundAddress: Address = value[0];
+		const toggleRound = rounds.find((e) => e.address === toggleRoundAddress);
+		if (!toggleRound) return;
+		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
+			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
+		} else {
+			setSelectedRounds((prev) => [...prev, toggleRound]);
+		}
 	};
 
 	const handleBuyAnother = (checked: boolean) => {
 		setBuyAnother(checked);
-	};
-
-	const removeRound = (round: Address) => {
-		setSelectedRounds((prev) => prev.filter((e) => e.address !== round));
-	};
-
-	const handleManualRequest = () => {
-		manualRequest({ round: round?.address });
 	};
 
 	const handleUnlock = () => {
@@ -109,6 +95,8 @@ const PlaceBet = () => {
 				} as IRound;
 			})
 			.filter((e) => e) as IRound[];
+		console.log(selected);
+
 		setSelectedRounds(selected);
 	};
 
@@ -122,40 +110,14 @@ const PlaceBet = () => {
 		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
 	}
 
-	if (status === 5 || status === 0) {
-		return (
-			<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'}>
-				<div className={'p-3 flex flex-col items-center h-full gap-2 justify-center'}>
-					<LoaderIcon className={'w-10 h-10 animate-spin'} />
-					{status === 5 && (
-						<div className={'flex flex-col items-center gap-2'}>
-							<span className={'text-sm'}>{t('waitingForResult')}</span>
-							<Button onClick={handleManualRequest}>{t('manualRequest')}</Button>
-						</div>
-					)}
-				</div>
-			</div>
-		);
-	}
-
 	// Main render
 	return (
-		<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'}>
+		<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col lottery'}>
 			<div className={'p-3 flex flex-col items-center gap-2'}>
 				<h2 className={'text-lg'}>{t('title')}</h2>
 				<div className={'text-secondary-foreground flex flex-row gap-1 items-center'}>
 					<BetValue value={1500} withIcon /> {t('ticketPrice')}
 				</div>
-				<ToggleGroup type={'multiple'} defaultValue={[]} value={selectedRounds.map((e) => e.address)} className={'w-full gap-2'} onValueChange={handleChange}>
-					<ToggleGroupItem variant={'outline'} value={rounds[0].address} className={'w-1/2 text-xs flex flex-col'}>
-						<span>{DateTime.fromSeconds(rounds[0].finish).toFormat('cccc')}</span>
-						<span>{DateTime.fromSeconds(rounds[0].finish).toFormat('DD')}</span>
-					</ToggleGroupItem>
-					<ToggleGroupItem variant={'outline'} value={rounds[1].address} className={'w-1/2 text-xs flex flex-col'}>
-						<span>{DateTime.fromSeconds(rounds[1].finish).toFormat('cccc')}</span>
-						<span>{DateTime.fromSeconds(rounds[1].finish).toFormat('DD')}</span>
-					</ToggleGroupItem>
-				</ToggleGroup>
 			</div>
 			<Separator />
 			<div className={'p-3 flex flex-col items-start gap-2'}>
@@ -170,21 +132,27 @@ const PlaceBet = () => {
 							<Calendar mode={'multiple'} disabled={compare(roundsAsDates)} selected={selectedDates} onSelect={handleCalendarChange} />
 						</PopoverContent>
 					</Popover>
+					<Button size={'sm'} variant={'ghost'} className="p-0" onClick={() => setSelectedRounds(rounds)}>
+						Select all
+					</Button>
 				</div>
-				<ScrollArea className={cn('w-full', buyAnother ? 'h-60' : 'h-72')}>
+				<ScrollArea className={cn('w-full', buyAnother ? 'h-72' : 'h-[340px]')}>
 					<div className={'flex flex-col gap-1'}>
-						{selectedRounds.map((date) => (
+						{rounds.map((date) => (
 							<div
 								key={date.address}
-								className={'flex flex-row justify-between items-center w-full p-1 px-2 bg-secondary text-secondary-foreground rounded-lg'}
+								className={'flex flex-row justify-between cursor-pointer items-center h-10 w-full p-1 px-2 bg-secondary text-secondary-foreground rounded-lg'}
+								onClick={() => handleToggle([date.address])}
 							>
 								<div className={'text-sm'}>{DateTime.fromSeconds(date.finish).toFormat('cccc, DD')}</div>
-								<Button variant={'ghost'} size={'sm'} className={'text-error text-destructive'} onClick={() => removeRound(date.address)}>
-									{t('remove')}
-								</Button>
+								<Checkbox
+									checked={selectedRounds.find((e) => e.address === date.address) !== undefined}
+									onCheckedChange={() => handleToggle([date.address])}
+									className={'data-[state=checked]:bg-success data-[state=checked]:text-success-foreground data-[state=checked]:border-success'}
+								/>
 							</div>
 						))}
-						{selectedRounds.length === 0 && <div className={'text-muted-foreground text-sm text-center'}>{t('noDraws')}</div>}
+						{/* {selectedRounds.length === 0 && <div className={'text-muted-foreground text-sm text-center'}>{t('noDraws')}</div>} */}
 					</div>
 				</ScrollArea>
 			</div>

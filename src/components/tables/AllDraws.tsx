@@ -1,5 +1,5 @@
 import Round from '@/src/components/tables/columns/Round.tsx';
-import { useOldRounds } from '@/src/lib/query';
+import { useActiveRounds, useOldRounds } from '@/src/lib/query';
 import type { IRound } from '@/src/lib/types.ts';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Count from './columns/Count';
 import Finish from './columns/Finish';
 import Result from './columns/Result';
+import RoundActions from './columns/RoundActions';
 
 const columnHelper = createColumnHelper<IRound>();
 
@@ -39,8 +40,17 @@ function AllDraws() {
 			header: t('headers.bank'),
 			cell: (props) => <BetValue value={props.getValue()} withIcon />,
 		}),
+		columnHelper.display({
+			id: 'actions',
+			meta: {
+				className: 'w-[30px]',
+			},
+			cell: (props) => <RoundActions round={props.row.original.address} />,
+		}),
 	];
-	const { data: rounds = [] } = useOldRounds();
+	const { data: oldRounds = [] } = useOldRounds();
+	const { data: activeRounds = [] } = useActiveRounds();
+	const rounds = activeRounds.length > 0 ? [activeRounds[0], ...oldRounds] : oldRounds;
 	return <DataTable data={rounds} columns={columns} />;
 }
 

@@ -5,6 +5,8 @@ import type { Address } from 'viem';
 
 function WinningLine({ round }: { round: Address }) {
 	const { data = null } = useWinningLine(round);
+	console.log(data);
+
 	const { mutate } = useManualRequest();
 	const handleRequest = () => {
 		const result = confirm('Do you want to manual request?');

@@ -1,4 +1,13 @@
-import { buyTicket, manualDistributeRefund, manualRefund, manualRequest, unlockMultibet, updateTicket } from '@/src/lib/api';
+import {
+	buyTicket,
+	claimTicket,
+	manualDistributeJackpot,
+	manualDistributeRefund,
+	manualRefund,
+	manualRequest,
+	unlockMultibet,
+	updateTicket,
+} from '@/src/lib/api';
 import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { toast } from '@betfinio/components/hooks';
 import { useQueryClient } from '@tanstack/react-query';
@@ -160,13 +169,11 @@ export const useManualRequest = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.manualRequest' });
 	const config = useConfig();
 	const queryClient = useQueryClient();
-	return useMutation<WriteContractReturnType, any, { round: Address }>({
+	return useMutation<WriteContractReturnType, WriteContractErrorType, { round: Address }>({
 		mutationKey: ['lottery', 'manualRequest'],
 		mutationFn: ({ round }) => manualRequest(round, config),
 		onError: (error) => {
 			console.log(error);
-
-			const reason = error.cause.reason || 'undefined';
 		},
 		onSuccess: async (data) => {
 			if (data !== undefined) {
@@ -240,7 +247,7 @@ export const useManualDistributeRefund = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.manualDistributeRefund' });
 	const config = useConfig();
 	const queryClient = useQueryClient();
-	return useMutation<WriteContractReturnType, any, { round: Address }>({
+	return useMutation<WriteContractReturnType, WriteContractErrorType, { round: Address }>({
 		mutationKey: ['lottery', 'manualDistributeRefund'],
 		mutationFn: ({ round }) => manualDistributeRefund(round, config),
 		onError: (error) => {
@@ -258,6 +265,81 @@ export const useManualDistributeRefund = () => {
 					hash: data,
 				});
 				await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+				update({
+					title: 'Distributed',
+					variant: 'default',
+					duration: 5 * 1000,
+					id: id,
+					action: getTransactionLink(data),
+				});
+			} else {
+				toast({
+					title: 'Error',
+					variant: 'destructive',
+				});
+			}
+		},
+	});
+};
+
+export const useManualDistributeJackpot = () => {
+	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.manualDistributeJackpot' });
+	const config = useConfig();
+	const queryClient = useQueryClient();
+	return useMutation<WriteContractReturnType, any, { round: Address }>({
+		mutationKey: ['lottery', 'manualDistributeJackpot'],
+		mutationFn: ({ round }) => manualDistributeJackpot(round, config),
+		onError: (error) => {
+			console.log(error);
+		},
+		onSuccess: async (data) => {
+			if (data !== undefined) {
+				const { id, update } = toast({
+					title: t('sent.title'),
+					description: t('sent.description'),
+					variant: 'loading',
+					duration: 60 * 1000,
+				});
+				await waitForTransactionReceipt(config.getClient(), {
+					hash: data,
+				});
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+				update({
+					title: 'Distributed',
+					variant: 'default',
+					duration: 5 * 1000,
+					id: id,
+					action: getTransactionLink(data),
+				});
+			} else {
+				toast({
+					title: 'Error',
+					variant: 'destructive',
+				});
+			}
+		},
+	});
+};
+
+export const useClaimTicket = () => {
+	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.claimTicket' });
+	const queryClient = useQueryClient();
+	const config = useConfig();
+	return useMutation<WriteContractReturnType, WriteContractErrorType, { ticket: Address }>({
+		mutationKey: ['lottery', 'claimTicket'],
+		mutationFn: ({ ticket }) => claimTicket(ticket, config),
+		onSuccess: async (data) => {
+			if (data !== undefined) {
+				const { id, update } = toast({
+					title: t('sent.title'),
+					description: t('sent.description'),
+					variant: 'loading',
+					duration: 60 * 1000,
+				});
+				await waitForTransactionReceipt(config.getClient(), {
+					hash: data,
+				});
+				await queryClient.invalidateQueries({ queryKey: ['lottery'] });
 				update({
 					title: 'Distributed',
 					variant: 'default',

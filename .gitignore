@@ -15,7 +15,7 @@ dist/
 @mf-types/
 
 bun.lockb
-
+bun.lock
 .graphclient
 
 .npmrc

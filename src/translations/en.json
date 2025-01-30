@@ -24,7 +24,7 @@
 	"placeBet": {
 		"title": "Place Bet",
 		"ticketPrice": "per line/draw",
-		"selectedDraws": "Selected draws",
+		"selectedDraws": "Future draws",
 		"openCalendar": "Open calendar",
 		"remove": "Remove",
 		"noDraws": "No draws selected",
@@ -36,6 +36,12 @@
 		"manualRequest": "Manual Request"
 	},
 	"toasts": {
+		"claimTicket": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
 		"buyTicket": {
 			"sent": {
 				"title": "Transaction pending",
@@ -61,6 +67,12 @@
 			}
 		},
 		"manualDistributeRefund": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
+		"manualDistributeJackpot": {
 			"sent": {
 				"title": "Transaction pending",
 				"description": "Transaction was submitted"

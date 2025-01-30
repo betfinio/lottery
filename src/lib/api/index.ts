@@ -1,8 +1,8 @@
 import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
-import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { decodeLines, encodeLines } from '@/src/lib/utils';
-import { LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
+import type { GTicket, ILine, IRoundTicket } from '@/src/lib/types.ts';
+import { decodeLine, decodeLines, encodeLines } from '@/src/lib/utils';
+import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
@@ -45,6 +45,10 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 		functionName: 'balanceOf',
 		args: [round],
 	});
+
+	if (balance === 0n && status === 5) {
+		return 9; // ended without bets
+	}
 
 	if (status === 5 && finish + BigInt(60 * 60) < BigInt(Math.floor(Date.now() / 1000))) {
 		return 7; // ready for refund;
@@ -105,6 +109,12 @@ export const buyTicket = async (options: { lines: ILine[]; rounds: Address[]; re
 		games.push(LOTTERY_ADDRESS);
 	}
 	if (games.length === 0) throw new Error('empty');
+	await simulateContract(config, {
+		abi: MultiBetABI,
+		address: MULTIBET_ADDRESS,
+		functionName: 'multiPlaceBet',
+		args: [PARTNER_ADDRESS, games, amounts, datas],
+	});
 	return writeContract(config, {
 		abi: MultiBetABI,
 		address: MULTIBET_ADDRESS,
@@ -156,14 +166,21 @@ export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
 
 export const fetchWinningLine = async (round: Address, config: Config): Promise<ILine | null> => {
 	logger.start('fetchWinningLine:', round);
-	const line = await readContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'winTicket',
-		args: [],
-	});
-	if (line[0] === 0 && line[1] === 0) return null;
-	return decodeLines([{ symbol: line[0], numbers: line[1] }])[0];
+	if (round === ZeroAddress) return null;
+	try {
+		const line = await readContract(config, {
+			abi: LotteryRoundABI,
+			address: round,
+			functionName: 'winTicket',
+			args: [],
+		});
+
+		if (line[0] === 0 && line[1] === 0) return null;
+		return decodeLine({ symbol: line[0], numbers: line[1] });
+	} catch (error) {
+		console.log(error);
+		return null;
+	}
 };
 
 export const manualRefund = async (round: Address, config: Config) => {
@@ -187,5 +204,74 @@ export const manualDistributeRefund = async (round: Address, config: Config) => 
 		address: round,
 		functionName: 'refund',
 		args: [0n, betsCount],
+	});
+};
+
+export const manualDistributeJackpot = async (round: Address, config: Config) => {
+	return writeContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'processJackpot',
+		args: [],
+	});
+};
+export const fetchTicketStatus = async (ticket: Address, config: Config) => {
+	return readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'getStatus',
+		args: [],
+	});
+};
+
+export const fetchTicketResult = async (ticket: Address, winLine: GTicket, config: Config) => {
+	logger.start('fetchTicketResult:', ticket);
+	return readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'calculateResult',
+		args: [{ numbers: winLine.numbers, symbol: winLine.symbol }],
+	});
+};
+
+export const fetchTicketRound = async (ticket: Address, config: Config) => {
+	return readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'getRound',
+		args: [],
+	});
+};
+
+export const fetchTicketClaimed = async (ticket: Address, config: Config) => {
+	return readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'getClaimed',
+		args: [],
+	});
+};
+
+export const claimTicket = async (ticket: Address, config: Config) => {
+	const token: bigint = await readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'getTokenId',
+		args: [],
+	});
+	return writeContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'claim',
+		args: [token],
+	});
+};
+
+export const fetchTicketWinAmount = async (ticket: Address, config: Config) => {
+	return readContract(config, {
+		abi: LotteryBetABI,
+		address: ticket,
+		functionName: 'getResult',
+		args: [],
 	});
 };

@@ -1,16 +1,19 @@
 import Countdown from '@/src/components/Countdown.tsx';
 import EditMode from '@/src/components/EditMode.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
-import { useRoundFinish } from '@/src/lib/query';
+import { useRoundFinish, useWinningLine } from '@/src/lib/query';
 import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { randomize } from '@/src/lib/utils';
+import { equals, partlyEquals, randomize } from '@/src/lib/utils';
+import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Badge, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilLineIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import logger from '../config/logger';
+import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
 import { NumberComponent, SymbolElement } from './Line.tsx';
+import TicketStatus from './TicketStatus.tsx';
 
 export interface TicketProps {
 	ticket: IRoundTicket;
@@ -22,6 +25,7 @@ export interface TicketProps {
 
 function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false }: TicketProps) {
 	const { data: finish = 0 } = useRoundFinish(ticket.round);
+	const { data: winningLine } = useWinningLine(ticket.round);
 	const [editing, setEditing] = useState(-1);
 	const [open, setOpen] = useState(false);
 	const [lines, setLines] = useState(ticket.lines);
@@ -78,7 +82,9 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 					className={'flex flex-row items-center justify-between'}
 				>
 					<div className={'flex flex-row items-center gap-2'}>
-						#{ticket.token}
+						<a href={`${ETHSCAN}/nft/${LOTTERY_ADDRESS}/${ticket.token}`} target="_blank" rel="noreferrer">
+							#{ticket.token}
+						</a>
 						{mode !== 'expanded' && !old && (
 							<DialogTrigger>
 								<PencilLineIcon className={'w-4 h-4 text-secondary-foreground cursor-pointer'} onClick={handleOpenEditMode} />
@@ -86,7 +92,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						)}
 						<div className={'text text-muted-foreground'}>{lines.length} lines</div>
 					</div>
-					{old ? <Badge>Ended</Badge> : <Countdown size={30} finish={finish} className={cn('text-muted-foreground')} />}
+					{old ? <TicketStatus ticket={ticket.betAddress} /> : <Countdown size={30} finish={finish} className={cn('text-muted-foreground')} />}
 				</motion.div>
 				<motion.div className={'flex flex-col py-2'}>
 					<div className={cn('overflow-y-scroll', { 'max-h-[115px]': mode !== 'expanded' })}>
@@ -97,29 +103,29 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 									key={index}
 									animate={{ opacity: 1, height: 33, margin: 4 }}
 									exit={{ height: 0, opacity: 0, margin: 0 }}
-									className={'flex flex-row gap-2 items-center justify-center'}
+									className={cn('flex flex-row gap-2 items-center justify-center')}
 								>
 									{line.numbers
 										.sort((a, b) => a - b)
-										.map((number, index) => (
-											<NumberComponent key={index}>{number || '-'}</NumberComponent>
+										.map((number, i) => (
+											<NumberComponent key={i} className={cn({ 'stroke-success': winningLine && partlyEquals(line, winningLine, i) })}>
+												{number || '-'}
+											</NumberComponent>
 										))}
 									+
-									<NumberComponent isSymbol>
+									<NumberComponent isSymbol className={cn({ 'stroke-success': winningLine && line.symbol === winningLine.symbol })}>
 										<SymbolElement symbol={line.symbol} />
 									</NumberComponent>
 									<div onClick={() => setEditing(index)} className={cn({ hidden: mode !== 'expanded' }, 'cursor-pointer')}>
 										<PencilLineIcon className={'w-4 h-4 text-secondary-foreground'} />
 									</div>
-									{lines.length > 1 && mode !== 'expanded' && (
-										<motion.div
-											animate={{ rotate: mode === 'full' ? 180 : 0 }}
-											className={cn('cursor-pointer', index > 0 && 'opacity-0')}
-											onClick={handleFullMode}
-										>
-											<ChevronDown className={'w-6 h-6'} />
-										</motion.div>
-									)}
+									<motion.div
+										animate={{ rotate: mode === 'full' ? 180 : 0 }}
+										className={cn('cursor-pointer', index > 0 && 'opacity-0')}
+										onClick={handleFullMode}
+									>
+										<ChevronDown className={'w-6 h-6'} />
+									</motion.div>
 									<EditMode
 										ticket={line}
 										editMode={editing === index}

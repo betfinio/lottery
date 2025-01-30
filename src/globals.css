@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+	user-select: none;
+}
+
 .shiny-gold {
 	background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
 }
