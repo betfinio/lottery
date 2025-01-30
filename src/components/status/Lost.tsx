@@ -19,7 +19,7 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 	const coef = winningLine ? compareLines(ticket.lines[0], winningLine) : -1;
 	const allLinesCoef = winningLine ? ticket.lines.map((line) => compareLines(line, winningLine)).every((coef) => coef === 0) : false;
 	// if claimed as lost
-	if (status === 3n && roundStatus !== 4) {
+	if (status === 3n) {
 		return <Badge variant="destructive">Lost</Badge>;
 	}
 	// if round is over and not claimed

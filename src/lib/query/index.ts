@@ -81,7 +81,7 @@ export const useSelectedRound = () => {
 		if (rounds.length > 0) {
 			queryClient.setQueryData(['lottery', 'round', 'selected'], rounds[0]);
 		}
-	}, [rounds]);
+	}, [rounds, queryClient]);
 	return useQuery({
 		queryKey: ['lottery', 'round', 'selected'],
 		initialData: rounds[0],

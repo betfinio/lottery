@@ -28,7 +28,7 @@ function Refunded({ ticket }: { ticket: IRoundTicket }) {
 		return <Badge className="bg-muted/10 text-muted-foreground">Waiting for refund</Badge>;
 	}
 
-	if (isClaimed && (status === 3n || status === 6n)) {
+	if (isClaimed && status === 6n) {
 		return <Badge variant="destructive">Refunded</Badge>;
 	}
 }
