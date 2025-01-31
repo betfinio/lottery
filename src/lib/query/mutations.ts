@@ -208,7 +208,7 @@ export const useManualRefund = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.manualRefund' });
 	const config = useConfig();
 	const queryClient = useQueryClient();
-	return useMutation<WriteContractReturnType, any, { round: Address }>({
+	return useMutation<WriteContractReturnType, never, { round: Address }>({
 		mutationKey: ['lottery', 'manualRefund'],
 		mutationFn: ({ round }) => manualRefund(round, config),
 		onError: (error) => {
@@ -286,7 +286,7 @@ export const useManualDistributeJackpot = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.manualDistributeJackpot' });
 	const config = useConfig();
 	const queryClient = useQueryClient();
-	return useMutation<WriteContractReturnType, any, { round: Address }>({
+	return useMutation<WriteContractReturnType, never, { round: Address }>({
 		mutationKey: ['lottery', 'manualDistributeJackpot'],
 		mutationFn: ({ round }) => manualDistributeJackpot(round, config),
 		onError: (error) => {

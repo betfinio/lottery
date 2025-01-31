@@ -103,6 +103,14 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 							'max-h-[115px]': mode !== 'expanded',
 						})}
 					>
+						{(mode === 'full' || mode === 'expanded') && (
+							<div className="flex flex-row items-center justify-center gap-1 text-sm text-muted-foreground">
+								Round:
+								<a href={`${ETHSCAN}/${ticket.round}`} target="_blank" rel="noreferrer">
+									{truncateEthAddress(ticket.round)}
+								</a>
+							</div>
+						)}
 						<AnimatePresence>
 							{lines
 								.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0))
