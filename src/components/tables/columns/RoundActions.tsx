@@ -1,10 +1,20 @@
 import { useRoundStatus } from '@/src/lib/query';
 import { useManualDistributeJackpot, useManualDistributeRefund, useManualRefund, useManualRequest } from '@/src/lib/query/mutations';
-import { DropdownMenuItem, DropdownMenuSeparator } from '@betfinio/components/ui';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+} from '@betfinio/components/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from '@betfinio/components/ui';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, SearchIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import type { Address } from 'viem';
+import RoundModalContent from '../../RoundModalContent';
 
 interface RoundActionsProps {
 	handler: () => void;
@@ -79,24 +89,42 @@ function RoundActions({ round }: { round: Address }) {
 
 		return options;
 	}, [data, handleDistributeRefund, handleJackpot, handleRequest, handleRefund]);
-
+	const renderDialog = () => {
+		return (
+			<Dialog>
+				<DialogTrigger>
+					<SearchIcon className="w-4 h-4 text-muted-foreground" />
+				</DialogTrigger>
+				<DialogContent className="lottery w-fit">
+					<div className="w-[90vw] max-w-[800px] lg:w-[800px] bg-background h-[90vh]">
+						<DialogTitle />
+						<DialogDescription />
+						<RoundModalContent round={round} />
+					</div>
+				</DialogContent>
+			</Dialog>
+		);
+	};
 	if (actions.length === 0 || data === 9) {
-		return null;
+		return renderDialog();
 	}
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger>
-				<MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-			</DropdownMenuTrigger>
-			<DropdownMenuContent>
-				{actions.map((action) => (
-					<DropdownMenuItem key={action.title} onClick={action.handler}>
-						{action.title}
-					</DropdownMenuItem>
-				))}
-			</DropdownMenuContent>
-		</DropdownMenu>
+		<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
+			<DropdownMenu>
+				<DropdownMenuTrigger>
+					<MoreHorizontal className="w-4 h-4 text-muted-foreground" />
+				</DropdownMenuTrigger>
+				<DropdownMenuContent>
+					{actions.map((action) => (
+						<DropdownMenuItem key={action.title} onClick={action.handler}>
+							{action.title}
+						</DropdownMenuItem>
+					))}
+				</DropdownMenuContent>
+			</DropdownMenu>
+			{renderDialog()}
+		</div>
 	);
 }
 

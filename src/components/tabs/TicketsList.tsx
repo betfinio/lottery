@@ -102,7 +102,7 @@ function TicketsList({ tickets = [], old = false }: TicketsListProps) {
 		);
 	};
 	return (
-		<div className={'flex flex-col justify-between gap-2'}>
+		<div className={'flex flex-col justify-between gap-2 w-full h-full'}>
 			{tickets.slice(offset, offset + 4).map((ticket, index) => (
 				<Ticket old={old} ticket={ticket} key={index + offset} mode={getMode(index + offset)} onToggleExpand={() => handleToggleExpand(index + offset)} />
 			))}

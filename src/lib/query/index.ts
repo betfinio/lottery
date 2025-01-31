@@ -1,4 +1,5 @@
 import {
+	fetchLinesCount,
 	fetchMultiAllowance,
 	fetchRoundFinish,
 	fetchRoundStatus,
@@ -10,7 +11,7 @@ import {
 	fetchTicketWinAmount,
 	fetchWinningLine,
 } from '@/src/lib/api';
-import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets } from '@/src/lib/gql';
+import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets, fetchRoundTicketsByPlayer } from '@/src/lib/gql';
 import type { ILine, IRound, IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -110,6 +111,14 @@ export const useWinningLine = (round: Address) => {
 	});
 };
 
+export const useLinesCount = (round: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'round', round, 'bank'],
+		queryFn: () => fetchLinesCount(round, config),
+	});
+};
+
 export const useRoundFinish = (round: Address) => {
 	const config = useConfig();
 	return useQuery<number>({
@@ -157,5 +166,12 @@ export const useTicketWinAmount = (ticket: Address) => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'ticket', ticket, 'winAmount'],
 		queryFn: () => fetchTicketWinAmount(ticket, config),
+	});
+};
+
+export const useRoundTicketsByPlayer = (round: Address, address: Address) => {
+	return useQuery<IRoundTicket[]>({
+		queryKey: ['lottery', 'round', round, 'tickets', address],
+		queryFn: () => fetchRoundTicketsByPlayer(round, address),
 	});
 };

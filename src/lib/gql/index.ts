@@ -3,6 +3,8 @@ import {
 	type GetActiveRoundsQuery,
 	GetOldRoundsDocument,
 	type GetOldRoundsQuery,
+	GetPlayerTicketByRoundDocument,
+	type GetPlayerTicketByRoundQuery,
 	GetTicketsDocument,
 	type GetTicketsQuery,
 	type Line,
@@ -92,4 +94,13 @@ const populateTickets = (
 		token: Number(ticket.tokenId),
 		lines: decodeLines(ticket.lines.map((e) => ({ numbers: Number(e.numbers), symbol: Number(e.symbol) }))),
 	};
+};
+
+export const fetchRoundTicketsByPlayer = async (round: Address, address: Address): Promise<IRoundTicket[]> => {
+	const result: ExecutionResult<GetPlayerTicketByRoundQuery> = await execute(GetPlayerTicketByRoundDocument, { round: round, player: address });
+	logger.success('fetched tickets', result.data?.tickets);
+	if (result.data) {
+		return result.data.tickets.map(populateTickets);
+	}
+	return [];
 };

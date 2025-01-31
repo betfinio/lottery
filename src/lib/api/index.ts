@@ -61,6 +61,15 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 	return status;
 };
 
+export const fetchLinesCount = async (round: Address, config: Config) => {
+	return await readContract(config, {
+		address: round,
+		abi: LotteryRoundABI,
+		functionName: 'getTicketsCount',
+		args: [],
+	});
+};
+
 export const fetchRoundFinish = async (round: Address, config: Config) => {
 	return Number(
 		await readContract(config, {

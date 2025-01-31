@@ -52,3 +52,9 @@ query GetTickets($player: Bytes, $now: BigInt) {
 		...Ticket
 	}
 }
+
+query GetPlayerTicketByRound($round: Bytes, $player: Bytes) {
+	tickets(where: { round_: { round: $round }, owner: $player }, orderBy: created, orderDirection: desc) {
+		...Ticket
+	}
+}
