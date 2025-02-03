@@ -17,13 +17,13 @@ function MyTickets() {
 						Old tickets
 					</TabsTrigger>
 				</TabsList>
-				<TabsContent value="active" className={'h-full'}>
+				<TabsContent value="active">
 					<ActiveTicketsList />
 				</TabsContent>
 				<TabsContent value="giveaway">
 					<div className={'border border-purple-box p-4 rounded-lg text-center'}>This feature is coming soon</div>
 				</TabsContent>
-				<TabsContent value="old" className={'h-full'}>
+				<TabsContent value="old">
 					<OldTicketsList />
 				</TabsContent>
 			</Tabs>

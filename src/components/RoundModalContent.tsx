@@ -58,7 +58,7 @@ function MyTickets({ round }: { round: Address }) {
 	const now = DateTime.now().toSeconds();
 	const isFinished = finish ? finish < now : true;
 	return (
-		<div className="border border-border rounded-lg p-2 flex flex-col items-center justify-center gap-4 w-full h-[530px] pb-10 relative">
+		<div className="border border-border rounded-lg p-2 flex flex-col items-center justify-center gap-4 w-full t pb-10 relative">
 			<div>My tickets ({tickets.length})</div>
 			<TicketsList tickets={tickets} old={isFinished} />
 		</div>
