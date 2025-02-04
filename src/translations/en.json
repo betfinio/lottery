@@ -7,7 +7,8 @@
 		"symbolUnlocked": "Symbol unlocked",
 		"validation": {
 			"symbol": "Symbol must be selected",
-			"5numbers": "5 numbers must be selected",
+			"5numbers": "Pick exactly 5 numbers",
+			"remaining": "{count} numbers remaining",
 			"unique": "Numbers must be unique",
 			"1to25": "Numbers must be between 1 and 25"
 		}

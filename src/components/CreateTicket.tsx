@@ -19,8 +19,8 @@ const CreateTicket = () => {
 	const symbolUnlocked = draftTickets.length >= 3;
 
 	return (
-		<section className={'w-full h-full border-2 border-primary/70 rounded-xl p-3 bg-background-light col-span-3 md:col-span-1 create-shadow relative'}>
-			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>New ticket</div>
+		<section className={'w-full md:h-full border-2 border-primary/70 rounded-xl p-3 bg-background-light col-span-3 md:col-span-1 create-shadow relative'}>
+			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>Fill new ticket</div>
 			<nav className={'flex justify-between'}>
 				<div className={cn('flex flex-row items-center gap-1', { 'animate-pulse blur-sm': isLoading || isFetching })}>
 					<BetValue value={price} withIcon withMillify={false} /> / {t('line')}
@@ -94,14 +94,15 @@ const TicketList = () => {
 
 	return (
 		<AnimatePresence mode={'popLayout'}>
-			<div className={'grid grid-rows-3 gap-2'} key={'list'}>
+			<div className={'grid md:grid-rows-3 gap-2'} key={'list'}>
 				{draftTickets.slice(offset, offset + 3).map((ticket, index) => (
 					<Line
 						key={index + offset}
-						ticket={ticket}
+						line={ticket}
 						order={index + 1 + offset}
 						onEdit={(newTicket) => updateTicket(index + offset, newTicket)}
 						onDelete={() => deleteTicket(index + offset)}
+						symbolUnlocked={draftTickets.length >= 3}
 					/>
 				))}
 			</div>

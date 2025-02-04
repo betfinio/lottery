@@ -8,14 +8,15 @@ import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useState } from 'react';
 
 export interface LineProps {
-	ticket: ILine;
+	line: ILine;
 	onDelete?: () => void;
 	onEdit?: (ticket: ILine) => void;
 	order: number;
+	symbolUnlocked?: boolean;
 	isNew?: boolean;
 }
 
-const Line: FC<LineProps> = ({ ticket, order, onEdit, onDelete }) => {
+const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false }) => {
 	const [editMode, setEditMode] = useState(false);
 	const handleRandomize = () => {
 		onEdit?.(randomize());
@@ -43,14 +44,30 @@ const Line: FC<LineProps> = ({ ticket, order, onEdit, onDelete }) => {
 				style={{ transformStyle: 'preserve-3d' }}
 				className={'overflow-x-hidden'}
 			>
-				<ViewMode ticket={ticket} isNew={isNew} onEditMode={handleEdit} order={order} onDelete={handleDelete} onRandomize={handleRandomize} />
+				<ViewMode
+					line={ticket}
+					isNew={isNew}
+					onEditMode={handleEdit}
+					order={order}
+					onDelete={handleDelete}
+					onRandomize={handleRandomize}
+					symbolUnlocked={symbolUnlocked}
+				/>
 			</motion.div>
 			<EditMode ticket={ticket} onBack={handleEdit} onSave={handleSave} order={order} editMode={editMode} onRandomize={handleRandomize} />
 		</>
 	);
 };
 
-const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void }> = ({ ticket, isNew, onEditMode, order, onRandomize, onDelete }) => {
+const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void }> = ({
+	line: ticket,
+	isNew,
+	onEditMode,
+	order,
+	onRandomize,
+	onDelete,
+	symbolUnlocked = false,
+}) => {
 	const renderNewFooter = () => {
 		return (
 			<div className={'flex flex-row px-4 justify-between'}>
@@ -98,7 +115,13 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 						<NumberComponent key={index}>{number || '-'}</NumberComponent>
 					))}
 				+
-				<NumberComponent isSymbol>
+				<NumberComponent
+					isSymbol
+					className={cn('stroke-primary text-primary/30', {
+						'stroke-primary text-primary/30': symbolUnlocked,
+						'stroke-foreground text-foreground/30 grayscale': !symbolUnlocked,
+					})}
+				>
 					<SymbolElement symbol={ticket.symbol} />
 				</NumberComponent>
 			</div>
@@ -131,21 +154,25 @@ export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; classNa
 	);
 };
 
-export const SymbolElement: FC<{ symbol: number }> = ({ symbol }) => {
-	switch (symbol) {
-		case 1:
-			return '🍒';
-		case 2:
-			return '🍊';
-		case 3:
-			return '🍋';
-		case 4:
-			return '🍉';
-		case 5:
-			return '🍇';
-		default:
-			return '-';
-	}
+export const SymbolElement: FC<{ symbol: number; className?: string }> = ({ symbol, className = '' }) => {
+	const getSymbol = () => {
+		//🎰🍦🍀🛩️🐥
+		switch (symbol) {
+			case 1:
+				return '🎰';
+			case 2:
+				return '🍦';
+			case 3:
+				return '🍀';
+			case 4:
+				return '🛩️';
+			case 5:
+				return '🐥';
+			default:
+				return '-';
+		}
+	};
+	return <div className={cn('text-secondary-foreground', className)}>{getSymbol()}</div>;
 };
 
 export default Line;

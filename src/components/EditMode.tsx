@@ -45,10 +45,15 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		onSave?.({ numbers: numbers.sort(), symbol });
 	};
 	const validation: string = useMemo(() => {
+		console.log(numbers, symbol);
+		const sum = numbers.reduce((acc, curr) => acc + curr, 0);
+
+		const actualNumbers = numbers.filter((n) => n !== 0);
+
+		// validate numbers are 5
+		if ((actualNumbers.length < 5 || sum === 0) && symbol === 0) return t('remaining', { count: 5 - actualNumbers.length });
 		// validate symbol is 1-5
 		if (symbol < 1 || symbol > 5) return t('symbol');
-		// validate numbers are 5
-		if (numbers.length !== 5) return t('5numbers');
 		// validate numbers are unique
 		if (new Set(numbers).size !== numbers.length) return t('unique');
 		// validate numbers are 1-25
@@ -78,46 +83,45 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 				<div className={'shiny-gold w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground font-semibold'}>{order}</div>
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full '}>
-				<h2 className={'uppercase text-secondary-foreground font-semibold text-lg'}>LOTTO line</h2>
-				<span className={'text-sm text-muted-foreground'}>Select 5 lucky numbers and 1 symbol</span>
-				<div className={'w-full'}>
-					<div className={'grid grid-cols-5 w-full gap-2'}>
-						{Array.from({ length: 5 }).map((_, index) => (
-							<div
-								key={index}
-								onClick={() => changeSymbol(index + 1)}
-								className={cn('aspect-[4/3] cursor-pointer bg-foreground/50 rounded-lg flex items-center justify-center transition-all', {
-									'border-2': symbol === index + 1,
-								})}
-							>
-								<SymbolElement symbol={index + 1} />
-							</div>
-						))}
-						{Array.from({ length: 5 }).map((_, index) => (
-							<div
-								key={index}
-								onClick={() => changeSymbol(index + 1)}
-								className={cn('cursor-pointer text-muted-foreground flex items-center justify-center transition-all')}
-							>
-								{index + 1}
-							</div>
-						))}
-					</div>
+				<div className={'uppercase  font-semibold text-lg flex flex-row gap-1 mt-4'}>
+					Pick <span className="text-success text-xl">5</span> numbers +<span className="text-secondary-foreground">symbol</span>
+				</div>
+				{/* <span className={'text-sm text-muted-foreground'}>Select 5 lucky numbers and 1 symbol</span> */}
+				<div className={'w-full gap-4 flex flex-col'}>
 					<div className={'grid grid-cols-5 grid-rows-5 grid-flow-col w-full gap-2'}>
 						{Array.from({ length: 25 }).map((_, index) => (
 							<div
 								key={index}
 								onClick={() => toggleNumber(index + 1)}
 								className={cn('aspect-[4/3] cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all', {
-									'border-2 bg-white/10': numbers.includes(index + 1),
+									'bg-primary text-primary-foreground border-none': numbers.includes(index + 1),
+									'bg-success text-success-foreground border-none': numbers.length === 5 && numbers.includes(index + 1),
+									'bg-destructive text-destructive-foreground border-none': numbers.length > 5 && numbers.includes(index + 1),
 								})}
 							>
 								{index + 1}
 							</div>
 						))}
 					</div>
+					<div className="flex flex-row justify-center text-sm text-muted-foreground">The symbol activates with 3 filled lines</div>
+					<div className={'grid grid-cols-5 w-full gap-2'}>
+						{Array.from({ length: 5 }).map((_, index) => (
+							<div
+								key={index}
+								onClick={() => changeSymbol(index + 1)}
+								className={cn(
+									'aspect-[4/3] border-2  border-foreground/50 cursor-pointerbg-secondary/90 rounded-lg flex items-center justify-center transition-all',
+									{
+										'border-primary border-2  bg-foreground/30 scale-110': symbol === index + 1,
+									},
+								)}
+							>
+								<SymbolElement symbol={index + 1} className={'text-2xl'} />
+							</div>
+						))}
+					</div>
 				</div>
-				<div className={'text-destructive/50 h-6'}>{validation}</div>
+				<div className={'text-destructive h-6'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
 					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />
