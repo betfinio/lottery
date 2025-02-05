@@ -216,7 +216,7 @@ const PlaceBet = () => {
 
 export const RoundInfo: FC<{ round: IRound; isSelected: boolean; toggleSelect: (address: Address[]) => void }> = ({ round, isSelected, toggleSelect }) => {
 	const { data: draftLines = [] } = useDraftLines();
-	const { data: linesAvailability = [] } = useLinesAvailability(round.address, draftLines);
+	const { data: linesAvailability = [] } = useLinesAvailability(round.address, draftLines, isSelected);
 	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
 	return (
 		<div

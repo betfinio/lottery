@@ -177,10 +177,11 @@ export const useRoundTicketsByPlayer = (round: Address, address: Address) => {
 	});
 };
 
-export const useLinesAvailability = (round: Address, lines: ILine[]) => {
+export const useLinesAvailability = (round: Address, lines: ILine[], enabled: boolean) => {
 	const config = useConfig();
 	return useQuery<boolean[]>({
 		queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'],
 		queryFn: () => fetchLinesAvailability(round, lines, config),
+		enabled,
 	});
 };

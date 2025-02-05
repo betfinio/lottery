@@ -7,14 +7,13 @@ import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraftLines } from '../lib/query';
-import { isDuplicate } from '../lib/utils';
+import { isDuplicate, randomize } from '../lib/utils';
 
-const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean; onRandomize: () => void }> = ({
+const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean }> = ({
 	order,
 	onBack,
 	ticket,
 	onSave,
-	onRandomize,
 	editMode,
 }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
@@ -38,7 +37,9 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		}
 	};
 	const handleRandomize = () => {
-		onRandomize();
+		const random = randomize();
+		setNumbers(random.numbers);
+		setSymbol(random.symbol);
 	};
 	const handleClear = () => {
 		setNumbers([]);
