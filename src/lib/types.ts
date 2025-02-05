@@ -37,3 +37,16 @@ export enum RoundState {
 }
 
 export const EMPTY_LINE: ILine = { symbol: 0, numbers: [0, 0, 0, 0, 0] };
+
+export enum RoundStatus {
+	NONE = 0,
+	BETTING = 1,
+	PENDING = 2,
+	DONE = 3,
+	CLAIMING = 4,
+	WAITING_FOR_REQUEST = 5,
+	REFUND = 6,
+	READY_FOR_REFUND = 7,
+	REFUNDING = 8,
+	ENDED_WITHOUT_BETS = 9,
+}

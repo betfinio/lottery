@@ -1,6 +1,6 @@
 import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
-import type { GTicket, ILine, IRoundTicket } from '@/src/lib/types.ts';
+import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
 import { decodeLine, decodeLines, encodeLines } from '@/src/lib/utils';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
@@ -21,7 +21,7 @@ export const fetchTicketPrice = async (round: Address, config: Config): Promise<
 };
 
 export const fetchRoundStatus = async (round: Address, config: Config) => {
-	if (round === ZeroAddress) return 0;
+	if (round === ZeroAddress) return RoundStatus.NONE;
 	logger.start('fetchRoundStatus:', round);
 	const finish: bigint = await readContract(config, {
 		address: round,
@@ -30,7 +30,7 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 		args: [],
 	});
 
-	const status: number = Number(
+	const status: RoundStatus = Number(
 		await readContract(config, {
 			address: round,
 			abi: LotteryRoundABI,
@@ -47,18 +47,18 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 	});
 
 	if (balance === 0n && status === 5) {
-		return 9; // ended without bets
+		return RoundStatus.ENDED_WITHOUT_BETS;
 	}
 
 	if (status === 5 && finish + BigInt(60 * 60) < BigInt(Math.floor(Date.now() / 1000))) {
-		return 7; // ready for refund;
+		return RoundStatus.READY_FOR_REFUND;
 	}
 
 	if (status === 6 && balance > 0n) {
-		return 8; // refunding
+		return RoundStatus.REFUNDING;
 	}
 
-	return status;
+	return status as RoundStatus;
 };
 
 export const fetchLinesCount = async (round: Address, config: Config) => {

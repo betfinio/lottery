@@ -1,26 +1,27 @@
 import WinningLine from '@/src/components/tables/columns/WinningLine.tsx';
 import { useRoundStatus } from '@/src/lib/query';
+import { RoundStatus } from '@/src/lib/types';
 import type { Address } from 'viem';
 
 function Result({ round }: { round: Address }) {
 	const { data = 0 } = useRoundStatus(round);
 
-	if (data === 9) {
+	if (data === RoundStatus.ENDED_WITHOUT_BETS) {
 		return <div className={'text-muted-foreground'}>Ended</div>;
 	}
 
-	if (data === 2) {
+	if (data === RoundStatus.PENDING) {
 		return <div className={'text-muted-foreground'}>Waiting for result</div>;
 	}
 
-	if (data === 1) {
+	if (data === RoundStatus.BETTING) {
 		return <div className={'text-muted-foreground'}>Betting</div>;
 	}
 
-	if (data === 4 || data === 3) {
+	if (data === RoundStatus.CLAIMING || data === RoundStatus.DONE) {
 		return <WinningLine round={round} />;
 	}
-	if (data === 6) {
+	if (data === RoundStatus.REFUND) {
 		return <div className={'text-muted-foreground'}>Refunded</div>;
 	}
 	return <div className={'text-muted-foreground'}>Waiting</div>;

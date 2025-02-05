@@ -3,7 +3,7 @@ import Jackpot from '@/src/assets/jackpot.svg?react';
 import Countdown from '@/src/components/Countdown.tsx';
 import { MAX_SHARES } from '@/src/globals.ts';
 import { useRoundFinish, useRoundStatus } from '@/src/lib/query';
-import type { IRound } from '@/src/lib/types.ts';
+import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
@@ -16,7 +16,7 @@ const CurrentRound: FC<{ round: IRound }> = ({ round }) => {
 	const { data: status } = useRoundStatus(round.address);
 
 	const renderStatus = () => {
-		if (status === 1) {
+		if (status === RoundStatus.BETTING) {
 			return <Countdown finish={finish} />;
 		}
 	};
