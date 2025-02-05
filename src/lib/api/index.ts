@@ -157,7 +157,6 @@ export const manualRequest = async (round: Address, config: Config) => {
 };
 
 export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
-	console.log(ticket);
 	const encodedLines = encodeLines(ticket.lines);
 	await simulateContract(config, {
 		abi: LotteryABI,

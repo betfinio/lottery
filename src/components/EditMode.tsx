@@ -109,7 +109,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 				</div>
 				<div className={'w-full gap-4 flex flex-col'}>
 					<div className={'grid grid-cols-5 grid-rows-5 grid-flow-col w-full gap-2'}>
-						<AnimatePresence mode="wait">
+						<AnimatePresence mode="popLayout">
 							{Array.from({ length: 25 }).map((_, index) => (
 								<motion.div
 									key={index}

@@ -23,7 +23,7 @@ const CreateTicket = () => {
 	const symbolUnlocked = filledLines.length >= 3;
 
 	return (
-		<motion.section
+		<section
 			className={cn('w-full md:h-full border border-border rounded-xl p-3 bg-background-light relative h-[593px] flex flex-col justify-between', {
 				'border-2 border-primary/70 create-shadow': state === RoundState.FILLING,
 			})}
@@ -71,7 +71,7 @@ const CreateTicket = () => {
 			<div className={'flex flex-col flex-grow'}>
 				<TicketList />
 			</div>
-		</motion.section>
+		</section>
 	);
 };
 

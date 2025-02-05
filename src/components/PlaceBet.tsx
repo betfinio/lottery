@@ -1,12 +1,17 @@
 import { useActiveRounds, useDraftLines, useLinesAvailability, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
+import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
 	Calendar,
 	Checkbox,
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
 	Input,
 	Popover,
 	PopoverContent,
@@ -26,6 +31,7 @@ import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
+import { ETHSCAN } from '../globals';
 import { useRoundState } from '../lib/gql/state';
 
 const PlaceBet = () => {
@@ -47,19 +53,13 @@ const PlaceBet = () => {
 	const [recipient, setRecipient] = useState<Address | undefined>(address);
 	const [selectedRounds, setSelectedRounds] = useState<IRound[]>([]);
 	const [visibleRounds, setVisibleRounds] = useState<IRound[]>([]);
-	const [buyAnother, setBuyAnother] = useState(false);
 	const { state } = useRoundState(round?.address);
+	const [newRecipientDialogOpen, setNewRecipientDialogOpen] = useState(false);
 
 	// Effects
 	useEffect(() => {
 		setVisibleRounds(rounds.slice(0, 3));
 	}, [rounds]);
-
-	useEffect(() => {
-		if (!buyAnother) {
-			setRecipient(address);
-		}
-	}, [buyAnother, address]);
 
 	useEffect(() => {
 		if (rounds.length > 0) {
@@ -83,10 +83,6 @@ const PlaceBet = () => {
 		} else {
 			setSelectedRounds((prev) => [...prev, toggleRound]);
 		}
-	};
-
-	const handleBuyAnother = (checked: boolean) => {
-		setBuyAnother(checked);
 	};
 
 	const handleUnlock = () => {
@@ -132,6 +128,18 @@ const PlaceBet = () => {
 			(date: Date) => specific.getFullYear() === date.getFullYear() && specific.getMonth() === date.getMonth() && specific.getDate() === date.getDate(),
 		);
 
+	const handleSaveRecipient = (newRecipient: Address) => {
+		setRecipient(newRecipient);
+		setNewRecipientDialogOpen(false);
+	};
+	const handleNewRecipientDialogOpenChange = (open: boolean) => {
+		if (open && recipient?.toLowerCase() !== address?.toLowerCase()) {
+			setRecipient(address);
+			return;
+		}
+		setNewRecipientDialogOpen(open);
+	};
+
 	// Early returns
 	if (rounds.length < 2) {
 		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
@@ -155,7 +163,7 @@ const PlaceBet = () => {
 				<div className="flex flex-row justify-end w-full px-2">
 					<div>{selectedRounds.length} selected</div>
 				</div>
-				<ScrollArea className={cn('w-full', buyAnother ? 'h-72' : 'h-[300px]')}>
+				<ScrollArea className={cn('w-full', 'h-[300px]')}>
 					<div className={'flex flex-col gap-2'}>
 						{visibleRounds.map((date: IRound) => (
 							<RoundInfo
@@ -185,14 +193,30 @@ const PlaceBet = () => {
 			</div>
 			<Separator />
 			<div className={'p-3 flex flex-col items-start gap-2 justify-end flex-grow'}>
-				<div className={cn(!buyAnother && 'hidden', 'w-full')}>
-					<Input className={'w-full'} placeholder={t('recipientPlaceholder')} value={recipient} onChange={(e) => setRecipient(e.target.value as Address)} />
-				</div>
-				{/*todo: add modal and diaply truncated version with edit option */}
-				<div className={'flex items-center gap-2 text-sm '}>
-					<SwitchComponent checked={buyAnother} onCheckedChange={handleBuyAnother} />
-					{t('buyForSomeone')}
-				</div>
+				<Dialog open={newRecipientDialogOpen} onOpenChange={handleNewRecipientDialogOpenChange}>
+					<DialogTrigger asChild>
+						<div className={'flex items-center justify-between w-full gap-2 text-sm '}>
+							<div className={'flex flex-row gap-2 items-center'}>
+								<SwitchComponent checked={recipient !== address} />
+								{t('buyForSomeone')}
+							</div>
+							{recipient && recipient.toLowerCase() !== address?.toLowerCase() && (
+								<a
+									href={`${ETHSCAN}/address/${recipient}`}
+									onClick={(e) => e.stopPropagation()}
+									target="_blank"
+									rel="noreferrer"
+									className={'text-sm text-secondary-foreground'}
+								>
+									{truncateEthAddress(recipient)}
+								</a>
+							)}
+						</div>
+					</DialogTrigger>
+					<DialogContent className={'lottery'}>
+						<NewRecipientDialog onSave={handleSaveRecipient} onCancel={() => setNewRecipientDialogOpen(false)} />
+					</DialogContent>
+				</Dialog>
 				{multiAllowance > totalAmount ? (
 					<Button variant={'default'} className={'w-full gap-1'} onClick={handleBuyTicket} disabled={isPending || totalAmount === 0n || !isValidRecipient}>
 						<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
@@ -232,6 +256,40 @@ export const RoundInfo: FC<{ round: IRound; isSelected: boolean; toggleSelect: (
 					onCheckedChange={() => toggleSelect([round.address])}
 					className={'data-[state=checked]:bg-success w-4 h-4 data-[state=checked]:text-success-foreground data-[state=checked]:border-success'}
 				/>
+			</div>
+		</div>
+	);
+};
+
+const NewRecipientDialog = ({ onSave, onCancel }: { onSave: (address: Address) => void; onCancel: () => void }) => {
+	const [recipient, setRecipient] = useState<Address>('0x');
+	const [changed, setChanged] = useState(false);
+	const { address = ZeroAddress } = useAccount();
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setRecipient(e.target.value as Address);
+		setChanged(true);
+	};
+	const validAddress = isAddress(recipient, { strict: false });
+	const isMe = recipient.toLowerCase() === address.toLowerCase();
+	return (
+		<div className="flex flex-col gap-2 bg-background-light p-4 rounded-lg md:w-[450px] w-[98vw]">
+			<DialogTitle className={'font-normal'}>Enter recipient address</DialogTitle>
+			<Input autoComplete="off" placeholder={'Enter address'} value={recipient} onChange={handleChange} />
+			{!validAddress && changed && <div className="text-destructive text-sm">Invalid address</div>}
+			{isMe && <div className="text-destructive text-sm">Enter another address</div>}
+			<div className="grid grid-cols-3">
+				<Button variant={'outline'} size={'sm'} className={'gap-1 border-primary text-secondary-foreground'} onClick={() => onCancel()}>
+					Cancel
+				</Button>
+				<Button
+					className={'gap-1 col-start-3'}
+					size={'sm'}
+					disabled={!recipient || !validAddress || !changed}
+					onClick={() => recipient && validAddress && onSave(recipient)}
+				>
+					Save
+				</Button>
 			</div>
 		</div>
 	);

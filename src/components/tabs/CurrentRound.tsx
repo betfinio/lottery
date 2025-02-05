@@ -11,7 +11,6 @@ import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import type { FC } from 'react';
 
 const CurrentRound: FC<{ round: IRound }> = ({ round }) => {
-	console.log(round);
 	const { data: finish = 0 } = useRoundFinish(round.address);
 	const { data: status } = useRoundStatus(round.address);
 
