@@ -156,14 +156,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 										>
 											<ChevronDown className={'w-6 h-6'} />
 										</motion.div>
-										<EditMode
-											ticket={line}
-											editMode={editing === index}
-											onSave={(e) => handleEdit(e, index)}
-											onBack={() => setEditing(-1)}
-											order={index}
-											onRandomize={() => handleRandomize(index)}
-										/>
+										<EditMode ticket={line} editMode={editing === index} onSave={(e) => handleEdit(e, index)} onBack={() => setEditing(-1)} order={index} />
 									</motion.div>
 								))}
 						</AnimatePresence>
