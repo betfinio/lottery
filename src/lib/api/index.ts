@@ -286,6 +286,7 @@ export const fetchTicketWinAmount = async (ticket: Address, config: Config) => {
 };
 
 export const fetchLinesAvailability = async (round: Address, lines: ILine[], config: Config): Promise<boolean[]> => {
+	logger.start('fetchLinesAvailability:', round);
 	const encodedLines = encodeLines(lines);
 	const data = await multicall(config, {
 		contracts: encodedLines.map(({ symbol, numbers }) => ({
