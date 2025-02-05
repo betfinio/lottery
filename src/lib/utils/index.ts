@@ -92,3 +92,9 @@ export const compareLines = (a: ILine, b: ILine): number => {
 	// return 0 if no combination
 	return 0;
 };
+
+export const isDuplicate = (lines: ILine[]): boolean => {
+	return lines.some((line: ILine) =>
+		lines.some((l: ILine) => l !== line && l.symbol === line.symbol && [...l.numbers].sort().join(',') === [...line.numbers].sort().join(',')),
+	);
+};

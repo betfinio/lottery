@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDraftLines } from '../lib/query';
+import { isDuplicate } from '../lib/utils';
 
 const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean; onRandomize: () => void }> = ({
 	order,
@@ -18,6 +20,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
+	const { data: draftLines = [] } = useDraftLines();
 
 	useEffect(() => {
 		setNumbers(ticket.numbers);
@@ -46,6 +49,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	};
 	const validation: string = useMemo(() => {
 		const sum = numbers.reduce((acc, curr) => acc + curr, 0);
+		const duplicates = isDuplicate([...draftLines, { numbers, symbol }]);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
 
@@ -57,6 +61,8 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		if (new Set(numbers).size !== numbers.length) return t('unique');
 		// validate numbers are 1-25
 		if (numbers.some((n) => n < 1 || n > 25)) return t('1to25');
+		// validate duplicates
+		if (duplicates) return t('duplicates');
 		return '';
 	}, [symbol, numbers]);
 
@@ -119,7 +125,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 						))}
 					</div>
 				</div>
-				<div className={'text-destructive h-6'}>{validation}</div>
+				<div className={'text-destructive h-6 text-sm'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
 					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />

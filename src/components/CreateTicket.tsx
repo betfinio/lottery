@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockOpenIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useRoundState } from '../lib/gql/state.ts';
-import { randomize } from '../lib/utils/index.ts';
+import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';
 import Pagination from './shared/Pagination';
 
@@ -107,6 +107,9 @@ const TicketList = () => {
 	};
 
 	const filledLines = draftTickets.filter((line: ILine) => line.numbers.every((number) => number !== 0));
+	// Check that there are no same lines with same numbers(sort by numbers) and symbol
+	const duplicates = isDuplicate(filledLines);
+
 	const handleDeleteAll = () => {
 		setTickets([EMPTY_LINE]);
 	};
@@ -153,10 +156,21 @@ const TicketList = () => {
 						Add line
 					</Button>
 					{state === RoundState.FILLING && (
-						<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0}>
-							Proceed ({filledLines.length} lines)
-							<ArrowRightIcon className={'w-4 h-4'} />
-						</Button>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
+										Proceed ({filledLines.length} lines)
+										<ArrowRightIcon className={'w-4 h-4'} />
+									</Button>
+								</TooltipTrigger>
+								{duplicates && (
+									<TooltipContent>
+										<div>You cannot proceed with duplicate lines</div>
+									</TooltipContent>
+								)}
+							</Tooltip>
+						</TooltipProvider>
 					)}
 				</footer>
 			</div>
