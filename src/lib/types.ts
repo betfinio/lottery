@@ -28,3 +28,12 @@ export interface IRoundTicket {
 }
 
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';
+
+export enum RoundState {
+	FILLING = 0,
+	PLACING = 1,
+	FINISHED = 2,
+	//todo: add more states
+}
+
+export const EMPTY_LINE: ILine = { symbol: 0, numbers: [0, 0, 0, 0, 0] };

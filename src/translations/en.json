@@ -2,7 +2,7 @@
 	"title": "Template",
 	"create": {
 		"line": "line",
-		"addMore": "Add {count, plural, =1 {1 more line} =2 {2 more lines} other {# more lines}}",
+		"addMore": "Fill {count, plural, =1 {1 more line} =2 {2 more lines} other {# more lines}}",
 		"addMoreTooltip": "Create a ticket with 3 rows to enable symbol",
 		"symbolUnlocked": "Symbol unlocked",
 		"validation": {
@@ -23,7 +23,7 @@
 		}
 	},
 	"placeBet": {
-		"title": "Place Bet",
+		"title": "Select Dates",
 		"ticketPrice": "per line/draw",
 		"selectedDraws": "Future draws",
 		"openCalendar": "Open calendar",

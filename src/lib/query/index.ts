@@ -12,7 +12,7 @@ import {
 	fetchWinningLine,
 } from '@/src/lib/api';
 import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets, fetchRoundTicketsByPlayer } from '@/src/lib/gql';
-import type { ILine, IRound, IRoundTicket } from '@/src/lib/types.ts';
+import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { Address } from 'viem';
@@ -83,7 +83,7 @@ export const useSelectedRound = () => {
 			queryClient.setQueryData(['lottery', 'round', 'selected'], rounds[0]);
 		}
 	}, [rounds, queryClient]);
-	return useQuery({
+	return useQuery<IRound>({
 		queryKey: ['lottery', 'round', 'selected'],
 		initialData: rounds[0],
 	});
@@ -97,7 +97,7 @@ export const useDraftLines = () => {
 	return {
 		...useQuery<ILine[]>({
 			queryKey: ['lottery', 'lines', 'draft'],
-			initialData: [{ numbers: [0, 0, 0, 0, 0], symbol: 0 }],
+			initialData: [EMPTY_LINE],
 		}),
 		setTickets,
 	};

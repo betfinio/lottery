@@ -45,7 +45,6 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		onSave?.({ numbers: numbers.sort(), symbol });
 	};
 	const validation: string = useMemo(() => {
-		console.log(numbers, symbol);
 		const sum = numbers.reduce((acc, curr) => acc + curr, 0);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
@@ -62,6 +61,8 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	}, [symbol, numbers]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
+
+	const is5Selected = numbers.length === 5;
 
 	return (
 		<motion.div
@@ -86,7 +87,6 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 				<div className={'uppercase  font-semibold text-lg flex flex-row gap-1 mt-4'}>
 					Pick <span className="text-success text-xl">5</span> numbers +<span className="text-secondary-foreground">symbol</span>
 				</div>
-				{/* <span className={'text-sm text-muted-foreground'}>Select 5 lucky numbers and 1 symbol</span> */}
 				<div className={'w-full gap-4 flex flex-col'}>
 					<div className={'grid grid-cols-5 grid-rows-5 grid-flow-col w-full gap-2'}>
 						{Array.from({ length: 25 }).map((_, index) => (
@@ -116,7 +116,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 									},
 								)}
 							>
-								<SymbolElement symbol={index + 1} className={'text-2xl'} />
+								<SymbolElement symbol={symbol === index + 1 ? symbol : index + 1} className={'text-2xl'} />
 							</div>
 						))}
 					</div>

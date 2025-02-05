@@ -1,16 +1,17 @@
-import { useActiveRounds, useDraftLines, useMultiAllowance, useRoundStatus, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useActiveRounds, useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
-import type { IRound } from '@/src/lib/types.ts';
+import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, Calendar, Checkbox, Input, Popover, PopoverContent, PopoverTrigger, ScrollArea, Separator, SwitchComponent } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { CalendarIcon, LoaderIcon, LockIcon } from 'lucide-react';
+import { CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
+import { useRoundState } from '../lib/gql/state';
 
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });
@@ -30,7 +31,14 @@ const PlaceBet = () => {
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(address);
 	const [selectedRounds, setSelectedRounds] = useState<IRound[]>([]);
+	const [visibleRounds, setVisibleRounds] = useState<IRound[]>([]);
 	const [buyAnother, setBuyAnother] = useState(false);
+	const { state } = useRoundState(round?.address);
+
+	// Effects
+	useEffect(() => {
+		setVisibleRounds(rounds.slice(0, 3));
+	}, [rounds]);
 
 	useEffect(() => {
 		if (!buyAnother) {
@@ -47,7 +55,7 @@ const PlaceBet = () => {
 	// Computed values
 	const totalAmount = BigInt(lines.length * selectedRounds.length) * ticketPrice;
 	const isValidRecipient = recipient && isAddress(recipient as string, { strict: false });
-	const roundsAsDates = rounds.map((e) => new Date(e.finish * 1000));
+	const roundsAsDates = rounds.map((e: IRound) => new Date(e.finish * 1000));
 	const selectedDates = selectedRounds.map((e) => new Date(e.finish * 1000));
 
 	// Handlers
@@ -59,6 +67,7 @@ const PlaceBet = () => {
 			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
 		} else {
 			setSelectedRounds((prev) => [...prev, toggleRound]);
+			setVisibleRounds((prev) => [...prev, toggleRound]);
 		}
 	};
 
@@ -70,9 +79,12 @@ const PlaceBet = () => {
 		unlock();
 	};
 
+	const addMoreRound = () => {
+		setVisibleRounds((prev) => [...prev, ...rounds.slice(visibleRounds.length, visibleRounds.length + 1)]);
+	};
+
 	const handleBuyTicket = () => {
 		if (!recipient) return;
-
 		buyTicket({
 			lines,
 			recipient,
@@ -95,9 +107,10 @@ const PlaceBet = () => {
 				} as IRound;
 			})
 			.filter((e) => e) as IRound[];
-		console.log(selected);
 
 		setSelectedRounds(selected);
+		const uniqueRounds = visibleRounds.filter((round) => selected.some((s) => s.address === round.address));
+		setVisibleRounds(uniqueRounds);
 	};
 
 	const compare = (roundDates: Date[]) => (specific: Date) =>
@@ -112,39 +125,31 @@ const PlaceBet = () => {
 
 	// Main render
 	return (
-		<div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col lottery'}>
-			<div className={'p-3 flex flex-col items-center gap-2'}>
-				<h2 className={'text-lg'}>{t('title')}</h2>
-				<div className={'text-secondary-foreground flex flex-row gap-1 items-center'}>
+		<motion.div
+			className={cn('w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col', {
+				'border-2 border-primary/70 create-shadow': state === RoundState.PLACING,
+			})}
+		>
+			<div className={'p-3 flex flex-col items-center gap-1'}>
+				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('title')}</h2>
+				<div className={'text-foreground flex flex-row gap-1 items-center'}>
 					<BetValue value={1500} withIcon /> {t('ticketPrice')}
 				</div>
 			</div>
 			<Separator />
 			<div className={'p-3 flex flex-col items-start gap-2'}>
-				<div className={'flex justify-between w-full items-center'}>
-					<div className={'text-sm text'}>{t('selectedDraws')}</div>
-					<Popover>
-						<PopoverTrigger className={' flex gap-1 items-center text-sm'}>
-							<CalendarIcon className={'w-4 h-4 '} />
-							{t('openCalendar')}
-						</PopoverTrigger>
-						<PopoverContent className={'border border-border'}>
-							<Calendar mode={'multiple'} disabled={compare(roundsAsDates)} selected={selectedDates} onSelect={handleCalendarChange} />
-						</PopoverContent>
-					</Popover>
-					<Button size={'sm'} variant={'ghost'} className="p-0" onClick={() => setSelectedRounds(rounds)}>
-						Select all
-					</Button>
+				<div className="flex flex-row justify-end w-full px-2">
+					<div>{selectedRounds.length} selected</div>
 				</div>
-				<ScrollArea className={cn('w-full', buyAnother ? 'h-72' : 'h-[340px]')}>
-					<div className={'flex flex-col gap-1'}>
-						{rounds.map((date) => (
+				<ScrollArea className={cn('w-full', buyAnother ? 'h-72' : 'h-[300px]')}>
+					<div className={'flex flex-col gap-2'}>
+						{visibleRounds.map((date: IRound) => (
 							<div
 								key={date.address}
-								className={'flex flex-row justify-between cursor-pointer items-center h-10 w-full p-1 px-2 bg-secondary text-secondary-foreground rounded-lg'}
+								className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
 								onClick={() => handleToggle([date.address])}
 							>
-								<div className={'text-sm'}>{DateTime.fromSeconds(date.finish).toFormat('cccc, DD')}</div>
+								<div className={'text-sm'}>{DateTime.fromSeconds(date.finish).toFormat('DD, T')}</div>
 								<Checkbox
 									checked={selectedRounds.find((e) => e.address === date.address) !== undefined}
 									onCheckedChange={() => handleToggle([date.address])}
@@ -152,15 +157,30 @@ const PlaceBet = () => {
 								/>
 							</div>
 						))}
-						{/* {selectedRounds.length === 0 && <div className={'text-muted-foreground text-sm text-center'}>{t('noDraws')}</div>} */}
 					</div>
 				</ScrollArea>
+				<div className={'grid grid-cols-2 gap-2 justify-center w-full'}>
+					<Popover>
+						<PopoverTrigger className={' flex gap-1 items-center text-sm w-full justify-center'}>
+							<CalendarIcon className={'w-4 h-4 '} />
+							{t('openCalendar')}
+						</PopoverTrigger>
+						<PopoverContent className={'border border-border'}>
+							<Calendar mode={'multiple'} disabled={compare(roundsAsDates)} selected={selectedDates} onSelect={handleCalendarChange} />
+						</PopoverContent>
+					</Popover>
+					<Button variant={'outline'} className={'gap-1 border-primary text-secondary-foreground'} onClick={() => addMoreRound()}>
+						<PlusCircleIcon className={'w-4 h-4'} />
+						Add more
+					</Button>
+				</div>
 			</div>
 			<Separator />
 			<div className={'p-3 flex flex-col items-start gap-2 justify-end flex-grow'}>
 				<div className={cn(!buyAnother && 'hidden', 'w-full')}>
 					<Input className={'w-full'} placeholder={t('recipientPlaceholder')} value={recipient} onChange={(e) => setRecipient(e.target.value as Address)} />
 				</div>
+				{/*todo: add modal and diaply truncated version with edit option */}
 				<div className={'flex items-center gap-2 text-sm '}>
 					<SwitchComponent checked={buyAnother} onCheckedChange={handleBuyAnother} />
 					{t('buyForSomeone')}
@@ -182,7 +202,7 @@ const PlaceBet = () => {
 					</Button>
 				)}
 			</div>
-		</div>
+		</motion.div>
 	);
 };
 

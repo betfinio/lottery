@@ -5,7 +5,7 @@ import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
 import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
-import { type FC, type PropsWithChildren, useState } from 'react';
+import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 
 export interface LineProps {
 	line: ILine;
@@ -14,9 +14,10 @@ export interface LineProps {
 	order: number;
 	symbolUnlocked?: boolean;
 	isNew?: boolean;
+	showDelete?: boolean;
 }
 
-const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false }) => {
+const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false, showDelete = true }) => {
 	const [editMode, setEditMode] = useState(false);
 	const handleRandomize = () => {
 		onEdit?.(randomize());
@@ -52,6 +53,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 					onDelete={handleDelete}
 					onRandomize={handleRandomize}
 					symbolUnlocked={symbolUnlocked}
+					showDelete={showDelete}
 				/>
 			</motion.div>
 			<EditMode ticket={ticket} onBack={handleEdit} onSave={handleSave} order={order} editMode={editMode} onRandomize={handleRandomize} />
@@ -67,13 +69,22 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	onRandomize,
 	onDelete,
 	symbolUnlocked = false,
+	showDelete = true,
 }) => {
 	const renderNewFooter = () => {
 		return (
-			<div className={'flex flex-row px-4 justify-between'}>
+			<div className={'grid grid-cols-3 px-2'}>
 				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto'} onClick={onEditMode}>
 					Fill line
 				</Button>
+				{showDelete ? (
+					<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
+						<TrashIcon className={'w-3.5 h-3.5'} />
+						Delete
+					</Button>
+				) : (
+					<div />
+				)}
 				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					Quick pick
@@ -83,14 +94,14 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	};
 	const renderRegularFooter = () => {
 		return (
-			<div className={'flex flex-row  justify-between'}>
-				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
-					<TrashIcon className={'w-3.5 h-3.5'} />
-					Delete
-				</Button>
+			<div className={'grid grid-cols-3 px-2'}>
 				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					Edit
+				</Button>
+				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
+					<TrashIcon className={'w-3.5 h-3.5'} />
+					Delete
 				</Button>
 				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
@@ -99,8 +110,10 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 			</div>
 		);
 	};
+
+	const sortedNumbers = ticket.numbers.sort((a, b) => a - b);
 	return (
-		<div className={'bg-secondary border border-purple-box rounded-lg mt-4 py-2 '}>
+		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
 				className={
 					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8'
@@ -109,11 +122,9 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				{order}
 			</div>
 			<div className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}>
-				{ticket.numbers
-					.sort((a, b) => a - b)
-					.map((number, index) => (
-						<NumberComponent key={index}>{number || '-'}</NumberComponent>
-					))}
+				{sortedNumbers.map((number, index) => (
+					<NumberComponent key={index}>{number || '-'}</NumberComponent>
+				))}
 				+
 				<NumberComponent
 					isSymbol
@@ -172,7 +183,7 @@ export const SymbolElement: FC<{ symbol: number; className?: string }> = ({ symb
 				return '-';
 		}
 	};
-	return <div className={cn('text-secondary-foreground', className)}>{getSymbol()}</div>;
+	return <motion.div className={cn('text-secondary-foreground', className)}>{getSymbol()}</motion.div>;
 };
 
 export default Line;
