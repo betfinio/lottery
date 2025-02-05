@@ -112,7 +112,6 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		);
 	};
 
-	const sortedNumbers = ticket.numbers.sort((a, b) => a - b);
 	return (
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
@@ -125,6 +124,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 
 			<SharedLine
 				line={ticket}
+				symbolUnlocked={symbolUnlocked}
 				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}
 				symbolClassName={cn('stroke-primary text-primary/30', {
 					'stroke-primary text-primary/30': symbolUnlocked,

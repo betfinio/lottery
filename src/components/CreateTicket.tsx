@@ -37,33 +37,36 @@ const CreateTicket = () => {
 				>
 					<BetValue value={price} withIcon withMillify={false} /> / {t('line')}
 				</div>
-				<div className={'text-sm flex flex-row gap-1 items-center font-thin'}>
+				<motion.div
+					animate={
+						symbolUnlocked
+							? {
+									scale: [1, 1.2, 1],
+									textShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
+								}
+							: {
+									scale: 1,
+									textShadow: 'none',
+								}
+					}
+					transition={{
+						duration: 1.6,
+						times: [0, 0.5, 0.6],
+						ease: 'easeInOut',
+					}}
+					className={'text-sm flex flex-row gap-1 items-center font-thin'}
+				>
 					{symbolUnlocked ? (
-						<motion.div
-							initial={{
-								opacity: 1,
-								scale: 1.5,
-								shadow: '0 0 20px 10px rgba(255, 215, 0, 0.5)',
-								borderRadius: '4px',
-							}}
-							animate={{
-								opacity: 1,
-								scale: 1,
-								shadow: 'none',
-								borderRadius: '4px',
-							}}
-							transition={{ duration: 1, ease: 'easeInOut', delay: 0.2 }}
-							className={'flex flex-row gap-1 items-center px-1'}
-						>
+						<div className={'flex flex-row gap-1 items-center px-1'}>
 							{t('symbolUnlocked')}
 							<LockOpenIcon className={'w-3 h-3 text-primary'} />
-						</motion.div>
+						</div>
 					) : (
 						<>
 							{t('addMore', { count: 3 - filledLines.length })} <MoreLinesTooltip />
 						</>
 					)}
-				</div>
+				</motion.div>
 			</nav>
 			<div className={'flex flex-col flex-grow'}>
 				<TicketList />
