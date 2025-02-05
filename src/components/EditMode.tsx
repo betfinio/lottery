@@ -9,6 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { useDraftLines } from '../lib/query';
 import { isDuplicate, randomize } from '../lib/utils';
 
+const animationDuration = 1000;
+const animationInterval = 100;
+
 const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean }> = ({
 	order,
 	onBack,
@@ -37,9 +40,17 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		}
 	};
 	const handleRandomize = () => {
-		const random = randomize();
-		setNumbers(random.numbers);
-		setSymbol(random.symbol);
+		const animateRandomValues = () => {
+			const { numbers, symbol } = randomize();
+			setNumbers(numbers);
+			setSymbol(symbol);
+		};
+
+		const interval = setInterval(animateRandomValues, animationInterval);
+		setTimeout(() => {
+			clearInterval(interval);
+			animateRandomValues();
+		}, animationDuration);
 	};
 	const handleClear = () => {
 		setNumbers([]);
@@ -50,22 +61,26 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	};
 	const validation: string = useMemo(() => {
 		const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-		const duplicates = isDuplicate([...draftLines, { numbers, symbol }]);
+		const newLine = { numbers: numbers, symbol };
+		// check if edited line is the same as the ticket
+		const isSame = ticket.numbers.length === numbers.length && ticket.numbers.every((n, index) => n === numbers[index]) && ticket.symbol === symbol;
+		const duplicates = isSame ? false : isDuplicate([...draftLines, newLine]);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
-
 		// validate numbers are 5
-		if ((actualNumbers.length < 5 || sum === 0) && symbol === 0) return t('remaining', { count: 5 - actualNumbers.length });
+		if (actualNumbers.length < 5 || sum === 0) return t('remaining', { count: 5 - actualNumbers.length });
 		// validate symbol is 1-5
 		if (symbol < 1 || symbol > 5) return t('symbol');
 		// validate numbers are unique
 		if (new Set(numbers).size !== numbers.length) return t('unique');
 		// validate numbers are 1-25
 		if (numbers.some((n) => n < 1 || n > 25)) return t('1to25');
+		// check if numbers length is 5
+		if (actualNumbers.length > 5) return t('5numbers');
 		// validate duplicates
 		if (duplicates) return t('duplicates');
 		return '';
-	}, [symbol, numbers]);
+	}, [symbol, numbers, ticket]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
