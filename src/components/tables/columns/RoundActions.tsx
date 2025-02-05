@@ -1,5 +1,6 @@
 import { useRoundStatus } from '@/src/lib/query';
 import { useManualDistributeJackpot, useManualDistributeRefund, useManualRefund, useManualRequest } from '@/src/lib/query/mutations';
+import { RoundStatus } from '@/src/lib/types';
 import {
 	Dialog,
 	DialogContent,
@@ -56,31 +57,31 @@ function RoundActions({ round }: { round: Address }) {
 
 	const actions: RoundActionsProps[] = useMemo(() => {
 		const options: RoundActionsProps[] = [];
-		if (data === 7) {
+		if (data === RoundStatus.READY_FOR_REFUND) {
 			options.push({
 				handler: handleRefund,
 				title: 'Refund',
 			});
 		}
-		if (data === 5) {
+		if (data === RoundStatus.WAITING_FOR_REQUEST) {
 			options.push({
 				handler: handleRequest,
 				title: 'Request',
 			});
 		}
-		if (data === 8) {
+		if (data === RoundStatus.REFUNDING) {
 			options.push({
 				handler: handleDistributeRefund,
 				title: 'Distribute Refund',
 			});
 		}
-		if (data === 9) {
+		if (data === RoundStatus.ENDED_WITHOUT_BETS) {
 			options.push({
 				handler: handleRequest,
 				title: 'Request',
 			});
 		}
-		if (data === 3) {
+		if (data === RoundStatus.DONE) {
 			options.push({
 				handler: handleJackpot,
 				title: 'Distribute Jackpot',
@@ -105,7 +106,7 @@ function RoundActions({ round }: { round: Address }) {
 			</Dialog>
 		);
 	};
-	if (actions.length === 0 || data === 9) {
+	if (actions.length === 0 || data === RoundStatus.ENDED_WITHOUT_BETS) {
 		return renderDialog();
 	}
 

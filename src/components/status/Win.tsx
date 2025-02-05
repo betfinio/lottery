@@ -1,6 +1,6 @@
 import { useRoundStatus, useTicketClaimed, useTicketResult, useTicketWinAmount } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
-import type { IRoundTicket } from '@/src/lib/types';
+import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge } from '@betfinio/components/ui';
 import { LoaderIcon } from 'lucide-react';
@@ -15,7 +15,7 @@ function Win({ ticket }: { ticket: IRoundTicket }) {
 	const handleClaim = () => {
 		claim({ ticket: ticket.betAddress });
 	};
-	if (!isPending && result[0] > 0n && roundStatus === 4) {
+	if (!isPending && result[0] > 0n && roundStatus === RoundStatus.CLAIMING) {
 		return (
 			<div className={'flex flex-row items-center gap-2'}>
 				{claimedAmount > 0n && <BetValue className="text-sm" value={claimedAmount} withIcon iconClassName="w-3 h-3" />}

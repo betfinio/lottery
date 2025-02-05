@@ -42,7 +42,7 @@ export const useMultiAllowance = (address?: Address) => {
 
 export const useRoundStatus = (round: Address) => {
 	const config = useConfig();
-	return useQuery<number>({
+	return useQuery({
 		queryKey: ['lottery', 'round', round, 'status'],
 		queryFn: () => fetchRoundStatus(round, config),
 	});

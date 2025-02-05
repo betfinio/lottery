@@ -1,6 +1,6 @@
 import { useRoundStatus, useTicketClaimed, useTicketStatus, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
-import type { IRoundTicket } from '@/src/lib/types';
+import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { compareLines } from '@/src/lib/utils';
 import { Badge, Button } from '@betfinio/components/ui';
 
@@ -23,7 +23,7 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 		return <Badge variant="destructive">Lost</Badge>;
 	}
 	// if round is over and not claimed
-	if (roundStatus === 4 && winningLine && coef === 0 && status === 1n && allLinesCoef) {
+	if (roundStatus === RoundStatus.CLAIMING && winningLine && coef === 0 && status === 1n && allLinesCoef) {
 		return (
 			<Badge className="bg-muted/10 text-muted-foreground" onClick={handleClaim}>
 				Lost
@@ -31,7 +31,7 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 		);
 	}
 
-	if (status === 1n && roundStatus === 5) {
+	if (status === 1n && roundStatus === RoundStatus.WAITING_FOR_REQUEST) {
 		return <Badge className="bg-muted/10 text-muted-foreground">Waiting</Badge>;
 	}
 }
