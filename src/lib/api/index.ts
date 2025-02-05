@@ -4,7 +4,7 @@ import type { GTicket, ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { decodeLine, decodeLines, encodeLines } from '@/src/lib/utils';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
-import { type Config, readContract, simulateContract, writeContract } from '@wagmi/core';
+import { type Config, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 
 /**
@@ -283,4 +283,17 @@ export const fetchTicketWinAmount = async (ticket: Address, config: Config) => {
 		functionName: 'getResult',
 		args: [],
 	});
+};
+
+export const fetchLinesAvailability = async (round: Address, lines: ILine[], config: Config): Promise<boolean[]> => {
+	const encodedLines = encodeLines(lines);
+	const data = await multicall(config, {
+		contracts: encodedLines.map(({ symbol, numbers }) => ({
+			abi: LotteryRoundABI,
+			address: round,
+			functionName: 'isBitmapEmpty',
+			args: [encodeAbiParameters(parseAbiParameters(['uint8 symbol', 'uint32 numbers']), [symbol, numbers])],
+		})),
+	});
+	return data.map(({ result }) => result === true);
 };

@@ -62,8 +62,6 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
-	const is5Selected = numbers.length === 5;
-
 	return (
 		<motion.div
 			initial={{ rotateX: 90, top: 0 }}

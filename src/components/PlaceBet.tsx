@@ -1,13 +1,28 @@
-import { useActiveRounds, useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useActiveRounds, useDraftLines, useLinesAvailability, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
-import { Button, Calendar, Checkbox, Input, Popover, PopoverContent, PopoverTrigger, ScrollArea, Separator, SwitchComponent } from '@betfinio/components/ui';
+import {
+	Button,
+	Calendar,
+	Checkbox,
+	Input,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+	ScrollArea,
+	Separator,
+	SwitchComponent,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon } from 'lucide-react';
+import { AlertTriangleIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { useEffect, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
@@ -67,7 +82,6 @@ const PlaceBet = () => {
 			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
 		} else {
 			setSelectedRounds((prev) => [...prev, toggleRound]);
-			setVisibleRounds((prev) => [...prev, toggleRound]);
 		}
 	};
 
@@ -109,8 +123,8 @@ const PlaceBet = () => {
 			.filter((e) => e) as IRound[];
 
 		setSelectedRounds(selected);
-		const uniqueRounds = visibleRounds.filter((round) => selected.some((s) => s.address === round.address));
-		setVisibleRounds(uniqueRounds);
+		// append selected rounds to visible rounds, only unique
+		setVisibleRounds((prev) => [...prev, ...selected].filter((e, index, self) => index === self.findIndex((t) => t.address === e.address)));
 	};
 
 	const compare = (roundDates: Date[]) => (specific: Date) =>
@@ -133,7 +147,7 @@ const PlaceBet = () => {
 			<div className={'p-3 flex flex-col items-center gap-1'}>
 				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('title')}</h2>
 				<div className={'text-foreground flex flex-row gap-1 items-center'}>
-					<BetValue value={1500} withIcon /> {t('ticketPrice')}
+					<BetValue value={BigInt(lines.length) * ticketPrice} withIcon /> {t('ticketPrice')}
 				</div>
 			</div>
 			<Separator />
@@ -144,18 +158,12 @@ const PlaceBet = () => {
 				<ScrollArea className={cn('w-full', buyAnother ? 'h-72' : 'h-[300px]')}>
 					<div className={'flex flex-col gap-2'}>
 						{visibleRounds.map((date: IRound) => (
-							<div
+							<RoundInfo
 								key={date.address}
-								className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
-								onClick={() => handleToggle([date.address])}
-							>
-								<div className={'text-sm'}>{DateTime.fromSeconds(date.finish).toFormat('DD, T')}</div>
-								<Checkbox
-									checked={selectedRounds.find((e) => e.address === date.address) !== undefined}
-									onCheckedChange={() => handleToggle([date.address])}
-									className={'data-[state=checked]:bg-success data-[state=checked]:text-success-foreground data-[state=checked]:border-success'}
-								/>
-							</div>
+								round={date}
+								isSelected={selectedRounds.find((e) => e.address === date.address) !== undefined}
+								toggleSelect={handleToggle}
+							/>
 						))}
 					</div>
 				</ScrollArea>
@@ -206,4 +214,41 @@ const PlaceBet = () => {
 	);
 };
 
+export const RoundInfo: FC<{ round: IRound; isSelected: boolean; toggleSelect: (address: Address[]) => void }> = ({ round, isSelected, toggleSelect }) => {
+	const { data: draftLines = [] } = useDraftLines();
+	const { data: linesAvailability = [] } = useLinesAvailability(round.address, draftLines);
+	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
+	return (
+		<div
+			key={round.address}
+			className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
+			onClick={() => toggleSelect([round.address])}
+		>
+			<div className={'text-sm'}>{DateTime.fromSeconds(round.finish).toFormat('DD, T')}</div>
+			<div className={'flex flex-row gap-4 items-center'}>
+				{collisions.length > 0 && <CollisionIndicator index={collisions.map((e) => e.index)} />}
+				<Checkbox
+					checked={isSelected}
+					onCheckedChange={() => toggleSelect([round.address])}
+					className={'data-[state=checked]:bg-success w-4 h-4 data-[state=checked]:text-success-foreground data-[state=checked]:border-success'}
+				/>
+			</div>
+		</div>
+	);
+};
+
+const CollisionIndicator = ({ index }: { index: number[] }) => {
+	return (
+		<TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger>
+					<AlertTriangleIcon className={'w-4 h-4 text-destructive'} />
+				</TooltipTrigger>
+				<TooltipContent>
+					<div>Lines {index.join(', ')} are already taken</div>
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
+	);
+};
 export default PlaceBet;

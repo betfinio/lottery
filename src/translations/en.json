@@ -24,7 +24,7 @@
 	},
 	"placeBet": {
 		"title": "Select Dates",
-		"ticketPrice": "per line/draw",
+		"ticketPrice": "per draw",
 		"selectedDraws": "Future draws",
 		"openCalendar": "Open calendar",
 		"remove": "Remove",

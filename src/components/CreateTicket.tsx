@@ -75,7 +75,7 @@ const CreateTicket = () => {
 const TicketList = () => {
 	const { data: draftTickets = [], setTickets } = useDraftLines();
 	const { data: round } = useSelectedRound();
-	const { updateState } = useRoundState(round?.address);
+	const { state, updateState } = useRoundState(round?.address);
 
 	const updateTicket = (index: number, newTicket: ILine) => {
 		const updatedTickets = [...draftTickets];
@@ -144,14 +144,20 @@ const TicketList = () => {
 				/>
 
 				<footer className={cn('grid grid-cols-2 gap-2')}>
-					<Button variant={'outline'} className={'border-primary text-secondary-foreground gap-1'} onClick={handleAddLine}>
+					<Button
+						variant={'outline'}
+						className={cn('border-primary text-secondary-foreground gap-1', { 'col-span-2': state !== RoundState.FILLING })}
+						onClick={handleAddLine}
+					>
 						<PlusCircleIcon className={'w-4 h-4'} />
 						Add line
 					</Button>
-					<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0}>
-						Proceed ({filledLines.length} lines)
-						<ArrowRightIcon className={'w-4 h-4'} />
-					</Button>
+					{state === RoundState.FILLING && (
+						<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0}>
+							Proceed ({filledLines.length} lines)
+							<ArrowRightIcon className={'w-4 h-4'} />
+						</Button>
+					)}
 				</footer>
 			</div>
 		</AnimatePresence>
