@@ -6,6 +6,7 @@ import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
 import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import SharedLine from './shared/Line';
 
 export interface LineProps {
 	line: ILine;
@@ -121,21 +122,16 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 			>
 				{order}
 			</div>
-			<div className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}>
-				{sortedNumbers.map((number, index) => (
-					<NumberComponent key={index}>{number || '-'}</NumberComponent>
-				))}
-				+
-				<NumberComponent
-					isSymbol
-					className={cn('stroke-primary text-primary/30', {
-						'stroke-primary text-primary/30': symbolUnlocked,
-						'stroke-foreground text-foreground/30 grayscale': !symbolUnlocked,
-					})}
-				>
-					<SymbolElement symbol={ticket.symbol} />
-				</NumberComponent>
-			</div>
+
+			<SharedLine
+				line={ticket}
+				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}
+				symbolClassName={cn('stroke-primary text-primary/30', {
+					'stroke-primary text-primary/30': symbolUnlocked,
+					'stroke-foreground text-foreground/30 grayscale': !symbolUnlocked,
+				})}
+			/>
+
 			<div className={'relative h-5 z-[1]'}>
 				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-[2]'} />
 				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-[2]'} />

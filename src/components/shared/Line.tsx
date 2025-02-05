@@ -1,20 +1,67 @@
 import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
 import type { ILine } from '@/src/lib/types.ts';
+import { cn } from '@betfinio/components';
+import { AnimatePresence, motion } from 'framer-motion';
 
-function Line({ line }: { line: ILine }) {
+function SharedLine({
+	line,
+	numberClassName,
+	symbolClassName,
+	className,
+}: { line: ILine; numberClassName?: string; symbolClassName?: string; className?: string }) {
 	return (
-		<div className={'flex gap-2 items-center'}>
+		<div className={cn('flex gap-2 items-center', className)}>
 			{line.numbers
 				.sort((a, b) => a - b)
-				.map((number, index) => (
-					<NumberComponent key={index}>{number || '-'}</NumberComponent>
+				.map((number, index, array) => (
+					<NumberComponent key={index} className={cn(numberClassName, 'overflow-hidden')}>
+						<AnimatePresence mode="popLayout" custom={array[index]}>
+							<motion.div
+								key={number}
+								custom={array[index]}
+								initial={{
+									y: -20,
+								}}
+								animate={{
+									y: 0,
+								}}
+								exit={{
+									y: 20,
+								}}
+								transition={{
+									duration: 0.2,
+								}}
+							>
+								{number || '-'}
+							</motion.div>
+						</AnimatePresence>
+					</NumberComponent>
 				))}
 			+
-			<NumberComponent isSymbol>
-				<SymbolElement symbol={line.symbol} />
+			<NumberComponent isSymbol className={symbolClassName}>
+				<AnimatePresence mode="popLayout" custom={line.symbol}>
+					<motion.div
+						key={line.symbol}
+						custom={line.symbol}
+						initial={{
+							y: -20,
+						}}
+						animate={{
+							y: 0,
+						}}
+						exit={{
+							y: 20,
+						}}
+						transition={{
+							duration: 0.2,
+						}}
+					>
+						<SymbolElement symbol={line.symbol} />
+					</motion.div>
+				</AnimatePresence>
 			</NumberComponent>
 		</div>
 	);
 }
 
-export default Line;
+export default SharedLine;
