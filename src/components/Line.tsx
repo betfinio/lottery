@@ -6,7 +6,7 @@ import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
 import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
-import SharedLine from './shared/Line';
+import SharedLine from './shared/SharedLine';
 
 export interface LineProps {
 	line: ILine;

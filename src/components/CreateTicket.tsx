@@ -144,7 +144,7 @@ const TicketList = () => {
 							onEdit={(newTicket) => updateTicket(index, newTicket)}
 							onDelete={() => deleteTicket(index)}
 							symbolUnlocked={filledLines.length >= 3}
-							showDelete={filledLines.length > 1}
+							showDelete={draftTickets.length > 1}
 						/>
 					)}
 				/>

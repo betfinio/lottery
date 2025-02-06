@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDraftLines } from '../lib/query';
+import { useDraftLines, useLinesAvailability, useSelectedRound } from '../lib/query';
 import { isDuplicate, randomize } from '../lib/utils';
 
 const animationDuration = 1000;
@@ -23,6 +23,8 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
 	const { data: draftLines = [] } = useDraftLines();
+	const { data: round } = useSelectedRound();
+	const { data: availability, isFetched } = useLinesAvailability(round?.address, [{ numbers, symbol }], true);
 
 	useEffect(() => {
 		setNumbers(ticket.numbers);
@@ -79,8 +81,10 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 		if (actualNumbers.length > 5) return t('5numbers');
 		// validate duplicates
 		if (duplicates) return t('duplicates');
+		// validate availability
+		if (isFetched && availability && availability.length === 1 && availability[0] === false) return t('notAvailable');
 		return '';
-	}, [symbol, numbers, ticket]);
+	}, [symbol, numbers, ticket, availability]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
@@ -148,9 +152,26 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 					<div className="flex flex-row justify-center text-sm text-muted-foreground">The symbol activates with 3 filled lines</div>
 					<div className={'grid grid-cols-5 w-full gap-2'}>
 						{Array.from({ length: 5 }).map((_, index) => (
-							<div
+							<motion.div
 								key={index}
 								onClick={() => changeSymbol(index + 1)}
+								animate={
+									symbol === index + 1 && numbers.length === 5
+										? {
+												boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 2px hsl(var(--primary))'],
+												scale: [1, 1.2, 1],
+											}
+										: {
+												boxShadow: ['0 0 0 0 transparent', '0 0 0 0 transparent', '0 0 0 0 transparent'],
+												scale: [1, 1, 1],
+											}
+								}
+								transition={{
+									duration: 1.6,
+									times: [0, 0.5, 0.7],
+									ease: 'easeInOut',
+									repeat: 0,
+								}}
 								className={cn(
 									'aspect-[4/3] border-2  border-foreground/50 cursor-pointerbg-secondary/90 rounded-lg cursor-pointer flex items-center justify-center transition-all',
 									{
@@ -159,7 +180,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 								)}
 							>
 								<SymbolElement symbol={symbol === index + 1 ? symbol : index + 1} className={'text-2xl'} />
-							</div>
+							</motion.div>
 						))}
 					</div>
 				</div>

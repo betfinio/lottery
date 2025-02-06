@@ -3,7 +3,7 @@ import { useDraftLines } from '@/src/lib/query';
 import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { AnimatePresence, motion, useAnimation } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 function SharedLine({
 	line,
@@ -19,9 +19,14 @@ function SharedLine({
 	symbolUnlocked?: boolean;
 }) {
 	const symbolControls = useAnimation();
+	const { data: draftLines = [] } = useDraftLines();
+
+	const filledLines = useMemo(() => draftLines.filter((line) => line.numbers.every((n) => n !== 0)), [draftLines]);
+
+	const filled3 = useMemo(() => filledLines.length >= 3, [filledLines]);
 
 	useEffect(() => {
-		if (symbolUnlocked) {
+		if (symbolUnlocked && filled3) {
 			symbolControls.start({
 				scale: [1, 1.2, 1],
 				boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
@@ -31,8 +36,13 @@ function SharedLine({
 					ease: 'easeInOut',
 				},
 			});
+		} else {
+			symbolControls.start({
+				scale: 1,
+				boxShadow: '0 0 0 0 hsl(var(--primary))',
+			});
 		}
-	}, [symbolUnlocked]);
+	}, [symbolUnlocked, filled3]);
 
 	return (
 		<div className={cn('flex gap-2 items-center', className)}>

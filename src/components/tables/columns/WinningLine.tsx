@@ -1,4 +1,4 @@
-import Line from '@/src/components/shared/Line.tsx';
+import Line from '@/src/components/shared/SharedLine';
 import { useWinningLine } from '@/src/lib/query';
 import { useManualRequest } from '@/src/lib/query/mutations.ts';
 import type { Address } from 'viem';

@@ -25,7 +25,7 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { AlertTriangleIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon } from 'lucide-react';
+import { AlertTriangleIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -187,7 +187,7 @@ const PlaceBet = () => {
 					</Popover>
 					<Button variant={'outline'} className={'gap-1 border-primary text-secondary-foreground'} onClick={() => addMoreRound()}>
 						<PlusCircleIcon className={'w-4 h-4'} />
-						Add more
+						Add more draws
 					</Button>
 				</div>
 			</div>
