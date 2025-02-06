@@ -6,10 +6,12 @@ import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockOpenIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRoundState } from '../lib/gql/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';
+import Alert from './shared/Alert.tsx';
 import Pagination from './shared/Pagination';
 
 const CreateTicket = () => {
@@ -127,12 +129,37 @@ const TicketList = () => {
 					itemsPerPage={3}
 					additionalFooter={
 						<div className={'flex flex-row justify-between'}>
-							<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill" onClick={handleDeleteAll}>
-								<TrashIcon className="w-3.5 h-3.5 text-destructive" />
-							</Button>
-							<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill" onClick={handleRandomizeAll}>
-								<ShuffleIcon className="w-3.5 h-3.5 text-primary" />
-							</Button>
+							<Alert
+								onSuccess={handleDeleteAll}
+								trigger={
+									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+										<TrashIcon className="w-3.5 h-3.5 text-destructive" />
+									</Button>
+								}
+								storageKey="lottery-deleteAll"
+								isValid={filledLines.length > 1}
+							>
+								<div className="flex flex-col">
+									<div className="text-lg font-semibold">Do you really want to delete all draft lines?</div>
+									<div className="text-sm text-muted-foreground">This action cannot be undone</div>
+								</div>
+							</Alert>
+
+							<Alert
+								onSuccess={handleRandomizeAll}
+								trigger={
+									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+										<ShuffleIcon className="w-3.5 h-3.5 text-primary" />
+									</Button>
+								}
+								storageKey="lottery-randomizeAll"
+								isValid={filledLines.length > 0}
+							>
+								<div className="flex flex-col">
+									<div className="text-lg font-semibold">Do you want to randomize all lines?</div>
+									<div className="text-sm text-muted-foreground">This will replace all your current numbers</div>
+								</div>
+							</Alert>
 						</div>
 					}
 					className={'flex-grow'}
