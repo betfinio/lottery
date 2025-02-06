@@ -32,7 +32,7 @@ import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import { ETHSCAN } from '../globals';
-import { useRoundState } from '../lib/gql/state';
+import { useRoundState } from '../lib/query/state';
 
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });

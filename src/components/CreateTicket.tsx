@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockOpenIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRoundState } from '../lib/gql/state.ts';
+import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';
 import Alert from './shared/Alert.tsx';

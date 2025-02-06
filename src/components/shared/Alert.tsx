@@ -1,4 +1,4 @@
-import { useLocalStorage } from '@/src/lib/gql/state';
+import { useLocalStorage } from '@/src/lib/query/state';
 import {
 	AlertDialog,
 	AlertDialogAction,
