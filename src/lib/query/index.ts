@@ -12,7 +12,7 @@ import {
 	fetchTicketWinAmount,
 	fetchWinningLine,
 } from '@/src/lib/api';
-import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets, fetchRoundTicketsByPlayer } from '@/src/lib/gql';
+import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets, fetchPlayerRounds, fetchRoundTicketsByPlayer } from '@/src/lib/gql';
 import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -174,6 +174,13 @@ export const useRoundTicketsByPlayer = (round: Address, address: Address) => {
 	return useQuery<IRoundTicket[]>({
 		queryKey: ['lottery', 'round', round, 'tickets', address],
 		queryFn: () => fetchRoundTicketsByPlayer(round, address),
+	});
+};
+
+export const usePlayerRounds = (address?: Address) => {
+	return useQuery<IRound[]>({
+		queryKey: ['lottery', 'rounds', 'player', address],
+		queryFn: () => fetchPlayerRounds(address),
 	});
 };
 
