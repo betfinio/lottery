@@ -97,7 +97,7 @@ const PlaceBet = () => {
 		if (!recipient) return;
 		buyTicket({
 			lines,
-			recipient,
+			recipient: recipient?.toLowerCase() === ZeroAddress.toLowerCase() ? address : recipient,
 			rounds: selectedRounds.map((e) => e.address),
 		});
 	};
