@@ -64,3 +64,9 @@ query GetPlayerTicketByRound($round: Bytes, $player: Bytes) {
 		...Ticket
 	}
 }
+
+query GetRoundDetails($round: Bytes!) {
+	rounds(where: { round: $round }) {
+		...Round
+	}
+}

@@ -7,10 +7,13 @@ import {
 	type GetPlayerRoundsQuery,
 	GetPlayerTicketByRoundDocument,
 	type GetPlayerTicketByRoundQuery,
+	GetRoundDetailsDocument,
+	type GetRoundDetailsQuery,
 	GetTicketsDocument,
 	type GetTicketsQuery,
 	type Line,
 	type Round,
+	type RoundFragment,
 	type Ticket,
 	execute,
 } from '@/.graphclient';
@@ -84,7 +87,7 @@ export const fetchOldTickets = async (address?: Address): Promise<IRoundTicket[]
 	return [];
 };
 
-const populateRound = (round: Pick<Round, 'id' | 'round' | 'timestamp' | 'bank' | 'blockNumber' | 'ticketPrice' | 'ticketsCount' | 'linesCount'>): IRound => {
+const populateRound = (round: RoundFragment): IRound => {
 	return {
 		address: round.round.toLowerCase() as Address,
 		finish: Number(round.timestamp),
@@ -119,4 +122,12 @@ export const fetchRoundTicketsByPlayer = async (round: Address, address: Address
 		return result.data.tickets.map(populateTickets);
 	}
 	return [];
+};
+
+export const fetchRoundDetails = async (round: Address) => {
+	const result: ExecutionResult<GetRoundDetailsQuery> = await execute(GetRoundDetailsDocument, { round: round });
+	logger.success('fetched round details', result.data?.rounds);
+	if (result.data) {
+		return result.data.rounds.map(populateRound)[0];
+	}
 };

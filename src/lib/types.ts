@@ -50,3 +50,10 @@ export enum RoundStatus {
 	REFUNDING = 8,
 	ENDED_WITHOUT_BETS = 9,
 }
+
+export interface JackpotCombination {
+	player: Address;
+	bet: Address;
+	winAmount: bigint;
+	ticketNumber: number;
+}

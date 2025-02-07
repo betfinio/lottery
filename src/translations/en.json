@@ -91,5 +91,16 @@
 			"title": "Transaction failed",
 			"LR01": "Ticket with selected combination already exists!"
 		}
+	},
+	"round": {
+		"drawId": "Draw ID",
+		"totalBets": "Total bets",
+		"luckyNumbers": "Lucky numbers",
+		"lines": "lines",
+		"paidToStaking": "Paid to staking",
+		"betId": "Bet ID",
+		"ticketOwner": "Ticket owner",
+		"ticketNumber": "Ticket number",
+		"ticketWinning": "Ticket winning"
 	}
 }

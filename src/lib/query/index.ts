@@ -12,9 +12,18 @@ import {
 	fetchTicketWinAmount,
 	fetchWinningLine,
 } from '@/src/lib/api';
-import { fetchActiveRounds, fetchActiveTickets, fetchOldRounds, fetchOldTickets, fetchPlayerRounds, fetchRoundTicketsByPlayer } from '@/src/lib/gql';
+import {
+	fetchActiveRounds,
+	fetchActiveTickets,
+	fetchOldRounds,
+	fetchOldTickets,
+	fetchPlayerRounds,
+	fetchRoundDetails,
+	fetchRoundTicketsByPlayer,
+} from '@/src/lib/gql';
 import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import type { Address } from 'viem';
 import { useConfig } from 'wagmi';
@@ -190,5 +199,18 @@ export const useLinesAvailability = (round: Address, lines: ILine[], enabled: bo
 		queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'],
 		queryFn: () => fetchLinesAvailability(round, lines, config),
 		enabled,
+	});
+};
+
+export const useGetRoundFromParams = () => {
+	const { round } = useParams({ from: '/games/lottery/lotto/$round' });
+
+	return round as Address;
+};
+
+export const useRoundDetails = (round: Address) => {
+	return useQuery({
+		queryKey: ['lottery', 'details', 'round', round],
+		queryFn: () => fetchRoundDetails(round),
 	});
 };

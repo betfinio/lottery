@@ -1,4 +1,5 @@
 import type { GTicket, ILine } from '@/src/lib/types.ts';
+import { DateTime } from 'luxon';
 
 export interface TimeDiff {
 	days: number;
@@ -98,3 +99,18 @@ export const isDuplicate = (lines: ILine[]): boolean => {
 		lines.some((l: ILine) => l !== line && l.symbol === line.symbol && [...l.numbers].sort().join(',') === [...line.numbers].sort().join(',')),
 	);
 };
+
+export const getTimeFromSeconds = (seconds: number) => {
+	return DateTime.fromSeconds(seconds).toFormat('DD, T');
+};
+
+export const COMBINATIONS_MAP = Object.freeze({
+	'5+1': { coeficient: 40_000, combination: '5 + 1' },
+	'5': { coeficient: 15_000, combination: '5' },
+	'4+1': { coeficient: 400, combination: '4 + 1' },
+	'4': { coeficient: 50, combination: '4' },
+	'3+1': { coeficient: 5, combination: '3 + 1' },
+	'3': { coeficient: 1, combination: '3' },
+	'2+1': { coeficient: 1, combination: '2 + 1' },
+	'0': { coeficient: 0, combination: '0' },
+} as const);

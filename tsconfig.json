@@ -18,5 +18,5 @@
 			"@/*": ["./*"]
 		}
 	},
-	"include": ["src"]
+	"include": ["src", "src/components/icons/index.ts"]
 }
