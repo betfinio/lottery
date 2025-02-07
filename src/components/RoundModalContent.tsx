@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
 import { useLinesCount, useRoundFinish, useRoundTicketsByPlayer, useTicketPrice } from '../lib/query';
-import TicketIcon from './icons/ticket';
+import TicketIcon from './icons/Ticket';
 import TicketsList from './tabs/TicketsList';
 
 function RoundModalContent({ round }: { round: Address }) {
