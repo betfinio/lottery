@@ -9,6 +9,8 @@ import {
 	type GetPlayerTicketByRoundQuery,
 	GetRoundDetailsDocument,
 	type GetRoundDetailsQuery,
+	GetRoundJackpotsDocument,
+	type GetRoundJackpotsQuery,
 	GetTicketsDocument,
 	type GetTicketsQuery,
 	type Line,
@@ -130,4 +132,11 @@ export const fetchRoundDetails = async (round: Address) => {
 	if (result.data) {
 		return result.data.rounds.map(populateRound)[0];
 	}
+};
+
+export const fetchRoundJackpots = async (round: Address) => {
+	console.log(round);
+	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, { round: round });
+	console.log(result.data);
+	return result.data;
 };
