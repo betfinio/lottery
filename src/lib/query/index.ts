@@ -17,6 +17,7 @@ import {
 	fetchActiveTickets,
 	fetchOldRounds,
 	fetchOldTickets,
+	fetchPlayerRounds,
 	fetchRoundDetails,
 	fetchRoundJackpots,
 	fetchRoundTicketsByPlayer,
@@ -183,6 +184,13 @@ export const useRoundTicketsByPlayer = (round: Address, address: Address) => {
 	return useQuery<IRoundTicket[]>({
 		queryKey: ['lottery', 'round', round, 'tickets', address],
 		queryFn: () => fetchRoundTicketsByPlayer(round, address),
+	});
+};
+
+export const usePlayerRounds = (address?: Address) => {
+	return useQuery<IRound[]>({
+		queryKey: ['lottery', 'rounds', 'player', address],
+		queryFn: () => fetchPlayerRounds(address),
 	});
 };
 

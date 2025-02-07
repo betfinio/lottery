@@ -3,6 +3,8 @@ import {
 	type GetActiveRoundsQuery,
 	GetOldRoundsDocument,
 	type GetOldRoundsQuery,
+	GetPlayerRoundsDocument,
+	type GetPlayerRoundsQuery,
 	GetPlayerTicketByRoundDocument,
 	type GetPlayerTicketByRoundQuery,
 	GetRoundDetailsDocument,
@@ -55,6 +57,20 @@ export const fetchActiveTickets = async (address?: Address): Promise<IRoundTicke
 	logger.success('fetched tickets', result.data?.active, result.data?.old);
 	if (result.data) {
 		return result.data.active.map(populateTickets);
+	}
+	return [];
+};
+
+export const fetchPlayerRounds = async (address?: Address): Promise<IRound[]> => {
+	if (!address || address === ZeroAddress) {
+		return [];
+	}
+	logger.start('fetching player rounds');
+	const now = BigInt(Math.floor(Date.now() / 1000));
+	const result: ExecutionResult<GetPlayerRoundsQuery> = await execute(GetPlayerRoundsDocument, { now: now.toString(), player: address });
+	logger.success('fetched player rounds', result.data?.rounds);
+	if (result.data) {
+		return result.data.rounds.map(populateRound);
 	}
 	return [];
 };

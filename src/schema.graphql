@@ -44,6 +44,12 @@ fragment Ticket on Ticket {
   symbolUnlocked
 }
 
+query GetPlayerRounds($player: Bytes, $now: BigInt) {
+	rounds(where: { tickets_: { owner: $player } }, orderBy: timestamp, orderDirection: desc) {
+		...Round
+	}
+}
+
 query GetTickets($player: Bytes, $now: BigInt) {
   active: tickets(
     where: { owner: $player, round_: { timestamp_gte: $now } }

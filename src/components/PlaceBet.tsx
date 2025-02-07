@@ -273,7 +273,6 @@ export const RoundInfo: FC<{
 	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
 	return (
 		<div
-			key={round.address}
 			className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
 			onClick={() => toggleSelect([round.address])}
 		>

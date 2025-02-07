@@ -189,7 +189,11 @@ const TicketList = () => {
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<Button className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
+									<Button
+										className="gap-1"
+										onClick={handleProceed}
+										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length}
+									>
 										Proceed ({filledLines.length} lines)
 										<ArrowRightIcon className={'w-4 h-4'} />
 									</Button>
@@ -197,6 +201,11 @@ const TicketList = () => {
 								{duplicates && (
 									<TooltipContent>
 										<div>You cannot proceed with duplicate lines</div>
+									</TooltipContent>
+								)}
+								{filledLines.length !== draftTickets.length && (
+									<TooltipContent>
+										<div>You must fill all lines</div>
 									</TooltipContent>
 								)}
 							</Tooltip>
