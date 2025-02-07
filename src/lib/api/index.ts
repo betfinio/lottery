@@ -290,6 +290,26 @@ export const fetchTicketWinAmount = async (ticket: Address, config: Config) => {
 	});
 };
 
+export const fetchAdditionalJackpot = async (config: Config) => {
+	return readContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'additionalJackpot',
+		args: [],
+	});
+};
+
+export const fetchPotentialJackpot = async (round: Address, config: Config) => {
+	// 4% of the balance of the round
+	const balance = await readContract(config, {
+		abi: TokenABI,
+		address: TOKEN,
+		functionName: 'balanceOf',
+		args: [round],
+	});
+	return (balance * BigInt(4)) / BigInt(100);
+};
+
 export const fetchLinesAvailability = async (round: Address, lines: ILine[], config: Config): Promise<boolean[]> => {
 	logger.start('fetchLinesAvailability:', round);
 	const encodedLines = encodeLines(lines);

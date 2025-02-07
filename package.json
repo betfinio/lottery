@@ -15,7 +15,7 @@
 		"build:schema:prod": "dotenv -e .env.production.local -- graphclient build"
 	},
 	"dependencies": {
-		"@betfinio/abi": "^2.3.4",
+		"@betfinio/abi": "^2.4.0",
 		"@betfinio/components": "^1.5.11",
 		"@module-federation/enhanced": "^0.8.9",
 		"@tailwindcss/postcss": "^4.0.3",

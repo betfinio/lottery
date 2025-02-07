@@ -4,7 +4,7 @@
     "": {
       "name": "@betfinio/lottery",
       "dependencies": {
-        "@betfinio/abi": "^2.3.4",
+        "@betfinio/abi": "^2.4.0",
         "@betfinio/components": "^1.5.11",
         "@module-federation/enhanced": "^0.8.9",
         "@tailwindcss/postcss": "^4.0.3",
@@ -212,7 +212,7 @@
 
     "@babel/types": ["@babel/types@7.26.7", "", { "dependencies": { "@babel/helper-string-parser": "^7.25.9", "@babel/helper-validator-identifier": "^7.25.9" } }, "sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg=="],
 
-    "@betfinio/abi": ["@betfinio/abi@2.3.4", "https://npm.pkg.github.com/download/@betfinio/abi/2.3.4/f9978cde011009ed033953e84cc0c5d0a6be90c6", { "dependencies": { "viem": "^2.22.10" } }, "sha512-QPVxFVN/QmC6yBrtzjzxvXp3xXuBhC6hJxyH6jMrZ77HirjrLNeeWn+inMHo5pJQ4ixLa36nkKyfW/RgbPTKGg=="],
+    "@betfinio/abi": ["@betfinio/abi@2.4.0", "https://npm.pkg.github.com/download/@betfinio/abi/2.4.0/2fd38934189b833ff920a32e8e67c48984727c43", { "dependencies": { "viem": "^2.22.10" } }, "sha512-3EZ1ErD4U/TBazT8a6kyy6SMBvDrDKhXKp/Z3g4Ihb6+iLThDPe02k4G5/c/ueSbAPY0Oe1VUKHnSp4Y88QePQ=="],
 
     "@betfinio/components": ["@betfinio/components@1.5.11", "https://npm.pkg.github.com/download/@betfinio/components/1.5.11/3cf00c1540a15bc8f373446c7a5bcc5db379c6e0", { "dependencies": { "@betfinio/abi": "^2.3.3", "@betfinio/ui": "^1.0.11", "@radix-ui/react-accordion": "^1.2.2", "@radix-ui/react-alert-dialog": "^1.1.5", "@radix-ui/react-checkbox": "^1.1.3", "@radix-ui/react-dialog": "^1.1.4", "@radix-ui/react-dropdown-menu": "^2.1.4", "@radix-ui/react-popover": "^1.1.4", "@radix-ui/react-progress": "^1.1.1", "@radix-ui/react-radio-group": "^1.2.2", "@radix-ui/react-scroll-area": "^1.2.2", "@radix-ui/react-select": "^2.1.4", "@radix-ui/react-separator": "^1.1.1", "@radix-ui/react-slider": "^1.2.2", "@radix-ui/react-slot": "^1.1.1", "@radix-ui/react-switch": "^1.1.2", "@radix-ui/react-tabs": "^1.1.2", "@radix-ui/react-toast": "^1.2.4", "@radix-ui/react-toggle": "^1.1.1", "@radix-ui/react-toggle-group": "^1.1.1", "@radix-ui/react-tooltip": "^1.1.6", "@tanstack/react-table": "^8.20.6", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "cmdk": "^1.0.4", "date-fns": "^4.1.0", "embla-carousel-react": "^8.5.2", "framer-motion": "^12.0.0", "lucide-react": "^0.469.0", "millify": "^6.1.0", "react-day-picker": "8.10.1", "react-i18next": "^15.4.0", "react-responsive": "^10.0.0", "tailwind-merge": "^2.6.0", "vaul": "^1.1.2" }, "peerDependencies": { "react": "^18.3.1", "react-dom": "^18.3.1" } }, "sha512-MDBaEl8xSVmeJY+A8pwvz80ggJpnAPq6xB3ZuAuOvD5paxIGM/q4O1YuBuoRI1VkbMglmRb6GhQ8jNrxF04xyw=="],
 
@@ -2401,6 +2401,8 @@
     "@aws-crypto/sha256-browser/@smithy/util-utf8": ["@smithy/util-utf8@2.3.0", "", { "dependencies": { "@smithy/util-buffer-from": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A=="],
 
     "@aws-crypto/util/@smithy/util-utf8": ["@smithy/util-utf8@2.3.0", "", { "dependencies": { "@smithy/util-buffer-from": "^2.2.0", "tslib": "^2.6.2" } }, "sha512-R8Rdn8Hy72KKcebgLiv8jQcQkXoLMOGGv5uI1/k0l+snqkOzQ1R0ChUBCxWMlBsFMekWjq0wRudIweFs7sKT5A=="],
+
+    "@betfinio/components/@betfinio/abi": ["@betfinio/abi@2.3.4", "https://npm.pkg.github.com/download/@betfinio/abi/2.3.4/f9978cde011009ed033953e84cc0c5d0a6be90c6", { "dependencies": { "viem": "^2.22.10" } }, "sha512-QPVxFVN/QmC6yBrtzjzxvXp3xXuBhC6hJxyH6jMrZ77HirjrLNeeWn+inMHo5pJQ4ixLa36nkKyfW/RgbPTKGg=="],
 
     "@betfinio/components/lucide-react": ["lucide-react@0.469.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-28vvUnnKQ/dBwiCQtwJw7QauYnE7yd2Cyp4tTTJpvglX4EMpbflcdBgrgToX2j71B3YvugK/NH3BGUk+E/p/Fw=="],
 
