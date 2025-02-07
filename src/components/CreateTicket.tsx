@@ -189,7 +189,7 @@ const TicketList = () => {
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger>
-									<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
+									<Button className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
 										Proceed ({filledLines.length} lines)
 										<ArrowRightIcon className={'w-4 h-4'} />
 									</Button>

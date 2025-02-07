@@ -25,7 +25,7 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { AlertTriangleIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
+import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ const PlaceBet = () => {
 	const { data: lines = [] } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
-	const { address } = useAccount();
+	const { address = ZeroAddress } = useAccount();
 	const { data: multiAllowance = 0n } = useMultiAllowance(address);
 
 	// Mutations
@@ -50,10 +50,10 @@ const PlaceBet = () => {
 	const { mutate: unlock, isPending: isPendingUnlock } = useUnlockMultibet();
 
 	// State
-	const [recipient, setRecipient] = useState<Address | undefined>(address);
+	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
 	const [selectedRounds, setSelectedRounds] = useState<IRound[]>([]);
 	const [visibleRounds, setVisibleRounds] = useState<IRound[]>([]);
-	const { state } = useRoundState(round?.address);
+	const { state, updateState } = useRoundState(round?.address);
 	const [newRecipientDialogOpen, setNewRecipientDialogOpen] = useState(false);
 
 	// Effects
@@ -133,12 +133,18 @@ const PlaceBet = () => {
 		setNewRecipientDialogOpen(false);
 	};
 	const handleNewRecipientDialogOpenChange = (open: boolean) => {
-		if (open && recipient?.toLowerCase() !== address?.toLowerCase()) {
+		if (open && recipient?.toLowerCase() !== address?.toLowerCase() && recipient !== ZeroAddress) {
 			setRecipient(address);
 			return;
 		}
 		setNewRecipientDialogOpen(open);
 	};
+
+	const handleBackToLines = () => {
+		updateState(RoundState.FILLING);
+	};
+
+	console.log(recipient, address);
 
 	// Early returns
 	if (rounds.length < 2) {
@@ -197,10 +203,13 @@ const PlaceBet = () => {
 					<DialogTrigger asChild>
 						<div className={'flex items-center justify-between w-full gap-2 text-sm '}>
 							<div className={'flex flex-row gap-2 items-center'}>
-								<SwitchComponent checked={recipient !== address} />
+								<SwitchComponent
+									onCheckedChange={handleNewRecipientDialogOpenChange}
+									checked={recipient?.toLowerCase() !== address?.toLowerCase() && recipient !== ZeroAddress}
+								/>
 								{t('buyForSomeone')}
 							</div>
-							{recipient && recipient.toLowerCase() !== address?.toLowerCase() && (
+							{recipient && recipient.toLowerCase() !== address?.toLowerCase() && recipient !== ZeroAddress && (
 								<a
 									href={`${ETHSCAN}/address/${recipient}`}
 									onClick={(e) => e.stopPropagation()}
@@ -217,28 +226,48 @@ const PlaceBet = () => {
 						<NewRecipientDialog onSave={handleSaveRecipient} onCancel={() => setNewRecipientDialogOpen(false)} />
 					</DialogContent>
 				</Dialog>
-				{multiAllowance > totalAmount ? (
-					<Button variant={'default'} className={'w-full gap-1'} onClick={handleBuyTicket} disabled={isPending || totalAmount === 0n || !isValidRecipient}>
-						<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
-							<LoaderIcon className={'w-4 h-4 animate-spin'} />
-						</motion.div>
-						{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border rounded-full border-primary-foreground'} />
+				<div className="w-full grid grid-cols-3 gap-2">
+					<Button
+						variant={'outline'}
+						className={cn('gap-1 px-4 w-auto md:hidden', state === RoundState.FILLING && 'hidden')}
+						onClick={handleBackToLines}
+						size={'icon'}
+					>
+						<ArrowLeftIcon className={'w-4 h-4'} />
+						Back
 					</Button>
-				) : (
-					<Button variant={'default'} className={'w-full gap-1'} onClick={handleUnlock} disabled={isPendingUnlock}>
-						<motion.div initial={{ scale: 0 }} animate={{ scale: isPendingUnlock ? 1 : 0 }} exit={{ scale: 0 }}>
-							<LoaderIcon className={'w-4 h-4 animate-spin'} />
-						</motion.div>
-						<LockIcon className={'w-4 h-4'} />
-						{t('unlockMultiBet')}
-					</Button>
-				)}
+					{multiAllowance > totalAmount ? (
+						<Button
+							variant={'default'}
+							className={'w-full gap-1 md:col-span-3 col-span-2'}
+							onClick={handleBuyTicket}
+							disabled={isPending || totalAmount === 0n || !isValidRecipient}
+						>
+							<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
+								<LoaderIcon className={'w-4 h-4 animate-spin'} />
+							</motion.div>
+							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border rounded-full border-primary-foreground'} />
+						</Button>
+					) : (
+						<Button variant={'default'} className={'w-full gap-1 md:col-span-3 col-span-2'} onClick={handleUnlock} disabled={isPendingUnlock}>
+							<motion.div initial={{ scale: 0 }} animate={{ scale: isPendingUnlock ? 1 : 0 }} exit={{ scale: 0 }}>
+								<LoaderIcon className={'w-4 h-4 animate-spin'} />
+							</motion.div>
+							<LockIcon className={'w-4 h-4'} />
+							{t('unlockMultiBet')}
+						</Button>
+					)}
+				</div>
 			</div>
 		</motion.div>
 	);
 };
 
-export const RoundInfo: FC<{ round: IRound; isSelected: boolean; toggleSelect: (address: Address[]) => void }> = ({ round, isSelected, toggleSelect }) => {
+export const RoundInfo: FC<{
+	round: IRound;
+	isSelected: boolean;
+	toggleSelect: (address: Address[]) => void;
+}> = ({ round, isSelected, toggleSelect }) => {
 	const { data: draftLines = [] } = useDraftLines();
 	const { data: linesAvailability = [], isLoading } = useLinesAvailability(round.address, draftLines, isSelected);
 	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
