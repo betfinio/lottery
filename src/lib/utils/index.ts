@@ -50,9 +50,9 @@ export const randomize = (): ILine => {
 export const equals = (a: ILine, b: ILine): boolean => {
 	return a.symbol === b.symbol && a.numbers.length === b.numbers.length && a.numbers.every((n, i) => n === b.numbers[i]);
 };
-
 export const partlyEquals = (a: ILine, b: ILine, numberIndex: number): boolean => {
-	return a.numbers.sort((a, b) => a - b)[numberIndex] === b.numbers.sort((a, b) => a - b)[numberIndex];
+	const sortedA = [...a.numbers].sort((a, b) => a - b);
+	return b.numbers.includes(sortedA[numberIndex]);
 };
 
 export const compareLines = (a: ILine, b: ILine): number => {

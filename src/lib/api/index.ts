@@ -267,6 +267,12 @@ export const claimTicket = async (ticket: Address, config: Config) => {
 		functionName: 'getTokenId',
 		args: [],
 	});
+	await simulateContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'claim',
+		args: [token],
+	});
 	return writeContract(config, {
 		abi: LotteryABI,
 		address: LOTTERY_ADDRESS,
