@@ -1,7 +1,10 @@
+import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
 import { Accordion } from '@betfinio/components/ui';
 import { RoundJackpotRow } from './RoundJackpotRow';
 import { JACKPOTS } from './constants';
 export const RoundJackpots = () => {
+	const round = useGetRoundFromParams();
+	const { data } = useRoundJackpots(round);
 	return (
 		<div>
 			<div className="flex gap-4 items-center px-6 py-2">

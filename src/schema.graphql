@@ -1,66 +1,122 @@
 query GetActiveRounds($now: BigInt) {
-	rounds(first: 100, where: { timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
-		...Round
-	}
+  rounds(first: 100, where: { timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
+    ...Round
+  }
 }
 
 query GetOldRounds($now: BigInt) {
-	rounds(first: 1000, where: { timestamp_lte: $now }, orderBy: timestamp, orderDirection: desc) {
-		...Round
-	}
+  rounds(first: 1000, where: { timestamp_lte: $now }, orderBy: timestamp, orderDirection: desc) {
+    ...Round
+  }
 }
 
 fragment Round on Round {
-	id
-	round
-	timestamp
-	blockNumber
-	ticketPrice
-	ticketsCount
-	linesCount
-	bank
+  id
+  round
+  timestamp
+  blockNumber
+  ticketPrice
+  ticketsCount
+  linesCount
+  bank
 }
 
 fragment Ticket on Ticket {
-	id
-	owner
-	tokenId
-	round {
-		id
-		round
-		timestamp
-		blockNumber
-	}
-	betAddress
-	lines {
-		id
-		numbers
-		symbol
-	}
-	linesCount
-	created
-	updated
-	amount
-	symbolUnlocked
+  id
+  owner
+  tokenId
+  round {
+    id
+    round
+    timestamp
+    blockNumber
+  }
+  betAddress
+  lines {
+    id
+    numbers
+    symbol
+  }
+  linesCount
+  created
+  updated
+  amount
+  symbolUnlocked
 }
 
 query GetTickets($player: Bytes, $now: BigInt) {
-	active: tickets(where: { owner: $player, round_: { timestamp_gte: $now } }, orderBy: round__timestamp, orderDirection: asc) {
-		...Ticket
-	}
-	old: tickets(where: { owner: $player, round_: { timestamp_lt: $now } }, orderBy: round__timestamp, orderDirection: desc) {
-		...Ticket
-	}
+  active: tickets(
+    where: { owner: $player, round_: { timestamp_gte: $now } }
+    orderBy: round__timestamp
+    orderDirection: asc
+  ) {
+    ...Ticket
+  }
+  old: tickets(
+    where: { owner: $player, round_: { timestamp_lt: $now } }
+    orderBy: round__timestamp
+    orderDirection: desc
+  ) {
+    ...Ticket
+  }
 }
 
 query GetPlayerTicketByRound($round: Bytes, $player: Bytes) {
-	tickets(where: { round_: { round: $round }, owner: $player }, orderBy: created, orderDirection: desc) {
-		...Ticket
-	}
+  tickets(where: { round_: { round: $round }, owner: $player }, orderBy: created, orderDirection: desc) {
+    ...Ticket
+  }
 }
 
 query GetRoundDetails($round: Bytes!) {
-	rounds(where: { round: $round }) {
-		...Round
-	}
+  rounds(where: { round: $round }) {
+    ...Round
+  }
+}
+
+fragment Jackpot on Jackpot {
+  id
+  round {
+    isAllClaimed
+  }
+  combination
+  claimed
+ 
+  tickets {
+    tokenId
+	owner
+	betAddress
+    lines(where: { claimed_gt: 0 }) {
+      symbol
+      numbers
+      claimed
+      combination
+    }
+  }
+}
+
+
+
+
+query GetRoundJackpots($round: String!) {
+  jackpot1:jackpots(where: { round: $round, combination: "0x352b31" }) {
+    ...Jackpot
+  }
+  jackpot2:jackpots(where: { round: $round, combination: "0x35" }) {
+    ...Jackpot
+  }
+  jackpot3:jackpots(where: { round: $round, combination: "0x342b31" }) {
+    ...Jackpot
+  }
+  jackpot4:jackpots(where: { round: $round, combination: "0x34" }) {
+    ...Jackpot
+  }
+  jackpot5:jackpots(where: { round: $round, combination: "0x332b31" }) {
+    ...Jackpot
+  }
+  jackpot6:jackpots(where: { round: $round, combination: "0x33" }) {
+    ...Jackpot
+  }
+  jackpot7:jackpots(where: { round: $round, combination: "0x322b31" }) {
+    ...Jackpot
+  }
 }

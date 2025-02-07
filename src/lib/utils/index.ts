@@ -114,3 +114,23 @@ export const COMBINATIONS_MAP = Object.freeze({
 	'2+1': { coeficient: 1, combination: '2 + 1' },
 	'0': { coeficient: 0, combination: '0' },
 } as const);
+
+export const COMBINATIONS_HEX_MAP = Object.freeze({
+	'0x322b31': '2+1',
+	'0x33': '3',
+	'0x332b31': '3+1',
+	'0x34': '4',
+	'0x342b31': '4+1',
+	'0x35': '5',
+	'0x352b31': '5+1',
+} as const);
+
+export const COMBINATIONS_HEX_MAP_REVERSED = Object.freeze({
+	'2+1': '0x322b31',
+	'3': '0x33',
+	'3+1': '0x332b31',
+	'4': '0x34',
+	'4+1': '0x342b31',
+	'5': '0x35',
+	'5+1': '0x352b31',
+} as const);
