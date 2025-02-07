@@ -11,7 +11,8 @@
 			"remaining": "{count} numbers remaining",
 			"unique": "Numbers must be unique",
 			"1to25": "Numbers must be between 1 and 25",
-			"duplicates": "Line with same numbers and symbol already exists"
+			"duplicates": "Line with same numbers and symbol already exists",
+			"notAvailable": "Line already taken for the next draw"
 		}
 	},
 	"tables": {

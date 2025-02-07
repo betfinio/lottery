@@ -157,7 +157,6 @@ export const manualRequest = async (round: Address, config: Config) => {
 };
 
 export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
-	console.log(ticket);
 	const encodedLines = encodeLines(ticket.lines);
 	await simulateContract(config, {
 		abi: LotteryABI,
@@ -267,6 +266,12 @@ export const claimTicket = async (ticket: Address, config: Config) => {
 		address: ticket,
 		functionName: 'getTokenId',
 		args: [],
+	});
+	await simulateContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'claim',
+		args: [token],
 	});
 	return writeContract(config, {
 		abi: LotteryABI,

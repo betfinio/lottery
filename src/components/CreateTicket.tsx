@@ -6,10 +6,12 @@ import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockOpenIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRoundState } from '../lib/gql/state.ts';
+import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';
+import Alert from './shared/Alert.tsx';
 import Pagination from './shared/Pagination';
 
 const CreateTicket = () => {
@@ -23,7 +25,7 @@ const CreateTicket = () => {
 	const symbolUnlocked = filledLines.length >= 3;
 
 	return (
-		<motion.section
+		<section
 			className={cn('w-full md:h-full border border-border rounded-xl p-3 bg-background-light relative h-[593px] flex flex-col justify-between', {
 				'border-2 border-primary/70 create-shadow': state === RoundState.FILLING,
 			})}
@@ -71,7 +73,7 @@ const CreateTicket = () => {
 			<div className={'flex flex-col flex-grow'}>
 				<TicketList />
 			</div>
-		</motion.section>
+		</section>
 	);
 };
 
@@ -127,12 +129,37 @@ const TicketList = () => {
 					itemsPerPage={3}
 					additionalFooter={
 						<div className={'flex flex-row justify-between'}>
-							<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill" onClick={handleDeleteAll}>
-								<TrashIcon className="w-3.5 h-3.5 text-destructive" />
-							</Button>
-							<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill" onClick={handleRandomizeAll}>
-								<ShuffleIcon className="w-3.5 h-3.5 text-primary" />
-							</Button>
+							<Alert
+								onSuccess={handleDeleteAll}
+								trigger={
+									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+										<TrashIcon className="w-3.5 h-3.5 text-destructive" />
+									</Button>
+								}
+								storageKey="lottery-deleteAll"
+								isValid={filledLines.length > 1}
+							>
+								<div className="flex flex-col">
+									<div className="text-lg font-semibold">Do you really want to delete all draft lines?</div>
+									<div className="text-sm text-muted-foreground">This action cannot be undone</div>
+								</div>
+							</Alert>
+
+							<Alert
+								onSuccess={handleRandomizeAll}
+								trigger={
+									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+										<ShuffleIcon className="w-3.5 h-3.5 text-primary" />
+									</Button>
+								}
+								storageKey="lottery-randomizeAll"
+								isValid={filledLines.length > 0}
+							>
+								<div className="flex flex-col">
+									<div className="text-lg font-semibold">Do you want to randomize all lines?</div>
+									<div className="text-sm text-muted-foreground">This will replace all your current numbers</div>
+								</div>
+							</Alert>
 						</div>
 					}
 					className={'flex-grow'}
@@ -144,7 +171,7 @@ const TicketList = () => {
 							onEdit={(newTicket) => updateTicket(index, newTicket)}
 							onDelete={() => deleteTicket(index)}
 							symbolUnlocked={filledLines.length >= 3}
-							showDelete={filledLines.length > 1}
+							showDelete={draftTickets.length > 1}
 						/>
 					)}
 				/>
@@ -161,8 +188,8 @@ const TicketList = () => {
 					{state === RoundState.FILLING && (
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger>
-									<Button variant={'success'} className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
+								<TooltipTrigger asChild>
+									<Button className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
 										Proceed ({filledLines.length} lines)
 										<ArrowRightIcon className={'w-4 h-4'} />
 									</Button>
