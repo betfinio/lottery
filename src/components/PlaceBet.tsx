@@ -229,7 +229,7 @@ const PlaceBet = () => {
 				<div className="w-full grid grid-cols-3 gap-2">
 					<Button
 						variant={'outline'}
-						className={cn('gap-1 px-4 w-auto md:hidden', state === RoundState.FILLING && 'hidden')}
+						className={cn('gap-1 px-4 w-auto xl:hidden', state === RoundState.FILLING && 'hidden')}
 						onClick={handleBackToLines}
 						size={'icon'}
 					>
@@ -239,7 +239,7 @@ const PlaceBet = () => {
 					{multiAllowance > totalAmount ? (
 						<Button
 							variant={'default'}
-							className={'w-full gap-1 md:col-span-3 col-span-2'}
+							className={'w-full gap-1 xl:col-span-3 col-span-2'}
 							onClick={handleBuyTicket}
 							disabled={isPending || totalAmount === 0n || !isValidRecipient}
 						>

@@ -188,7 +188,7 @@ const TicketList = () => {
 					{state === RoundState.FILLING && (
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger>
+								<TooltipTrigger asChild>
 									<Button className="gap-1" onClick={handleProceed} disabled={filledLines.length === 0 || duplicates}>
 										Proceed ({filledLines.length} lines)
 										<ArrowRightIcon className={'w-4 h-4'} />

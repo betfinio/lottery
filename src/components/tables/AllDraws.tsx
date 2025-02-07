@@ -17,27 +17,36 @@ function AllDraws() {
 		columnHelper.accessor('address', {
 			header: t('headers.round'),
 			meta: {
-				className: 'h-[50px]',
+				className: 'h-[50px] min-w-[100px]',
 			},
 			cell: (props) => <Round address={props.getValue()} />,
 		}),
 		columnHelper.display({
 			header: t('headers.result'),
 			meta: {
-				className: 'w-[300px]',
+				className: 'min-w-[300px]',
 			},
 			cell: (props) => <Result round={props.row.original.address} />,
 		}),
 		columnHelper.accessor('finish', {
 			header: t('headers.finish'),
+			meta: {
+				className: 'min-w-[150px]',
+			},
 			cell: (props) => <Finish timestamp={props.getValue()} />,
 		}),
 		columnHelper.accessor('linesCount', {
 			header: t('headers.linesCount'),
+			meta: {
+				className: 'min-w-[100px]',
+			},
 			cell: (props) => <Count count={props.getValue()} />,
 		}),
 		columnHelper.accessor('bank', {
 			header: t('headers.bank'),
+			meta: {
+				className: 'min-w-[100px]',
+			},
 			cell: (props) => <BetValue value={props.getValue()} withIcon />,
 		}),
 		columnHelper.display({
