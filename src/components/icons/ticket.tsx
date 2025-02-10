@@ -1,9 +1,6 @@
-import * as React from 'react';
-import type { CustomIconProps } from '.';
-
-export const Ticket: CustomIconProps = React.forwardRef(({ ...props }, ref) => {
+export const Ticket = (props: any) => {
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 33" fill="none" role="presentation" ref={ref} {...props}>
+		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 33" fill="none" role="presentation" {...props}>
 			<g clipPath="url(#clip0_2018_11742)">
 				<path
 					d="M30.437 13.876L11.3829 2.87511C10.0729 2.11879 8.38235 2.57178 7.62603 3.88177L6.49846 5.83478C6.24633 6.27148 6.39736 6.83498 6.83401 7.08708C8.22337 7.88923 8.69982 9.66751 7.89767 11.0569C7.09552 12.4462 5.31729 12.9227 3.92792 12.1206C3.49127 11.8685 2.92773 12.0195 2.67563 12.4561L1.54803 14.4092C0.791734 15.7191 1.24469 17.4097 2.55468 18.1661L21.6088 29.167C22.9188 29.9233 24.6094 29.4703 25.3657 28.1603L26.4933 26.2073C26.7454 25.7706 26.5944 25.2071 26.1577 24.955C24.7684 24.1528 24.2919 22.3746 25.0941 20.9852C25.8962 19.5958 27.6745 19.1193 29.0638 19.9215C29.5005 20.1736 30.064 20.0226 30.3161 19.5859L31.4437 17.6329C32.2 16.3229 31.747 14.6323 30.437 13.876Z"
@@ -25,6 +22,6 @@ export const Ticket: CustomIconProps = React.forwardRef(({ ...props }, ref) => {
 			</defs>
 		</svg>
 	);
-});
+};
 
 export default Ticket;
