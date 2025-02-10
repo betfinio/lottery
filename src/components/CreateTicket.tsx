@@ -28,9 +28,9 @@ const CreateTicket = () => {
 
 	return (
 		<section
-			className={cn('w-full md:h-full border border-border rounded-xl p-3  relative h-[593px] flex flex-col justify-between', {
+			className={cn('w-full md:h-full border border-border rounded-xl p-3  bg-background-lighter relative h-[593px] flex flex-col justify-between', {
 				'border-2 border-primary/70 create-shadow bg-background-light': state === RoundState.FILLING,
-				'bg-background-lighter': isDisabled,
+				'border border-foreground/50': isDisabled,
 			})}
 		>
 			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>{isDisabled ? 'Your ticket' : 'Fill new ticket'}</div>
@@ -143,7 +143,7 @@ const TicketList = () => {
 								<Alert
 									onSuccess={handleDeleteAll}
 									trigger={
-										<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+										<Button size="sm" variant="ghost" className="py-0 h-auto transition-all hover:scale-[1.2]" shape="pill">
 											<TrashIcon className="w-3.5 h-3.5 text-destructive" />
 										</Button>
 									}
@@ -159,7 +159,7 @@ const TicketList = () => {
 								<Alert
 									onSuccess={handleRandomizeAll}
 									trigger={
-										<Button size="sm" variant="outline" className="py-0 h-auto border-none" shape="pill">
+										<Button size="sm" variant="outline" className="py-0 h-auto border-none transition-all hover:scale-[1.2]" shape="pill">
 											<ShuffleIcon className="w-3.5 h-3.5" />
 										</Button>
 									}

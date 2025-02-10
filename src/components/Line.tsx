@@ -29,6 +29,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 		onDelete?.();
 	};
 	const handleEdit = () => {
+		if (isDisabled) return;
 		setEditMode((prev) => !prev);
 	};
 	const handleSave = (ticket: ILine) => {
@@ -98,7 +99,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	};
 	const renderRegularFooter = () => {
 		return (
-			<div className={cn('grid grid-cols-3 px-2', { 'pointer-events-none opacity-0': isDisabled })}>
+			<div className={cn('grid grid-cols-3 px-2', { 'pointer-events-none grayscale opacity-50': isDisabled })}>
 				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					Edit
@@ -107,7 +108,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					Quick pick
 				</Button>
-				<Button variant="outline" className={'text-destructive gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onDelete}>
+				<Button variant="outline" className={cn('text-destructive gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all')} onClick={onDelete}>
 					<TrashIcon className={'w-3.5 h-3.5'} />
 					Delete
 				</Button>
@@ -115,12 +116,17 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		);
 	};
 
+	const isFilled = ticket.numbers.every((n) => n !== 0) && ticket.symbol !== 0;
+
 	return (
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
-				className={
-					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8'
-				}
+				className={cn(
+					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8',
+					{
+						grayscale: !isFilled,
+					},
+				)}
 			>
 				{order}
 			</div>

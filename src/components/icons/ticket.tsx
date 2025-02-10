@@ -1,4 +1,4 @@
-export const Ticket = (props: any) => {
+const Ticket = (props: any) => {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 33" fill="none" role="presentation" {...props}>
 			<g clipPath="url(#clip0_2018_11742)">

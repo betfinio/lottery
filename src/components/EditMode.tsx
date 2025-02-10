@@ -12,13 +12,13 @@ import { isDuplicate, randomize } from '../lib/utils';
 const animationDuration = 1000;
 const animationInterval = 100;
 
-const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean }> = ({
-	order,
-	onBack,
-	ticket,
-	onSave,
-	editMode,
-}) => {
+const EditMode: FC<{
+	ticket: ILine;
+	onBack: () => void;
+	onSave?: (ticket: ILine) => void;
+	order: number;
+	editMode: boolean;
+}> = ({ order, onBack, ticket, onSave, editMode }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
@@ -87,8 +87,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	}, [symbol, numbers, ticket, availability]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
-
-	console.log(numbers);
+	const isFilled = numbers.every((n) => n !== 0) && symbol !== 0;
 
 	return (
 		<motion.div
@@ -107,7 +106,13 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 					<ChevronLeft className={'w-5 h-5'} />
 					Back to all lines
 				</Button>
-				<div className={'shiny-gold w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground font-semibold'}>{order}</div>
+				<div
+					className={cn(
+						'shiny-gold w-7 h-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold absolute -top-3.5 left-1/2 -ml-3',
+					)}
+				>
+					{order}
+				</div>
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full '}>
 				<div className={'uppercase  font-semibold text-lg flex flex-row gap-1 mt-4'}>
