@@ -24,13 +24,16 @@ const CreateTicket = () => {
 	const filledLines = draftTickets.filter((line: ILine) => line.numbers.every((number) => number !== 0));
 	const symbolUnlocked = filledLines.length >= 3;
 
+	const isDisabled = state !== RoundState.FILLING;
+
 	return (
 		<section
-			className={cn('w-full md:h-full border border-border rounded-xl p-3 bg-background-light relative h-[593px] flex flex-col justify-between', {
-				'border-2 border-primary/70 create-shadow': state === RoundState.FILLING,
+			className={cn('w-full md:h-full border border-border rounded-xl p-3  relative h-[593px] flex flex-col justify-between', {
+				'border-2 border-primary/70 create-shadow bg-background-light': state === RoundState.FILLING,
+				'bg-background-lighter': isDisabled,
 			})}
 		>
-			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>Fill new ticket</div>
+			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>{isDisabled ? 'Your ticket' : 'Fill new ticket'}</div>
 			<nav className={'flex justify-between'}>
 				<div
 					className={cn('flex flex-row items-center gap-1', {
@@ -121,6 +124,8 @@ const TicketList = () => {
 	const handleRandomizeAll = () => {
 		setTickets(draftTickets.map(() => randomize()));
 	};
+
+	const isDisabled = state !== RoundState.FILLING;
 	return (
 		<AnimatePresence mode={'popLayout'}>
 			<div className={'flex flex-col justify-between h-full'}>
@@ -128,39 +133,41 @@ const TicketList = () => {
 					items={draftTickets}
 					itemsPerPage={3}
 					additionalFooter={
-						<div className={'flex flex-row justify-between'}>
-							<Alert
-								onSuccess={handleDeleteAll}
-								trigger={
-									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
-										<TrashIcon className="w-3.5 h-3.5 text-destructive" />
-									</Button>
-								}
-								storageKey="lottery-deleteAll"
-								isValid={filledLines.length > 1}
-							>
-								<div className="flex flex-col">
-									<div className="text-lg font-semibold">Do you really want to delete all draft lines?</div>
-									<div className="text-sm text-muted-foreground">This action cannot be undone</div>
-								</div>
-							</Alert>
+						!isDisabled && (
+							<div className={'flex flex-row justify-between'}>
+								<Alert
+									onSuccess={handleDeleteAll}
+									trigger={
+										<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
+											<TrashIcon className="w-3.5 h-3.5 text-destructive" />
+										</Button>
+									}
+									storageKey="lottery-deleteAll"
+									isValid={filledLines.length > 1}
+								>
+									<div className="flex flex-col">
+										<div className="text-lg font-semibold">Do you really want to delete all draft lines?</div>
+										<div className="text-sm text-muted-foreground">This action cannot be undone</div>
+									</div>
+								</Alert>
 
-							<Alert
-								onSuccess={handleRandomizeAll}
-								trigger={
-									<Button size="sm" variant="ghost" className="py-0 h-auto" shape="pill">
-										<ShuffleIcon className="w-3.5 h-3.5 text-primary" />
-									</Button>
-								}
-								storageKey="lottery-randomizeAll"
-								isValid={filledLines.length > 0}
-							>
-								<div className="flex flex-col">
-									<div className="text-lg font-semibold">Do you want to randomize all lines?</div>
-									<div className="text-sm text-muted-foreground">This will replace all your current numbers</div>
-								</div>
-							</Alert>
-						</div>
+								<Alert
+									onSuccess={handleRandomizeAll}
+									trigger={
+										<Button size="sm" variant="outline" className="py-0 h-auto border-none" shape="pill">
+											<ShuffleIcon className="w-3.5 h-3.5" />
+										</Button>
+									}
+									storageKey="lottery-randomizeAll"
+									isValid={filledLines.length > 0}
+								>
+									<div className="flex flex-col">
+										<div className="text-lg font-semibold">Do you want to randomize all lines?</div>
+										<div className="text-sm text-muted-foreground">This will replace all your current numbers</div>
+									</div>
+								</Alert>
+							</div>
+						)
 					}
 					className={'flex-grow'}
 					renderItem={(ticket: ILine, index: number) => (
@@ -170,6 +177,7 @@ const TicketList = () => {
 							order={index + 1}
 							onEdit={(newTicket) => updateTicket(index, newTicket)}
 							onDelete={() => deleteTicket(index)}
+							isDisabled={isDisabled}
 							symbolUnlocked={filledLines.length >= 3}
 							showDelete={draftTickets.length > 1}
 						/>
@@ -177,14 +185,19 @@ const TicketList = () => {
 				/>
 
 				<footer className={cn('grid grid-cols-2 gap-2')}>
-					<Button
-						variant={'outline'}
-						className={cn('border-primary text-secondary-foreground gap-1', { 'col-span-2': state !== RoundState.FILLING })}
-						onClick={handleAddLine}
-					>
-						<PlusCircleIcon className={'w-4 h-4'} />
-						Add line
-					</Button>
+					{isDisabled ? (
+						<Button className={'col-span-2'}>Edit</Button>
+					) : (
+						<Button
+							variant={'outline'}
+							className={cn('border-primary text-secondary-foreground gap-1', { 'col-span-2': state !== RoundState.FILLING })}
+							onClick={handleAddLine}
+						>
+							<PlusCircleIcon className={'w-4 h-4'} />
+							Add line
+						</Button>
+					)}
+
 					{state === RoundState.FILLING && (
 						<TooltipProvider>
 							<Tooltip>

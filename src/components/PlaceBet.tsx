@@ -3,6 +3,7 @@ import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
+import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
@@ -79,6 +80,13 @@ const PlaceBet = () => {
 		const toggleRound = rounds.find((e) => e.address === toggleRoundAddress);
 		if (!toggleRound) return;
 		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
+			if (selectedRounds.length === 1) {
+				toast({
+					title: 'At least one draw must be selected',
+					variant: 'destructive',
+				});
+				return;
+			}
 			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
 		} else {
 			setSelectedRounds((prev) => [...prev, toggleRound]);

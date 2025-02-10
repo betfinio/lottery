@@ -1,6 +1,5 @@
-import { LOTTERY_ADDRESS } from '@/src/globals';
 import { useSelectedRound } from '@/src/lib/query';
-import { LotteryABI, LotteryRoundABI, ZeroAddress } from '@betfinio/abi';
+import { LotteryRoundABI } from '@betfinio/abi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWatchContractEvent } from 'wagmi';
 

@@ -4,7 +4,7 @@ import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { LockIcon, PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 import SharedLine from './shared/SharedLine';
 
@@ -16,9 +16,10 @@ export interface LineProps {
 	symbolUnlocked?: boolean;
 	isNew?: boolean;
 	showDelete?: boolean;
+	isDisabled?: boolean;
 }
 
-const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false, showDelete = true }) => {
+const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false, showDelete = true, isDisabled = false }) => {
 	const [editMode, setEditMode] = useState(false);
 	const handleRandomize = () => {
 		onEdit?.(randomize());
@@ -51,6 +52,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 					isNew={isNew}
 					onEditMode={handleEdit}
 					order={order}
+					isDisabled={isDisabled}
 					onDelete={handleDelete}
 					onRandomize={handleRandomize}
 					symbolUnlocked={symbolUnlocked}
@@ -71,12 +73,17 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	onDelete,
 	symbolUnlocked = false,
 	showDelete = true,
+	isDisabled = false,
 }) => {
 	const renderNewFooter = () => {
 		return (
 			<div className={'grid grid-cols-3 px-2'}>
 				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto'} onClick={onEditMode}>
 					Fill line
+				</Button>
+				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none'} onClick={onRandomize}>
+					<ShuffleIcon className={'w-3.5 h-3.5'} />
+					Quick pick
 				</Button>
 				{showDelete ? (
 					<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
@@ -86,27 +93,23 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				) : (
 					<div />
 				)}
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
-					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
-				</Button>
 			</div>
 		);
 	};
 	const renderRegularFooter = () => {
 		return (
-			<div className={'grid grid-cols-3 px-2'}>
+			<div className={cn('grid grid-cols-3 px-2', { 'grayscale pointer-events-none opacity-50': isDisabled })}>
 				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					Edit
 				</Button>
-				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
-					<TrashIcon className={'w-3.5 h-3.5'} />
-					Delete
-				</Button>
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
+				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					Quick pick
+				</Button>
+				<Button variant="outline" className={'text-destructive gap-1 font-light py-0 h-auto border-none'} onClick={onDelete}>
+					<TrashIcon className={'w-3.5 h-3.5'} />
+					Delete
 				</Button>
 			</div>
 		);
