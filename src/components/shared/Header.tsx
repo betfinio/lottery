@@ -1,8 +1,6 @@
+import TicketIcon from '@/src/components/icons/Ticket';
 import { useChatbot } from 'betfinio_context/lib/context';
 import { AlertCircle, CircleHelp } from 'lucide-react';
-import TicketIcon from '../icons/Ticket';
-
-// todo: change link to the correct one
 
 const Header = () => {
 	const { toggle } = useChatbot();
