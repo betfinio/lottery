@@ -113,6 +113,9 @@ const TicketList = () => {
 	const handleProceed = () => {
 		updateState(RoundState.PLACING);
 	};
+	const handleEdit = () => {
+		updateState(RoundState.FILLING);
+	};
 
 	const filledLines = draftTickets.filter((line: ILine) => line.numbers.every((number) => number !== 0));
 	// Check that there are no same lines with same numbers(sort by numbers) and symbol
@@ -186,7 +189,9 @@ const TicketList = () => {
 
 				<footer className={cn('grid grid-cols-2 gap-2')}>
 					{isDisabled ? (
-						<Button className={'col-span-2'}>Edit</Button>
+						<Button className={'col-span-2'} onClick={handleEdit}>
+							Edit
+						</Button>
 					) : (
 						<Button
 							variant={'outline'}

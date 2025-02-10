@@ -98,7 +98,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	};
 	const renderRegularFooter = () => {
 		return (
-			<div className={cn('grid grid-cols-3 px-2', { 'grayscale pointer-events-none opacity-50': isDisabled })}>
+			<div className={cn('grid grid-cols-3 px-2', { 'pointer-events-none opacity-0': isDisabled })}>
 				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					Edit
