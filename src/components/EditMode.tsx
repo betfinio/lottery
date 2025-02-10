@@ -88,6 +88,8 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
+	console.log(numbers);
+
 	return (
 		<motion.div
 			initial={{ rotateX: 90, top: 0 }}
@@ -138,9 +140,11 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 									className={cn(
 										'aspect-[4/3] cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all border-2 border-transparent',
 										{
-											'bg-primary text-primary-foreground border-none': numbers.includes(index + 1),
+											'bg-primary text-primary-foreground border-none ': numbers.includes(index + 1),
 											'bg-success text-success-foreground border-none': numbers.length === 5 && numbers.includes(index + 1),
 											'bg-destructive text-destructive-foreground border-none': numbers.length > 5 && numbers.includes(index + 1),
+											'hover:border-success': numbers.length === 4,
+											'hover:border-primary': numbers.length < 4,
 										},
 									)}
 								>
@@ -173,7 +177,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 									repeat: 0,
 								}}
 								className={cn(
-									'aspect-[4/3] border-2  border-foreground/50 cursor-pointerbg-secondary/90 rounded-lg cursor-pointer flex items-center justify-center transition-all',
+									'aspect-[4/3] border-2  border-foreground/50 cursor-pointer bg-secondary/90 rounded-lg flex items-center justify-center transition-all hover:border-foreground',
 									{
 										'border-primary border-2  bg-foreground/30 scale-110': symbol === index + 1,
 									},

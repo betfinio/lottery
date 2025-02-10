@@ -11,12 +11,14 @@ function SharedLine({
 	symbolClassName,
 	className,
 	symbolUnlocked,
+	onClick,
 }: {
 	line: ILine;
 	numberClassName?: string;
 	symbolClassName?: string;
 	className?: string;
 	symbolUnlocked?: boolean;
+	onClick?: () => void;
 }) {
 	const symbolControls = useAnimation();
 	const { data: draftLines = [] } = useDraftLines();
@@ -45,7 +47,7 @@ function SharedLine({
 	}, [symbolUnlocked, filled3]);
 
 	return (
-		<div className={cn('flex gap-2 items-center', className)}>
+		<div className={cn('flex gap-2 items-center', className)} onClick={onClick}>
 			{line.numbers
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (

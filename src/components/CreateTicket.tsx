@@ -5,7 +5,7 @@ import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRightIcon, CircleHelp, LockOpenIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { ArrowRightIcon, CircleHelp, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRoundState } from '../lib/query/state.ts';
@@ -129,6 +129,8 @@ const TicketList = () => {
 	};
 
 	const isDisabled = state !== RoundState.FILLING;
+	console.log(isDisabled);
+
 	return (
 		<AnimatePresence mode={'popLayout'}>
 			<div className={'flex flex-col justify-between h-full'}>
@@ -189,7 +191,8 @@ const TicketList = () => {
 
 				<footer className={cn('grid grid-cols-2 gap-2')}>
 					{isDisabled ? (
-						<Button className={'col-span-2'} onClick={handleEdit}>
+						<Button className={'col-span-2 gap-2  border-primary text-secondary-foreground'} variant={'outline'} onClick={handleEdit}>
+							<PencilIcon className={'w-3.5 h-3.5'} />
 							Edit
 						</Button>
 					) : (
@@ -209,6 +212,7 @@ const TicketList = () => {
 								<TooltipTrigger asChild>
 									<Button
 										className="gap-1"
+										variant={'success'}
 										onClick={handleProceed}
 										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length}
 									>

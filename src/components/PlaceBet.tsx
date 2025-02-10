@@ -246,7 +246,7 @@ const PlaceBet = () => {
 					</Button>
 					{multiAllowance > totalAmount ? (
 						<Button
-							variant={'default'}
+							variant={'success'}
 							className={'w-full gap-1 xl:col-span-3 col-span-2'}
 							onClick={handleBuyTicket}
 							disabled={isPending || totalAmount === 0n || !isValidRecipient}
@@ -254,7 +254,7 @@ const PlaceBet = () => {
 							<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
 								<LoaderIcon className={'w-4 h-4 animate-spin'} />
 							</motion.div>
-							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border rounded-full border-primary-foreground'} />
+							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
 						</Button>
 					) : (
 						<Button variant={'default'} className={'w-full gap-1 md:col-span-3 col-span-2'} onClick={handleUnlock} disabled={isPendingUnlock}>
