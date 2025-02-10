@@ -198,7 +198,7 @@ const TicketList = () => {
 					) : (
 						<Button
 							variant={'outline'}
-							className={cn('border-primary text-secondary-foreground gap-1', { 'col-span-2': state !== RoundState.FILLING })}
+							className={cn('border-primary text-secondary-foreground gap-1 hover:scale-105 transition-all', { 'col-span-2': state !== RoundState.FILLING })}
 							onClick={handleAddLine}
 						>
 							<PlusCircleIcon className={'w-4 h-4'} />
@@ -211,7 +211,7 @@ const TicketList = () => {
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button
-										className="gap-1"
+										className="gap-1 hover:scale-105 transition-all"
 										variant={'success'}
 										onClick={handleProceed}
 										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length}

@@ -190,15 +190,22 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 				</div>
 				<div className={'text-destructive h-6 text-sm'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
-					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none'} onClick={handleClear}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />
 						Clear
 					</Button>
-					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none'} onClick={handleRandomize}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleRandomize}>
 						<ShuffleIcon className={'w-3.5 h-3.5'} />
 						Quick pick
 					</Button>
-					<Button variant={'success'} className={' gap-1 font-light '} shape={'pill'} size={'sm'} onClick={handleSave} disabled={validation !== ''}>
+					<Button
+						variant={'success'}
+						className={' gap-1 font-light hover:scale-105 transition-all'}
+						shape={'pill'}
+						size={'sm'}
+						onClick={handleSave}
+						disabled={validation !== ''}
+					>
 						<CheckCircle className={'w-3.5 h-3.5'} />
 						Save
 					</Button>
