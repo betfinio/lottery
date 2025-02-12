@@ -146,7 +146,8 @@ export const useBuyTicket = () => {
 				await waitForTransactionReceipt(config.getClient(), {
 					hash: data,
 				});
-				queryClient.invalidateQueries({ queryKey: ['lottery'] });
+				// update table key
+				queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
 				update({
 					title: t('buyTicket.sent.title'),
 					description: t('buyTicket.sent.description'),

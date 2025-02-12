@@ -6,22 +6,16 @@ function MyTickets() {
 	return (
 		<div className={'p-2 flex flex-col gap-4 justify-between relative h-full'}>
 			<Tabs defaultValue={'active'}>
-				<TabsList className={'bg-transparent w-full'}>
-					<TabsTrigger variant={'contained'} value="active" className={'w-1/3'}>
+				<TabsList className={'bg-transparent w-full grid grid-cols-2'}>
+					<TabsTrigger variant={'contained'} value="active" className={''}>
 						Active tickets
 					</TabsTrigger>
-					<TabsTrigger variant={'contained'} value="giveaway" className={'w-1/3'}>
-						Giveaways
-					</TabsTrigger>
-					<TabsTrigger variant={'contained'} value="old" className={'w-1/3'}>
+					<TabsTrigger variant={'contained'} value="old" className={''}>
 						Old tickets
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="active">
 					<ActiveTicketsList />
-				</TabsContent>
-				<TabsContent value="giveaway">
-					<div className={'border border-purple-box p-4 rounded-lg text-center'}>This feature is coming soon</div>
 				</TabsContent>
 				<TabsContent value="old">
 					<OldTicketsList />

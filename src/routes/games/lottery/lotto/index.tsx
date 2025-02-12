@@ -2,6 +2,7 @@ import CreateTicket from '@/src/components/CreateTicket.tsx';
 import DrawInfo from '@/src/components/DrawInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
 import Header from '@/src/components/shared/Header.tsx';
+import Watchers from '@/src/components/shared/Watchers';
 import TablesWrapper from '@/src/components/tables/TablesWrapper';
 import { useSelectedRound } from '@/src/lib/query';
 import { useRoundState } from '@/src/lib/query/state';
@@ -26,6 +27,7 @@ function RouteComponent() {
 
 	return (
 		<div className={'lottery overflow-hidden'}>
+			<Watchers />
 			<div className={'p-2 md:p-3 lg:p-4 flex flex-col items-center gap-2 md:gap-3 lg:gap-4 2xl:pr-0'}>
 				<Header />
 				<div className={'grid grid-cols-6 grid-rows-2 md:grid-rows-1 grid-auto-rows gap-4 w-full md:h-[593px]'}>

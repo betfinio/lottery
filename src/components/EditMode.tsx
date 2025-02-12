@@ -12,13 +12,13 @@ import { isDuplicate, randomize } from '../lib/utils';
 const animationDuration = 1000;
 const animationInterval = 100;
 
-const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine) => void; order: number; editMode: boolean }> = ({
-	order,
-	onBack,
-	ticket,
-	onSave,
-	editMode,
-}) => {
+const EditMode: FC<{
+	ticket: ILine;
+	onBack: () => void;
+	onSave?: (ticket: ILine) => void;
+	order: number;
+	editMode: boolean;
+}> = ({ order, onBack, ticket, onSave, editMode }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
@@ -87,6 +87,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 	}, [symbol, numbers, ticket, availability]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
+	const isFilled = numbers.every((n) => n !== 0) && symbol !== 0;
 
 	return (
 		<motion.div
@@ -105,7 +106,13 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 					<ChevronLeft className={'w-5 h-5'} />
 					Back to all lines
 				</Button>
-				<div className={'shiny-gold w-8 h-8 rounded-full flex items-center justify-center text-primary-foreground font-semibold'}>{order}</div>
+				<div
+					className={cn(
+						'shiny-gold w-7 h-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold absolute -top-3.5 left-1/2 -ml-3',
+					)}
+				>
+					{order}
+				</div>
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full '}>
 				<div className={'uppercase  font-semibold text-lg flex flex-row gap-1 mt-4'}>
@@ -138,9 +145,11 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 									className={cn(
 										'aspect-[4/3] cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all border-2 border-transparent',
 										{
-											'bg-primary text-primary-foreground border-none': numbers.includes(index + 1),
+											'bg-primary text-primary-foreground border-none ': numbers.includes(index + 1),
 											'bg-success text-success-foreground border-none': numbers.length === 5 && numbers.includes(index + 1),
 											'bg-destructive text-destructive-foreground border-none': numbers.length > 5 && numbers.includes(index + 1),
+											'hover:border-success': numbers.length === 4,
+											'hover:border-primary': numbers.length < 4,
 										},
 									)}
 								>
@@ -173,7 +182,7 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 									repeat: 0,
 								}}
 								className={cn(
-									'aspect-[4/3] border-2  border-foreground/50 cursor-pointerbg-secondary/90 rounded-lg cursor-pointer flex items-center justify-center transition-all',
+									'aspect-[4/3] border-2  border-foreground/50 cursor-pointer bg-secondary/90 rounded-lg flex items-center justify-center transition-all hover:border-foreground',
 									{
 										'border-primary border-2  bg-foreground/30 scale-110': symbol === index + 1,
 									},
@@ -186,15 +195,22 @@ const EditMode: FC<{ ticket: ILine; onBack: () => void; onSave?: (ticket: ILine)
 				</div>
 				<div className={'text-destructive h-6 text-sm'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
-					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleClear}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />
 						Clear
 					</Button>
-					<Button variant={'ghost'} className={' gap-1 font-light py-0 h-auto'} onClick={handleRandomize}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleRandomize}>
 						<ShuffleIcon className={'w-3.5 h-3.5'} />
 						Quick pick
 					</Button>
-					<Button variant={'success'} className={' gap-1 font-light '} shape={'pill'} size={'sm'} onClick={handleSave} disabled={validation !== ''}>
+					<Button
+						variant={'success'}
+						className={' gap-1 font-light hover:scale-105 transition-all'}
+						shape={'pill'}
+						size={'sm'}
+						onClick={handleSave}
+						disabled={validation !== ''}
+					>
 						<CheckCircle className={'w-3.5 h-3.5'} />
 						Save
 					</Button>

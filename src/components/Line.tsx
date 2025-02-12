@@ -4,7 +4,7 @@ import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { LockIcon, PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 import SharedLine from './shared/SharedLine';
 
@@ -16,9 +16,10 @@ export interface LineProps {
 	symbolUnlocked?: boolean;
 	isNew?: boolean;
 	showDelete?: boolean;
+	isDisabled?: boolean;
 }
 
-const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false, showDelete = true }) => {
+const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlocked = false, showDelete = true, isDisabled = false }) => {
 	const [editMode, setEditMode] = useState(false);
 	const handleRandomize = () => {
 		onEdit?.(randomize());
@@ -28,6 +29,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 		onDelete?.();
 	};
 	const handleEdit = () => {
+		if (isDisabled) return;
 		setEditMode((prev) => !prev);
 	};
 	const handleSave = (ticket: ILine) => {
@@ -51,6 +53,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 					isNew={isNew}
 					onEditMode={handleEdit}
 					order={order}
+					isDisabled={isDisabled}
 					onDelete={handleDelete}
 					onRandomize={handleRandomize}
 					symbolUnlocked={symbolUnlocked}
@@ -71,61 +74,68 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	onDelete,
 	symbolUnlocked = false,
 	showDelete = true,
+	isDisabled = false,
 }) => {
 	const renderNewFooter = () => {
 		return (
-			<div className={'grid grid-cols-3 px-2'}>
-				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto'} onClick={onEditMode}>
+			<div className={'grid grid-cols-3 px-2 '}>
+				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
 					Fill line
 				</Button>
+				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
+					<ShuffleIcon className={'w-3.5 h-3.5'} />
+					Quick pick
+				</Button>
 				{showDelete ? (
-					<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
+					<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto hover:scale-105 transition-all'} onClick={onDelete}>
 						<TrashIcon className={'w-3.5 h-3.5'} />
 						Delete
 					</Button>
 				) : (
 					<div />
 				)}
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
-					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
-				</Button>
 			</div>
 		);
 	};
 	const renderRegularFooter = () => {
 		return (
-			<div className={'grid grid-cols-3 px-2'}>
-				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto'} onClick={onEditMode}>
+			<div className={cn('grid grid-cols-3 px-2', { 'pointer-events-none grayscale opacity-50': isDisabled })}>
+				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					Edit
 				</Button>
-				<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto'} onClick={onDelete}>
-					<TrashIcon className={'w-3.5 h-3.5'} />
-					Delete
-				</Button>
-				<Button variant={'ghost'} className={'gap-1 font-light py-0 h-auto'} onClick={onRandomize}>
+				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					Quick pick
+				</Button>
+				<Button variant="outline" className={cn('text-destructive gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all')} onClick={onDelete}>
+					<TrashIcon className={'w-3.5 h-3.5'} />
+					Delete
 				</Button>
 			</div>
 		);
 	};
 
+	const isFilled = ticket.numbers.every((n) => n !== 0) && ticket.symbol !== 0;
+
 	return (
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
-				className={
-					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8'
-				}
+				className={cn(
+					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8',
+					{
+						grayscale: !isFilled,
+					},
+				)}
 			>
 				{order}
 			</div>
 
 			<SharedLine
 				line={ticket}
+				onClick={onEditMode}
 				symbolUnlocked={symbolUnlocked}
-				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center'}
+				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center cursor-pointer'}
 				symbolClassName={cn('stroke-primary text-primary/30', {
 					'stroke-primary text-primary/30': symbolUnlocked,
 					'stroke-foreground text-foreground/30 grayscale': !symbolUnlocked,

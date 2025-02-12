@@ -3,7 +3,7 @@ import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { Bag } from '@betfinio/ui/dist/icons';
 import { useTranslation } from 'react-i18next';
-import { Ticket } from '../icons';
+import Ticket from '../icons/Ticket.tsx';
 import WinningLine from '../tables/columns/WinningLine';
 export function RoundTotalsDetails() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });

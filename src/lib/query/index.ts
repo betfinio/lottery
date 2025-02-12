@@ -1,8 +1,10 @@
 import {
+	fetchAdditionalJackpot,
 	fetchFinishedRoundTransactionByRoundAddress,
 	fetchLinesAvailability,
 	fetchLinesCount,
 	fetchMultiAllowance,
+	fetchPotentialJackpot,
 	fetchRoundFinish,
 	fetchRoundStatus,
 	fetchTicketClaimed,
@@ -61,14 +63,14 @@ export const useRoundStatus = (round: Address) => {
 
 export const useActiveRounds = () => {
 	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'active', 'rounds'],
+		queryKey: ['lottery', 'round', 'active'],
 		queryFn: () => fetchActiveRounds(),
 	});
 };
 
 export const useOldRounds = () => {
 	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'old', 'rounds'],
+		queryKey: ['lottery', 'round', 'old'],
 		queryFn: () => fetchOldRounds(),
 	});
 };
@@ -178,6 +180,22 @@ export const useTicketWinAmount = (ticket: Address) => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'ticket', ticket, 'winAmount'],
 		queryFn: () => fetchTicketWinAmount(ticket, config),
+	});
+};
+
+export const useAdditionalJackpot = () => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'additionalJackpot'],
+		queryFn: () => fetchAdditionalJackpot(config),
+	});
+};
+
+export const usePotentialJackpot = (round: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'round', round, 'potentialJackpot'],
+		queryFn: () => fetchPotentialJackpot(round, config),
 	});
 };
 

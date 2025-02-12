@@ -3,6 +3,7 @@ import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
+import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
@@ -79,6 +80,13 @@ const PlaceBet = () => {
 		const toggleRound = rounds.find((e) => e.address === toggleRoundAddress);
 		if (!toggleRound) return;
 		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
+			if (selectedRounds.length === 1) {
+				toast({
+					title: 'At least one draw must be selected',
+					variant: 'destructive',
+				});
+				return;
+			}
 			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
 		} else {
 			setSelectedRounds((prev) => [...prev, toggleRound]);
@@ -238,7 +246,7 @@ const PlaceBet = () => {
 					</Button>
 					{multiAllowance > totalAmount ? (
 						<Button
-							variant={'default'}
+							variant={'success'}
 							className={'w-full gap-1 xl:col-span-3 col-span-2'}
 							onClick={handleBuyTicket}
 							disabled={isPending || totalAmount === 0n || !isValidRecipient}
@@ -246,10 +254,10 @@ const PlaceBet = () => {
 							<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
 								<LoaderIcon className={'w-4 h-4 animate-spin'} />
 							</motion.div>
-							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border rounded-full border-primary-foreground'} />
+							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
 						</Button>
 					) : (
-						<Button variant={'default'} className={'w-full gap-1 md:col-span-3 col-span-2'} onClick={handleUnlock} disabled={isPendingUnlock}>
+						<Button variant={'success'} className={'w-full gap-1 md:col-span-3 col-span-2'} onClick={handleUnlock} disabled={isPendingUnlock}>
 							<motion.div initial={{ scale: 0 }} animate={{ scale: isPendingUnlock ? 1 : 0 }} exit={{ scale: 0 }}>
 								<LoaderIcon className={'w-4 h-4 animate-spin'} />
 							</motion.div>
