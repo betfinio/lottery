@@ -1,4 +1,5 @@
 import {
+	fetchFinishedRoundTransactionByRoundAddress,
 	fetchLinesAvailability,
 	fetchLinesCount,
 	fetchMultiAllowance,
@@ -220,5 +221,16 @@ export const useRoundJackpots = (round: Address) => {
 	return useQuery({
 		queryKey: ['lottery', 'jackpots', 'round', round],
 		queryFn: () => fetchRoundJackpots(round),
+	});
+};
+
+export const useFinishedRoundTransactionByRoundAddress = (round: Address) => {
+	const config = useConfig();
+
+	const { data: roundFinish, isLoading: isRoundFinishLoading } = useRoundFinish(round);
+	return useQuery({
+		queryKey: ['lottery', 'round', 'finishedRoundTransaction', round],
+		queryFn: () => fetchFinishedRoundTransactionByRoundAddress(config, round, roundFinish),
+		enabled: !!roundFinish && !isRoundFinishLoading,
 	});
 };

@@ -15,8 +15,8 @@ function HistoryRoundPage() {
 			<RoundHeader />
 			<RoundTotalsDetails />
 			<RoundPlayerDetails />
-			<RoundChainDetails />
 			<RoundJackpots />
+			<RoundChainDetails />
 		</div>
 	);
 }
