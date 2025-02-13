@@ -6,7 +6,6 @@ import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
-import { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';

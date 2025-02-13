@@ -18,7 +18,7 @@ import { waitForTransactionReceipt } from 'viem/actions';
 import { useConfig } from 'wagmi';
 import { useMutation } from 'wagmi/query';
 
-interface BuyTicketProps {
+export interface BuyTicketProps {
 	lines: ILine[];
 	rounds: Address[];
 	recipient: Address;

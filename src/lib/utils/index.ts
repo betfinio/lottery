@@ -1,4 +1,5 @@
 import type { GTicket, ILine } from '@/src/lib/types.ts';
+import confetti from 'canvas-confetti';
 import { DateTime } from 'luxon';
 
 export interface TimeDiff {
@@ -134,3 +135,26 @@ export const COMBINATIONS_HEX_MAP_REVERSED = Object.freeze({
 	'5': '0x35',
 	'5+1': '0x352b31',
 } as const);
+
+export const shootConfetti = () => {
+	confetti({
+		particleCount: 100,
+		angle: -90,
+		spread: 360,
+		startVelocity: 30,
+		origin: { x: 0.5, y: 0.1 },
+		colors: ['#FF2A51', '#B100A8', '#FFB300', '#B0D100', '#2462E7'],
+	});
+
+	confetti({
+		particleCount: 50,
+		spread: 360,
+		startVelocity: 40,
+		gravity: 0,
+		decay: 0.96,
+		scalar: 2,
+		shapes: ['circle'],
+		colors: ['#FF2A51', '#B100A8', '#FFB300', '#B0D100', '#2462E7'],
+		origin: { x: 0.5, y: 0.4 },
+	});
+};

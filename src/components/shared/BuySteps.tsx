@@ -1,0 +1,178 @@
+import { useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { type BuyTicketProps, useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations';
+import { useRoundState } from '@/src/lib/query/state';
+import { EMPTY_LINE, RoundState } from '@/src/lib/types';
+import { shootConfetti } from '@/src/lib/utils';
+import { cn } from '@betfinio/components';
+import { BetValue } from '@betfinio/components/shared';
+import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator } from '@betfinio/components/ui';
+import { useQueryClient } from '@tanstack/react-query';
+import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+
+// Steps for the ticket purchase flow
+export type Step = 'unlock' | 'buy' | 'done';
+
+interface BuyStepsProps {
+	buy: BuyTicketProps; // Ticket purchase parameters
+	isOpen: boolean; // Dialog open state
+	setIsOpen: (isOpen: boolean) => void; // Dialog state setter
+}
+
+/**
+ * BuySteps component handles the multi-step process of purchasing lottery tickets
+ * Steps:
+ * 1. Unlock multibet contract (if not already unlocked)
+ * 2. Purchase tickets
+ */
+function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
+	// State and hooks
+	const [step, setStep] = useState<Step>('unlock');
+	const { address } = useAccount();
+	const queryClient = useQueryClient();
+
+	// Queries
+	const { data: selectedRound } = useSelectedRound();
+	const { data: unlocked = 0n } = useMultiAllowance(address);
+	const { data: ticketPrice = 0n } = useTicketPrice(selectedRound?.address);
+	const { state, updateState } = useRoundState(selectedRound?.address);
+
+	// Mutations
+	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
+	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy } = useBuyTicket();
+	const { setTickets } = useDraftLines();
+
+	// Reset step when dialog opens
+	useEffect(() => {
+		if (isOpen) {
+			setStep('unlock');
+		}
+	}, [isOpen]);
+
+	// Auto-advance to buy step if already unlocked
+	useEffect(() => {
+		if (unlocked > 0n && step === 'unlock') {
+			setStep('buy');
+		}
+	}, [unlocked, step]);
+
+	// Cleanup after purchase completion
+	useEffect(() => {
+		if (step === 'done') {
+			setIsOpen(false);
+			resetUnlock();
+			resetBuy();
+			queryClient.invalidateQueries({ queryKey: ['lottery'] });
+			setTickets([EMPTY_LINE]);
+			shootConfetti();
+			updateState(RoundState.FILLING);
+		}
+	}, [step]);
+
+	// Handlers
+	const handleUnlock = async () => {
+		try {
+			await unlock();
+			setStep('buy');
+		} catch (error) {
+			setStep('unlock');
+		}
+	};
+
+	const handleBuy = async () => {
+		try {
+			await buyTickets({ ...buy });
+			setStep('done');
+		} catch (error) {
+			setStep('buy');
+		}
+	};
+
+	const onNext = () => {
+		if (step === 'unlock') {
+			handleUnlock();
+		} else if (step === 'buy') {
+			handleBuy();
+		}
+	};
+
+	// Derived state
+	const isUnlocked = step !== 'unlock';
+	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice;
+
+	return (
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogContent className="lottery rounded-xl">
+				<div className="w-[300px] p-4 flex flex-col gap-4">
+					<DialogTitle className="font-normal flex justify-between text-muted-foreground">
+						You're buying ticket(s)
+						<DialogClose>
+							<XIcon className="w-4 h-4" />
+						</DialogClose>
+					</DialogTitle>
+					<DialogDescription className="flex flex-col gap-2">
+						{/* Unlock step indicator */}
+						<div className={cn('flex items-center gap-2', isUnlocked && 'text-success')}>
+							<div
+								className={cn(
+									'w-6 h-6 rounded-full bg-border flex items-center justify-center',
+									isUnlocked && 'bg-success text-success-foreground',
+									step === 'unlock' && 'bg-primary text-primary-foreground',
+								)}
+							>
+								{isUnlockPending ? (
+									<LoaderIcon className="w-3 h-3 animate-spin" />
+								) : isUnlocked ? (
+									<CheckIcon className="w-3 h-3" />
+								) : (
+									<LockIcon className="w-3 h-3" />
+								)}
+							</div>
+							<div>Unlock multibet contract</div>
+						</div>
+
+						<Separator orientation="vertical" className="h-4 ml-3" />
+
+						{/* Buy step indicator */}
+						<div className={cn('flex items-center gap-2', isBuySuccess && 'text-success')}>
+							<div
+								className={cn(
+									'w-6 h-6 rounded-full bg-border flex items-center justify-center',
+									isBuySuccess && 'bg-success text-success-foreground',
+									step === 'buy' && 'bg-primary text-primary-foreground',
+								)}
+							>
+								{isBuyPending ? (
+									<LoaderIcon className="w-3 h-3 animate-spin" />
+								) : isBuySuccess ? (
+									<CheckIcon className="w-3 h-3" />
+								) : (
+									<ShoppingCartIcon className="w-3 h-3" />
+								)}
+							</div>
+							<div className="flex items-center flex-row gap-1">
+								Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
+							</div>
+						</div>
+
+						{/* Action buttons */}
+						<div className="grid grid-cols-2 gap-2 mt-2">
+							<DialogClose asChild>
+								<Button variant={'ghost'} size="sm">
+									Cancel
+								</Button>
+							</DialogClose>
+							<Button size={'sm'} onClick={onNext} className="gap-2">
+								{isBuyPending || isUnlockPending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : null}
+								Proceed
+							</Button>
+						</div>
+					</DialogDescription>
+				</div>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+export default BuySteps;
