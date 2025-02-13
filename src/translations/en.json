@@ -103,6 +103,7 @@
 		"ticketNumber": "Ticket number",
 		"ticketWinning": "Ticket winning",
 		"howItWorks": "How it works",
-		"proofOfRandom": "Proof of randomness"
+		"proofOfRandom": "Proof of randomness",
+		"yourTicketsInDraw": "Your tickets in draw"
 	}
 }

@@ -1,3 +1,4 @@
+import { PlayerStatusForRound } from '@/src/components/round/PlayerStatusForRound/PlayerStatusForRound';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
 import { RoundJackpots } from '@/src/components/round/RoundJackpots/RoundJackpots';
@@ -14,7 +15,9 @@ function HistoryRoundPage() {
 		<div className="lottery">
 			<RoundHeader />
 			<RoundTotalsDetails />
-			<RoundPlayerDetails />
+			<div className="mt-4 h-[541px]">
+				<PlayerStatusForRound />
+			</div>
 			<RoundJackpots />
 			<RoundChainDetails />
 		</div>
