@@ -5,7 +5,9 @@ import { decodeLine, decodeLines, encodeLines } from '@/src/lib/utils';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
+import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
+import { getContractEvents } from 'viem/actions';
 
 /**
  *  Example of function that reads data from blockchain
@@ -322,4 +324,20 @@ export const fetchLinesAvailability = async (round: Address, lines: ILine[], con
 		})),
 	});
 	return data.map(({ result }) => result === true);
+};
+
+export const fetchFinishedRoundTransactionByRoundAddress = async (config: Config, round: Address, fromTimeStamp?: number) => {
+	if (!fromTimeStamp) return;
+	const fromBlock = await getBlockByTimestamp(fromTimeStamp);
+	const toBlock = await getBlockByTimestamp(fromTimeStamp + 60 * 60 * 1.5);
+	const roundFinished = await getContractEvents(config.getClient(), {
+		abi: LotteryRoundABI,
+		address: round,
+		eventName: 'RoundFinished',
+		fromBlock,
+		toBlock,
+	});
+
+	console.log(roundFinished, 'roundFinished');
+	return roundFinished;
 };

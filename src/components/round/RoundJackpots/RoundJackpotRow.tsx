@@ -14,7 +14,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 	const Icon = jackpot.icon;
 
 	const currentJackpot = jackpotData?.[jackpot.id][0];
-	const hasNoTickets = currentJackpot?.tickets.length === 0;
+	const hasNoTickets = !currentJackpot?.tickets || currentJackpot?.tickets.length === 0;
 	return (
 		<AccordionItem className={'p-0 w-full '} value={jackpot.id.toString()}>
 			<AccordionTrigger
