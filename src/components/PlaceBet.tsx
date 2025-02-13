@@ -34,6 +34,7 @@ import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
 import { ETHSCAN } from '../globals';
 import { useRoundState } from '../lib/query/state';
+import BuySteps from './shared/BuySteps';
 
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });
@@ -44,11 +45,9 @@ const PlaceBet = () => {
 	const { data: round } = useSelectedRound();
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
-	const { data: multiAllowance = 0n } = useMultiAllowance(address);
 
 	// Mutations
 	const { mutate: buyTicket, isPending } = useBuyTicket();
-	const { mutate: unlock, isPending: isPendingUnlock } = useUnlockMultibet();
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -56,6 +55,7 @@ const PlaceBet = () => {
 	const [visibleRounds, setVisibleRounds] = useState<IRound[]>([]);
 	const { state, updateState } = useRoundState(round?.address);
 	const [newRecipientDialogOpen, setNewRecipientDialogOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	// Effects
 	useEffect(() => {
@@ -93,21 +93,8 @@ const PlaceBet = () => {
 		}
 	};
 
-	const handleUnlock = () => {
-		unlock();
-	};
-
 	const addMoreRound = () => {
 		setVisibleRounds((prev) => [...prev, ...rounds.slice(visibleRounds.length, visibleRounds.length + 1)]);
-	};
-
-	const handleBuyTicket = () => {
-		if (!recipient) return;
-		buyTicket({
-			lines,
-			recipient: recipient?.toLowerCase() === ZeroAddress.toLowerCase() ? address : recipient,
-			rounds: selectedRounds.map((e) => e.address),
-		});
 	};
 
 	const handleCalendarChange = (days?: Date[]) => {
@@ -152,12 +139,16 @@ const PlaceBet = () => {
 		updateState(RoundState.FILLING);
 	};
 
-	console.log(recipient, address);
+	const handleOpen = () => {
+		setIsOpen(true);
+	};
 
 	// Early returns
 	if (rounds.length < 2) {
 		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
 	}
+
+	const realRecipient = recipient === ZeroAddress ? address : recipient ? recipient : address;
 
 	// Main render
 	return (
@@ -244,27 +235,18 @@ const PlaceBet = () => {
 						<ArrowLeftIcon className={'w-4 h-4'} />
 						Back
 					</Button>
-					{multiAllowance > totalAmount ? (
-						<Button
-							variant={'success'}
-							className={'w-full gap-1 xl:col-span-3 col-span-2'}
-							onClick={handleBuyTicket}
-							disabled={isPending || totalAmount === 0n || !isValidRecipient}
-						>
-							<motion.div initial={{ scale: 0 }} animate={{ scale: isPending ? 1 : 0 }} exit={{ scale: 0 }}>
-								<LoaderIcon className={'w-4 h-4 animate-spin'} />
-							</motion.div>
-							{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
-						</Button>
-					) : (
-						<Button variant={'success'} className={'w-full gap-1 md:col-span-3 col-span-2'} onClick={handleUnlock} disabled={isPendingUnlock}>
-							<motion.div initial={{ scale: 0 }} animate={{ scale: isPendingUnlock ? 1 : 0 }} exit={{ scale: 0 }}>
-								<LoaderIcon className={'w-4 h-4 animate-spin'} />
-							</motion.div>
-							<LockIcon className={'w-4 h-4'} />
-							{t('unlockMultiBet')}
-						</Button>
-					)}
+					<Button
+						variant={'success'}
+						className={'w-full gap-1 xl:col-span-3 col-span-2'}
+						onClick={handleOpen}
+						disabled={isPending || totalAmount === 0n || !isValidRecipient}
+					>
+						<motion.div initial={{ scale: 0 }} animate={{ scale: isOpen ? 1 : 0 }} exit={{ scale: 0 }}>
+							<LoaderIcon className={'w-4 h-4 animate-spin'} />
+						</motion.div>
+						{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
+					</Button>
+					<BuySteps buy={{ lines, recipient: realRecipient, rounds: selectedRounds.map((e) => e.address) }} isOpen={isOpen} setIsOpen={setIsOpen} />
 				</div>
 			</div>
 		</motion.div>
