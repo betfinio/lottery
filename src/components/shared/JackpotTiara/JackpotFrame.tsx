@@ -3,7 +3,7 @@ import { BfIcon } from './BfIcon';
 import { GradientImage } from './GradientImage';
 import { JackpotStarsSpread } from './JackpotStarsSpread';
 
-export const JackpotFrame: FC = () => {
+export const JackpotFrame: FC<{ className?: string }> = ({ className = '' }) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -13,6 +13,7 @@ export const JackpotFrame: FC = () => {
 			viewBox="0 0 320 208"
 			fill="none"
 			role="presentation"
+			className={className}
 		>
 			<g clipPath="url(#clip0_6001_54972)">
 				<rect y="18" width="320" height="190" fill="url(#pattern0_6001_54972)" />

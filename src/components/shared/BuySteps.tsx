@@ -79,7 +79,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 				]);
 			});
 		}
-	}, [step]);
+	}, [step, address, queryClient]);
 
 	// Handlers
 	const handleUnlock = async () => {
