@@ -17,7 +17,6 @@ interface JackpotRowTableProps {
 export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const round = useGetRoundFromParams();
 	const { data: jackpotData } = useRoundJackpots(round);
-	console.log(jackpotData, 'jackpotData');
 	if (!jackpotData) return null;
 	const currentJackpot = jackpotData[id][0];
 	const tickets = currentJackpot?.tickets ?? [];

@@ -74,6 +74,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 			animate={{ height: editing === -1 ? 'auto' : 450 }}
 			className={cn('border border-purple-box rounded-xl p-2 ', {
 				'bg-gradient-to-b from-background to-background via-primary/20 via-60%': mode === 'full' || mode === 'expanded',
+				'border-primary': ticket.isLocal,
 			})}
 		>
 			<Dialog open={open} onOpenChange={setOpen}>

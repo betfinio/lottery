@@ -1,7 +1,7 @@
 import { useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { type BuyTicketProps, useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations';
-import { useRoundState } from '@/src/lib/query/state';
-import { EMPTY_LINE, RoundState } from '@/src/lib/types';
+import { type BuyTicketProps, useBuyTicket, useLoadMintedTokens, useUnlockMultibet } from '@/src/lib/query/mutations';
+import { useDrawInfoTab, useRoundState, useTicketsTab } from '@/src/lib/query/state';
+import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
 import { shootConfetti } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -9,8 +9,8 @@ import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTi
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
-
 // Steps for the ticket purchase flow
 export type Step = 'unlock' | 'buy' | 'done';
 
@@ -40,9 +40,11 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	// Mutations
 	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
-	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy } = useBuyTicket();
+	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy, data } = useBuyTicket();
+	const { mutateAsync: logsByHash } = useLoadMintedTokens();
 	const { setTickets } = useDraftLines();
-
+	const { setTab } = useDrawInfoTab();
+	const { setTab: setTicketsTab } = useTicketsTab();
 	// Reset step when dialog opens
 	useEffect(() => {
 		if (isOpen) {
@@ -63,10 +65,19 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			setIsOpen(false);
 			resetUnlock();
 			resetBuy();
-			queryClient.invalidateQueries({ queryKey: ['lottery'] });
 			setTickets([EMPTY_LINE]);
 			shootConfetti();
 			updateState(RoundState.FILLING);
+			setTab('tickets');
+			setTicketsTab('active');
+
+			// Merge fresh on-chain data with subgraph data
+			logsByHash({ hash: data as Address }).then((newTickets) => {
+				queryClient.setQueryData<IRoundTicket[]>(['lottery', 'tickets', 'active', address?.toLowerCase()], (old = []) => [
+					...newTickets.map((t) => ({ ...t, isLocal: true })), // Mark fresh tickets
+					...old.filter((ot) => !newTickets.some((nt) => nt.token === ot.token)), // Remove duplicates
+				]);
+			});
 		}
 	}, [step]);
 

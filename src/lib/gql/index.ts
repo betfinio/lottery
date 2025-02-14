@@ -135,8 +135,6 @@ export const fetchRoundDetails = async (round: Address) => {
 };
 
 export const fetchRoundJackpots = async (round: Address) => {
-	console.log(round);
 	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, { round: round });
-	console.log(result.data);
 	return result.data;
 };

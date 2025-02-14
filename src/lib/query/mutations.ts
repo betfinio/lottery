@@ -1,6 +1,7 @@
 import {
 	buyTicket,
 	claimTicket,
+	getMintedTokensByHash,
 	manualDistributeJackpot,
 	manualDistributeRefund,
 	manualRefund,
@@ -9,13 +10,14 @@ import {
 	updateTicket,
 } from '@/src/lib/api';
 import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
+import { ZeroAddress } from '@betfinio/abi';
 import { toast } from '@betfinio/components/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import { getTransactionLink } from 'betfinio_context/lib/helpers';
 import { useTranslation } from 'react-i18next';
-import type { Address, WriteContractErrorType, WriteContractReturnType } from 'viem';
+import type { Address, Log, WriteContractErrorType, WriteContractReturnType } from 'viem';
 import { waitForTransactionReceipt } from 'viem/actions';
-import { useConfig } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { useMutation } from 'wagmi/query';
 
 export interface BuyTicketProps {
@@ -355,5 +357,14 @@ export const useClaimTicket = () => {
 				});
 			}
 		},
+	});
+};
+
+export const useLoadMintedTokens = () => {
+	const config = useConfig();
+	const queryClient = useQueryClient();
+	return useMutation<IRoundTicket[], never, { hash: Address }>({
+		mutationKey: ['lottery', 'ticketsByHash'],
+		mutationFn: ({ hash }) => getMintedTokensByHash(hash, config),
 	});
 };

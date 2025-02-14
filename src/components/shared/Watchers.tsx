@@ -11,7 +11,7 @@ function Watchers() {
 		abi: LotteryRoundABI,
 		eventName: 'TicketSold',
 		onLogs: () => {
-			queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+			// queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
 		},
 	});
 

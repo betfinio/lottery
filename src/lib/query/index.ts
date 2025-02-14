@@ -84,8 +84,10 @@ export const useOldTickets = (address?: Address) => {
 
 export const useActiveTickets = (address?: Address) => {
 	return useQuery({
-		queryKey: ['lottery', 'tickets', 'active', address],
+		queryKey: ['lottery', 'tickets', 'active', address?.toLowerCase()],
 		queryFn: () => fetchActiveTickets(address),
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
 	});
 };
 

@@ -25,6 +25,7 @@ export interface IRoundTicket {
 	token: number;
 	betAddress: Address;
 	lines: ILine[];
+	isLocal?: boolean;
 }
 
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';
@@ -57,3 +58,6 @@ export interface JackpotCombination {
 	winAmount: bigint;
 	ticketNumber: number;
 }
+
+export type DrawTab = 'draw' | 'tickets';
+export type TicketsTab = 'active' | 'old';
