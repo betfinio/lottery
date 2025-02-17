@@ -51,19 +51,23 @@ function SharedLine({
 			{line.numbers
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
-					<NumberComponent key={index} className={cn(numberClassName, 'overflow-hidden')}>
-						<AnimatePresence mode="popLayout" custom={array[index]}>
+					<NumberComponent key={index} className={cn(numberClassName, 'relative')}>
+						<AnimatePresence mode="wait" custom={array[index]}>
 							<motion.div
 								key={number}
 								custom={array[index]}
+								className={'absolute top-[5px]'}
 								initial={{
 									y: -20,
+									opacity: 0,
 								}}
 								animate={{
 									y: 0,
+									opacity: 1,
 								}}
 								exit={{
 									y: 20,
+									opacity: 0,
 								}}
 								transition={{
 									duration: 0.2,
@@ -82,21 +86,26 @@ function SharedLine({
 				animate={symbolControls}
 			>
 				<NumberComponent isSymbol className={symbolClassName}>
-					<motion.div
-						key={line.symbol + line.numbers.join(',')}
-						custom={line.symbol}
-						initial={{
-							y: -20,
-						}}
-						animate={{
-							y: 0,
-						}}
-						exit={{
-							y: 20,
-						}}
-					>
-						<SymbolElement symbol={line.symbol} />
-					</motion.div>
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={line.symbol + line.numbers.join(',')}
+							custom={line.symbol}
+							initial={{
+								y: -20,
+								opacity: 0,
+							}}
+							animate={{
+								y: 0,
+								opacity: 1,
+							}}
+							exit={{
+								y: 20,
+								opacity: 0,
+							}}
+						>
+							<SymbolElement symbol={line.symbol} />
+						</motion.div>
+					</AnimatePresence>
 				</NumberComponent>
 			</motion.div>
 		</div>

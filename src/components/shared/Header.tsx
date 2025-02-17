@@ -72,7 +72,7 @@ function PayoutContent() {
 	];
 	return (
 		<DialogContent className={'lottery'}>
-			<div className={'w-[98vw] md:max-w-[550px] p-2'}>
+			<div className={'w-[98vw] md:max-w-[550px] p-2 overflow-y-scroll max-h-[90vh]'}>
 				<DialogHeader>
 					<DialogTitle className="flex justify-between font-normal p-2 text-xl">
 						Winning combinations

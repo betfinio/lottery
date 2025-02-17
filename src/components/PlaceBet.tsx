@@ -28,7 +28,7 @@ import {
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { type FC, useEffect, useState } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount } from 'wagmi';
@@ -56,6 +56,7 @@ const PlaceBet = () => {
 	const { state, updateState } = useRoundState(round?.address);
 	const [newRecipientDialogOpen, setNewRecipientDialogOpen] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
+	const toastShown = useRef(false);
 
 	// Effects
 	useEffect(() => {
@@ -80,20 +81,28 @@ const PlaceBet = () => {
 		const toggleRound = rounds.find((e) => e.address === toggleRoundAddress);
 		if (!toggleRound) return;
 		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
+			if (toastShown.current) return;
 			if (selectedRounds.length === 1) {
 				toast({
 					title: 'At least one draw must be selected',
 					variant: 'destructive',
 				});
+				toastShown.current = true;
 				return;
 			}
 			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
 		} else {
-			setSelectedRounds((prev) => [...prev, toggleRound]);
+			setSelectedRounds((prev) => {
+				if (prev.find((r) => r.address === toggleRound.address)) return prev;
+				return [...prev, toggleRound];
+			});
+			toastShown.current = false;
 		}
 	};
 
 	const addMoreRound = () => {
+		// ignore if there are no more rounds to add
+		if (visibleRounds.length >= rounds.length) return;
 		setVisibleRounds((prev) => [...prev, ...rounds.slice(visibleRounds.length, visibleRounds.length + 1)]);
 	};
 
@@ -190,7 +199,12 @@ const PlaceBet = () => {
 							<Calendar mode={'multiple'} disabled={compare(roundsAsDates)} selected={selectedDates} onSelect={handleCalendarChange} />
 						</PopoverContent>
 					</Popover>
-					<Button variant={'outline'} className={'gap-1 border-primary text-secondary-foreground'} onClick={() => addMoreRound()}>
+					<Button
+						variant={'outline'}
+						className={'gap-1 border-primary text-secondary-foreground'}
+						onClick={() => addMoreRound()}
+						disabled={visibleRounds.length >= rounds.length}
+					>
 						<PlusCircleIcon className={'w-4 h-4'} />
 						Add more draws
 					</Button>

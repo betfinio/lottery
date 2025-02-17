@@ -164,7 +164,7 @@ export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; classNa
 				strokeWidth="1"
 			/>
 
-			<foreignObject width={33} height={33} x={0} y={0}>
+			<foreignObject width={33} height={33} x={0} y={0} className={'overflow-hidden'}>
 				<div className={'text-foreground flex items-center h-[33px] justify-center'}>{children}</div>
 			</foreignObject>
 		</svg>
