@@ -35,9 +35,10 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, render
 				<div className={'flex flex-row gap-1'}>
 					{Array.from({ length: Math.ceil(items.length / itemsPerPage) }).map((_, i) => (
 						<div
+							onClick={() => setOffset(i * itemsPerPage)}
 							key={i}
 							className={cn(
-								'rounded-md w-6 h-6 flex items-center justify-center text-sm',
+								'rounded-md w-6 h-6 flex items-center justify-center text-sm cursor-pointer',
 								i === Math.floor(offset / itemsPerPage) ? 'text-foreground' : 'text-muted-foreground',
 							)}
 						>

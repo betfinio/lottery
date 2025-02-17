@@ -7,7 +7,7 @@ function MyTickets() {
 	const { tab, setTab } = useTicketsTab();
 	return (
 		<div className={'p-2 flex flex-col gap-4 justify-between relative h-full'}>
-			<Tabs value={tab}>
+			<Tabs value={tab} className="h-full">
 				<TabsList className={'bg-transparent w-full grid grid-cols-2'}>
 					<TabsTrigger variant={'contained'} value="active" className={''} onClick={() => setTab('active')}>
 						Active tickets
@@ -16,10 +16,10 @@ function MyTickets() {
 						Old tickets
 					</TabsTrigger>
 				</TabsList>
-				<TabsContent value="active">
+				<TabsContent value="active" className={'h-[calc(100%-40px)]'}>
 					<ActiveTicketsList />
 				</TabsContent>
-				<TabsContent value="old">
+				<TabsContent value="old" className={'h-[calc(100%-40px)]'}>
 					<OldTicketsList />
 				</TabsContent>
 			</Tabs>
