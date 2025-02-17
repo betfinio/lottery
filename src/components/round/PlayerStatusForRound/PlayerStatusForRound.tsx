@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PlayerDidNotWin } from './PlayerDidNotWin';
+import PlayerTickets from './PlayerTickets';
 import { PlayerWon } from './PlayerWon';
 import { RoundNotCalculated } from './RoundNotCalculated';
 
@@ -35,7 +36,7 @@ export const PlayerStatusForRound: FC = () => {
 				<div className="mb-6 text-lg font-semibold">{t('yourTicketsInDraw')}</div>
 				<div className="flex gap-5 flex-wrap justify-center">
 					<PlayerWon />
-					<PlayerWon />
+					<PlayerTickets />
 				</div>
 			</div>
 		);
