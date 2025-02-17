@@ -39,6 +39,7 @@ fragment Ticket on Ticket {
 	}
 	linesCount
 	created
+	claimed
 	updated
 	amount
 	symbolUnlocked

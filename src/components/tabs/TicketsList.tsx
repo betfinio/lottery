@@ -6,9 +6,10 @@ import { useState } from 'react';
 export interface TicketsListProps {
 	tickets: IRoundTicket[];
 	old?: boolean;
+	itemsPerPage?: number;
 }
 
-function TicketsList({ tickets = [], old = false }: TicketsListProps) {
+function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsListProps) {
 	const [expanded, setExpanded] = useState<number>(-1);
 
 	const getMode = (index: number): ActiveTicketMode => {
@@ -28,7 +29,7 @@ function TicketsList({ tickets = [], old = false }: TicketsListProps) {
 	return (
 		<Pagination
 			items={tickets}
-			itemsPerPage={4}
+			itemsPerPage={itemsPerPage}
 			className="w-full h-full"
 			renderItem={(ticket, index) => <Ticket old={old} ticket={ticket} key={index} mode={getMode(index)} onToggleExpand={() => handleToggleExpand(index)} />}
 		/>

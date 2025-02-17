@@ -11,7 +11,7 @@ export const PlayerStatusForRound: FC = () => {
 	const roundIsNotCalculated = false;
 
 	const playerHasBets = true;
-	const playerDidNotWin = true;
+	const playerDidNotWin = false;
 	const playerWon = true;
 
 	if (roundIsNotCalculated) {
@@ -31,7 +31,7 @@ export const PlayerStatusForRound: FC = () => {
 						<PlayerDidNotWin />
 					</div>
 					<div>
-						<TicketsList tickets={itemsList} />
+						<PlayerTickets />
 					</div>
 					{/* <PlayerDidNotWin /> */}
 					{/* <PlayerWon /> */}
