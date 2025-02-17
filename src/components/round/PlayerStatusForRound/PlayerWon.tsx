@@ -1,8 +1,10 @@
-import { useGetRoundFromParams, useWinningLine } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundTicketsByPlayer, useWinningLine } from '@/src/lib/query';
 import type { IRoundTicket } from '@/src/lib/types';
+import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
 import { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 import { CopyLocation } from '../../shared/CopyLocation';
 import { JackpotFrame } from '../../shared/JackpotTiara/JackpotFrame';
 import Pagination from '../../shared/Pagination';
@@ -45,13 +47,13 @@ export const itemsList = [
 ] as IRoundTicket[];
 
 export const PlayerWon: FC = () => {
+	const { address = ZeroAddress } = useAccount();
 	const round = useGetRoundFromParams();
+	const { data: tickets = [] } = useRoundTicketsByPlayer(round, address);
+
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const { data: winningLine } = useWinningLine(round);
 	console.log(winningLine, 'winningLine');
-	const tickets: IRoundTicket[] = useMemo(() => {
-		return itemsList as IRoundTicket[];
-	}, []);
 
 	const applyPagination = tickets.length > 2;
 	return (
