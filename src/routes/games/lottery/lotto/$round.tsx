@@ -39,11 +39,10 @@ function HistoryRoundPage() {
 				<div className="mt-4 md:min-h-[541px] flex justify-center items-center">
 					<PlayerStatusForRound />
 				</div>
-				{showJackpotsTable && (
-					<div className="mt-4">
-						<RoundJackpots />
-					</div>
-				)}
+
+				<div className="mt-4">
+					<RoundJackpots />
+				</div>
 				<RoundChainDetails />
 			</div>
 			<Toaster />
