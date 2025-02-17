@@ -31,6 +31,11 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 			items={tickets}
 			itemsPerPage={itemsPerPage}
 			className="w-full h-full"
+			additionalFooter={
+				<div className="text-sm text-muted-foreground">
+					Total: <span className="text-foreground">{tickets.length}</span>
+				</div>
+			}
 			renderItem={(ticket, index) => <Ticket old={old} ticket={ticket} key={index} mode={getMode(index)} onToggleExpand={() => handleToggleExpand(index)} />}
 		/>
 	);
