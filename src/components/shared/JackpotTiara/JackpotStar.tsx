@@ -34,12 +34,12 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 			<g transform={`translate(${x}, ${y}) scale(${scale})`}>
 				<path
 					d="M0 -46.8L9.273 -28.016L30 -25.004L15.003 -10.382L18.541 10.264L0 0.519L-18.541 10.264L-14.997 -10.382L-30 -25.004L-9.268 -28.016L0 -46.8Z"
-					fill="#F2BF18"
+					fill="currentColor"
 				/>
 				<g style={{ mixBlendMode: 'multiply' }}>
 					<path
 						d="M0 -46.8L9.273 -28.016L30 -25.004L15.003 -10.382L18.541 10.264L0 0.519L-18.541 10.264L-14.997 -10.382L-30 -25.004L-9.268 -28.016L0 -46.8Z"
-						fill="#F2BF18"
+						fill="currentColor"
 					/>
 				</g>
 				<path
@@ -74,8 +74,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint0.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint1}
@@ -85,8 +85,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint1.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint2}
@@ -96,8 +96,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint2.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint3}
@@ -107,8 +107,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint3.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint4}
@@ -118,8 +118,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint4.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint5}
@@ -129,8 +129,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint5.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.02" stopColor="#FFFF54" stopOpacity="0" />
-					<stop offset="0.95" stopColor="#FFFF54" />
+					<stop offset="0.02" stopColor="currentColor" stopOpacity="0" />
+					<stop offset="0.95" stopColor="currentColor" />
 				</linearGradient>
 				<linearGradient
 					id={gradientIds.paint6}
@@ -140,8 +140,8 @@ export const JackpotStar: FC<StarProps> = ({ x, y, scale = 1, index }) => {
 					y2={gradientCoords.paint6.y2}
 					gradientUnits="userSpaceOnUse"
 				>
-					<stop offset="0.05" stopColor="#FFFF54" />
-					<stop offset="0.98" stopColor="#FFFF54" stopOpacity="0" />
+					<stop offset="0.05" stopColor="currentColor" />
+					<stop offset="0.98" stopColor="currentColor" stopOpacity="0" />
 				</linearGradient>
 			</defs>
 		</>

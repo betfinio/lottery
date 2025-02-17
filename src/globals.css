@@ -3,23 +3,39 @@
 @tailwind utilities;
 
 * {
-	user-select: none;
+  user-select: none;
+}
+
+@layer base {
+  :root {
+    --gold: 45 89% 52%;
+    --silver: 0, 0%, 86%;
+    --bronze: 33, 57%, 56%;
+    --aura: 48, 100%, 89%;
+  }
+
+  .dark {
+    --gold: 45 89% 52%;
+    --silver: 0, 0%, 86%;
+    --bronze: 33, 57%, 56%;
+    --aura: 48, 100%, 89%;
+  }
 }
 
 .shiny-gold {
-	background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
+  background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
 }
 
 .regular-number {
-	color: hsla(228, 11%, 47%, 0.3);
-	stroke: hsla(228, 11%, 47%, 1);
+  color: hsla(228, 11%, 47%, 0.3);
+  stroke: hsla(228, 11%, 47%, 1);
 }
 
 .symbol-number {
-	stroke: hsla(33, 67%, 48%, 1);
-	color: hsla(33, 67%, 48%, 0.3);
+  stroke: hsla(33, 67%, 48%, 1);
+  color: hsla(33, 67%, 48%, 0.3);
 }
 
 .create-shadow {
-	box-shadow: 0 0 40px -10px #c6a152;
+  box-shadow: 0 0 40px -10px #c6a152;
 }
