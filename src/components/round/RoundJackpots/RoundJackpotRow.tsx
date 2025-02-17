@@ -3,6 +3,7 @@ import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@betfinio/components/ui';
 import type { FC } from 'react';
+import Ticket from '../../icons/Ticket';
 import { JackpotRowTable } from './JackpotRowTable';
 import type { JACKPOTS, JackpotRowItem } from './constants';
 interface RoundJackpotRowProps {
@@ -11,33 +12,40 @@ interface RoundJackpotRowProps {
 export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 	const round = useGetRoundFromParams();
 	const { data: jackpotData, isLoading } = useRoundJackpots(round);
-	const Icon = jackpot.icon;
 
 	const currentJackpot = jackpotData?.[jackpot.id][0];
 	const hasNoTickets = !currentJackpot?.tickets || currentJackpot?.tickets.length === 0;
 	return (
 		<AccordionItem className={'p-0 w-full '} value={jackpot.id.toString()}>
 			<AccordionTrigger
-				className={cn(' bg-secondary rounded-md   flex  py-3 px-6 h-16 gap-4 ', {
+				className={cn(' bg-secondary rounded-md flex py-3 px-6 h-[72px] gap-4 ', {
 					'[&>svg]:opacity-0': hasNoTickets,
 				})}
 				disabled={hasNoTickets}
 			>
 				<div className="grid grid-cols-4 w-full">
 					<div className="flex gap-2 items-center">
-						{Icon ? <Icon className="w-6 h-6" /> : <div className="w-6 h-6 " />}
-						<div className="flex gap-4 items-center font-semibold whitespace-nowrap">{jackpot.name}</div>
+						<div className="w-24 relative">
+							{jackpot.icon}
+							<div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+								<div className="text-xs font-semibold">{jackpot.name}</div>
+							</div>
+						</div>
 					</div>
 					<div className="flex gap-4 items-center justify-center whitespace-nowrap">{jackpot.combination}</div>
 					<div className="flex gap-4 items-center justify-center  whitespace-nowrap">
 						<BetValue
+							withIcon
 							className={cn({
 								'animate-pulse blur': isLoading,
 							})}
 							value={BigInt(currentJackpot?.claimed ?? 0)}
 						/>
 					</div>
-					<div className="flex gap-4 items-center justify-center whitespace-nowrap">Winners</div>
+					<div className="flex gap-4 items-center justify-center whitespace-nowrap">
+						{currentJackpot?.tickets.length}
+						<Ticket className={'w-4 h-4'} />
+					</div>
 				</div>
 			</AccordionTrigger>
 			<AccordionContent className="flex p-0 w-full">

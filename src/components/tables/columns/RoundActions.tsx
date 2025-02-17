@@ -3,7 +3,7 @@ import { useManualDistributeJackpot, useManualDistributeRefund, useManualRefund,
 import { RoundStatus } from '@/src/lib/types';
 import { DropdownMenuItem } from '@betfinio/components/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@betfinio/components/ui';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, SearchIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import type { Address } from 'viem';
 

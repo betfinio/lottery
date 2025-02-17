@@ -1,4 +1,5 @@
 import type { GetRoundJackpotsQuery, JackpotFragment } from '@/.graphclient';
+import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
 import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
 import type { JackpotCombination } from '@/src/lib/types';
 import { truncateEthAddress } from '@betfinio/abi';
@@ -27,21 +28,33 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			meta: {
 				className: 'h-[50px]',
 			},
-			cell: (props) => <div>{truncateEthAddress(props.row.original.betAddress as Address)}</div>,
+			cell: (props) => (
+				<a href={`${ETHSCAN}/address/${props.row.original.betAddress}`} target="_blank" rel="noreferrer">
+					{truncateEthAddress(props.row.original.betAddress as Address)}
+				</a>
+			),
 		}),
 		columnHelper.accessor('owner', {
 			header: t('ticketOwner'),
 			meta: {
 				className: 'h-[50px]',
 			},
-			cell: (props) => <div>{truncateEthAddress(props.row.original.owner as Address)}</div>,
+			cell: (props) => (
+				<a href={`${ETHSCAN}/address/${props.row.original.owner}`} target="_blank" rel="noreferrer">
+					{truncateEthAddress(props.row.original.owner as Address)}
+				</a>
+			),
 		}),
 		columnHelper.accessor('tokenId', {
 			header: t('ticketNumber'),
 			meta: {
 				className: 'h-[50px]',
 			},
-			cell: (props) => <div>{Number(props.row.original.tokenId)}</div>,
+			cell: (props) => (
+				<a href={`${ETHSCAN}/nft/${LOTTERY_ADDRESS}/${props.row.original.tokenId}`} target="_blank" rel="noreferrer">
+					{Number(props.row.original.tokenId)}
+				</a>
+			),
 		}),
 		columnHelper.accessor('lines.claimed', {
 			header: t('ticketWinning'),
@@ -51,7 +64,7 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			cell: (props) => {
 				const lines = props.row.original.lines.filter((line) => line.combination === currentJackpot.combination);
 				const lineTotal = lines.reduce((acc, line) => acc + BigInt(line.claimed), BigInt(0));
-				return <BetValue value={lineTotal} />;
+				return <BetValue value={lineTotal} withIcon />;
 			},
 		}),
 	] as ColumnDef<Ticket>[];

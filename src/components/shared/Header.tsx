@@ -90,7 +90,14 @@ function PayoutContent() {
 							{jackpots.map((jackpot, index) => (
 								<div key={index} className={cn('grid grid-cols-4 gap-2 text-center items-center p-2 rounded-xl', index % 2 === 0 && 'bg-secondary/50')}>
 									<div className={'relative hidden md:block'}>
-										<JackpotFrame className={'w-full h-full'} />
+										<JackpotFrame
+											animateStars
+											className={cn('w-full h-full', {
+												'text-gold': jackpot.coef >= 15_000n,
+												'text-silver': jackpot.coef >= 5n && jackpot.coef < 15_000n,
+												'text-bronze': jackpot.coef >= 1n && jackpot.coef < 5n,
+											})}
+										/>
 										<div className={'absolute top-1 left-0 w-full h-full flex flex-col items-center justify-center'}>
 											<div className={' font-semibold'}>{jackpot.name}</div>
 										</div>
