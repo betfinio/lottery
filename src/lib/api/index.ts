@@ -1,12 +1,12 @@
 import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
 import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
-import { decodeLine, decodeLines, encodeLines } from '@/src/lib/utils';
+import { decodeLine, decodeLines, encodeLines, parseLine } from '@/src/lib/utils';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
-import { type Config, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
+import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
-import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
+import { type Address, Log, encodeAbiParameters, parseAbiParameters } from 'viem';
 import { getContractEvents } from 'viem/actions';
 
 /**
@@ -337,7 +337,56 @@ export const fetchFinishedRoundTransactionByRoundAddress = async (config: Config
 		fromBlock,
 		toBlock,
 	});
-
-	console.log(roundFinished, 'roundFinished');
 	return roundFinished;
+};
+
+export const getMintedTokensByHash = async (hash: Address, config: Config): Promise<IRoundTicket[]> => {
+	const receipt = await getTransactionReceipt(config, {
+		hash,
+	});
+	// filter logs from LOTTERY_ADDRESS
+	const logs = receipt.logs.filter((log) => log.address.toLowerCase() === LOTTERY_ADDRESS.toLowerCase());
+
+	const ids = logs.map((log) => {
+		const mintedToken = BigInt(log.topics[3] ?? '0x0');
+		return mintedToken;
+	});
+
+	return await Promise.all(ids.map((id) => getTicketByTokenId(id, config)));
+};
+
+export const getTicketByTokenId = async (tokenId: bigint, config: Config): Promise<IRoundTicket> => {
+	const bet = await readContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'bets',
+		args: [tokenId],
+	});
+
+	const betInfo = await readContract(config, {
+		abi: LotteryBetABI,
+		address: bet,
+		functionName: 'getBetInfo',
+	});
+
+	const round = await readContract(config, {
+		abi: LotteryBetABI,
+		address: bet,
+		functionName: 'getRound',
+		args: [],
+	});
+	const lines = await readContract(config, {
+		abi: LotteryBetABI,
+		address: bet,
+		functionName: 'getTickets',
+	});
+	const parsedLines = lines.map((line) => parseLine(line));
+	return {
+		token: Number(tokenId),
+		round: round,
+		player: betInfo[0],
+		betAddress: bet,
+		lines: parsedLines,
+		isLocal: true,
+	};
 };

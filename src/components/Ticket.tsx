@@ -39,12 +39,6 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 	const handleOpenEditMode = () => logger.log('edit');
 	const handleFullMode = () => onToggleExpand?.();
 
-	const handleRandomize = (index: number) => {
-		const random = randomize();
-		changeLine(random, index);
-		logger.log('randomize', index);
-	};
-
 	const changeLine = (line: ILine, index: number) => {
 		setLines((prev) => {
 			const newLines = [...prev];
@@ -72,8 +66,9 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 	return (
 		<motion.div
 			animate={{ height: editing === -1 ? 'auto' : 450 }}
-			className={cn('border border-purple-box rounded-xl p-2 ', {
+			className={cn('border border-purple-box rounded-xl p-2', {
 				'bg-gradient-to-b from-background to-background via-primary/20 via-60%': mode === 'full' || mode === 'expanded',
+				'border-primary shadow': ticket.isLocal,
 			})}
 		>
 			<Dialog open={open} onOpenChange={setOpen}>

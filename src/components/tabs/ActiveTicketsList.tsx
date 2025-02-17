@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi';
 function ActiveTicketsList() {
 	const { address } = useAccount();
 	const { data: tickets = [] } = useActiveTickets(address);
+
 	return <TicketsList tickets={tickets} />;
 }
 

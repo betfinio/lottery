@@ -1,7 +1,7 @@
 import type { GTicket, ILine } from '@/src/lib/types.ts';
 import confetti from 'canvas-confetti';
 import { DateTime } from 'luxon';
-
+import { type Address, decodeAbiParameters } from 'viem';
 export interface TimeDiff {
 	days: number;
 	hours: number;
@@ -37,6 +37,14 @@ export const decodeLine = (line: GTicket): ILine => {
 
 export const decodeLines = (lines: GTicket[]): ILine[] => {
 	return lines.map(decodeLine);
+};
+
+export const parseLine = (line: Address): ILine => {
+	const decoded = decodeAbiParameters([{ type: 'uint8' }, { type: 'uint32' }], line);
+	return decodeLine({
+		symbol: decoded[0],
+		numbers: decoded[1],
+	});
 };
 
 export const randomize = (): ILine => {

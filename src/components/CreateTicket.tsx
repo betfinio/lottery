@@ -128,7 +128,6 @@ const TicketList = () => {
 	};
 
 	const isDisabled = state !== RoundState.FILLING;
-	console.log(isDisabled);
 
 	return (
 		<AnimatePresence mode={'popLayout'}>

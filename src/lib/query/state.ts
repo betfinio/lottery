@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { Address } from 'viem';
-import { RoundState } from '../types';
+import { type DrawTab, RoundState, type TicketsTab } from '../types';
 
 // use query that saves state of round
 
@@ -65,5 +65,60 @@ export const useLocalStorage = <T>(key: string, options: UseLocalStorageOptions<
 	return {
 		value: query.data as T,
 		setValue,
+	};
+};
+
+export const useDrawInfoTab = () => {
+	const queryClient = useQueryClient();
+	const query = useQuery<DrawTab>({
+		queryKey: ['drawInfoTab'],
+		initialData: 'draw',
+	});
+
+	const setTab = (tab: string) => {
+		if (tab === 'draw' || tab === 'tickets') {
+			queryClient.setQueryData(['drawInfoTab'], tab);
+		}
+	};
+
+	return {
+		tab: query.data,
+		setTab,
+	};
+};
+
+export const useTicketsTab = () => {
+	const queryClient = useQueryClient();
+	const query = useQuery<TicketsTab>({
+		queryKey: ['ticketsTab'],
+		initialData: 'active',
+	});
+
+	const setTab = (tab: string) => {
+		if (tab === 'active' || tab === 'old') {
+			queryClient.setQueryData(['ticketsTab'], tab);
+		}
+	};
+
+	return {
+		tab: query.data,
+		setTab,
+	};
+};
+
+export const useHighlightedTickets = () => {
+	const queryClient = useQueryClient();
+	const query = useQuery<number[]>({
+		queryKey: ['highlightedTickets'],
+		initialData: [],
+	});
+
+	const setHighlightedTickets = (tickets: number[]) => {
+		queryClient.setQueryData(['highlightedTickets'], tickets);
+	};
+
+	return {
+		highlightedTickets: query.data,
+		setHighlightedTickets,
 	};
 };
