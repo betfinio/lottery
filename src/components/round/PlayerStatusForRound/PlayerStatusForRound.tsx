@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import TicketsList from '../../tabs/TicketsList';
 import { PlayerDidNotWin } from './PlayerDidNotWin';
-import { PlayerWon } from './PlayerWon';
+import { PlayerWon, itemsList } from './PlayerWon';
 import { RoundNotCalculated } from './RoundNotCalculated';
 
 export const PlayerStatusForRound: FC = () => {
@@ -9,7 +10,7 @@ export const PlayerStatusForRound: FC = () => {
 	const roundIsNotCalculated = false;
 
 	const playerHasBets = true;
-	const playerDidNotWin = false;
+	const playerDidNotWin = true;
 	const playerWon = true;
 
 	if (roundIsNotCalculated) {
@@ -23,8 +24,17 @@ export const PlayerStatusForRound: FC = () => {
 	if (playerHasBets && playerDidNotWin) {
 		return (
 			<div className="flex flex-col items-center">
-				<div className="mb-6 text-lg font-semibold">{t('yourTicketsInDraw')}</div>
-				<PlayerDidNotWin />
+				<div className="text-lg mb-4 font-semibold">{t('yourTicketsInDraw')}</div>
+				<div className="flex gap-5 flex-wrap justify-end ">
+					<div className="mt-auto">
+						<PlayerDidNotWin />
+					</div>
+					<div>
+						<TicketsList tickets={itemsList} />
+					</div>
+					{/* <PlayerDidNotWin /> */}
+					{/* <PlayerWon /> */}
+				</div>
 			</div>
 		);
 	}
@@ -32,7 +42,7 @@ export const PlayerStatusForRound: FC = () => {
 	if (playerHasBets && playerWon) {
 		return (
 			<div className="flex flex-col items-center justify-center">
-				<div className="mb-6 text-lg font-semibold">{t('yourTicketsInDraw')}</div>
+				<div className=" text-lg font-semibold">{t('yourTicketsInDraw')}</div>
 				<div className="flex gap-5 flex-wrap justify-center">
 					<PlayerWon />
 					<PlayerWon />

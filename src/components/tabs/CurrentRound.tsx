@@ -9,6 +9,7 @@ import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
+import { StatBox } from '../shared/StatBox';
 
 interface CurrentRoundProps {
 	round: IRound;
@@ -93,21 +94,6 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		</div>
 	);
 };
-
-interface StatBoxProps {
-	label: string;
-	value: React.ReactNode;
-	icon?: React.ReactNode;
-}
-
-const StatBox: FC<StatBoxProps> = ({ label, value, icon }) => (
-	<div className="bg-secondary text-secondary-foreground rounded-xl flex items-center justify-between p-4 py-2 flex-col">
-		<span className="text-muted-foreground text-sm">{label}</span>
-		<div className="flex flex-row items-center gap-1">
-			{value} {icon}
-		</div>
-	</div>
-);
 
 interface PartnerLinkProps {
 	text: string;
