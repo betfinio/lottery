@@ -111,19 +111,13 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 								.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0))
 								.slice(0, mode === 'full' || mode === 'expanded' ? lines.length : 1)
 								.map((line, index) => (
-									<motion.div
-										// initial={{ opacity: 0, height: 0, margin: 0 }}
-										key={index}
-										// animate={{ opacity: 1, height: 36, margin: 4 }}
-										// exit={{ height: 0, opacity: 0, margin: 0 }}
-										className={cn('flex flex-row gap-2 items-center justify-center')}
-									>
+									<motion.div key={index} className={cn('flex flex-row gap-2 items-center justify-center')}>
 										{line.numbers
 											.sort((a, b) => a - b)
 											.map((number, i) => (
 												<NumberComponent
 													key={i}
-													className={cn({
+													className={cn('mt-1', {
 														'stroke-success': winningLine && partlyEquals(line, winningLine, i),
 													})}
 												>
@@ -143,7 +137,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 											<PencilLineIcon className={'w-4 h-4 text-secondary-foreground'} />
 										</div>
 										<motion.div
-											// animate={{ rotate: mode === 'full' ? 180 : 0 }}
+											animate={{ rotate: mode === 'full' ? 180 : 0 }}
 											className={cn('cursor-pointer', {
 												'opacity-0': index > 0 || lines.length === 1,
 											})}
