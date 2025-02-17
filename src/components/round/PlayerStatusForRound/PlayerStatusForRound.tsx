@@ -31,9 +31,12 @@ export const PlayerStatusForRound: FC = () => {
 
 	if (playerHasBets && playerWon) {
 		return (
-			<div className="flex flex-col items-center">
+			<div className="flex flex-col items-center justify-center">
 				<div className="mb-6 text-lg font-semibold">{t('yourTicketsInDraw')}</div>
-				<PlayerWon />
+				<div className="flex gap-5 flex-wrap justify-center">
+					<PlayerWon />
+					<PlayerWon />
+				</div>
 			</div>
 		);
 	}

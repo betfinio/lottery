@@ -104,6 +104,10 @@
 		"ticketWinning": "Ticket winning",
 		"howItWorks": "How it works",
 		"proofOfRandom": "Proof of randomness",
-		"yourTicketsInDraw": "Your tickets in draw"
+		"yourTicketsInDraw": "Your tickets in draw",
+		"betSize": "Bet size",
+		"multiplicator": "Multiplicator",
+		"share": "Share",
+		"copiedCurrentRoundRef": "Copied current round link"
 	}
 }
