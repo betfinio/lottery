@@ -1,5 +1,5 @@
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer, useTicketPrice, useWinningLine } from '@/src/lib/query';
-import type { IRoundTicket, IRoundTicketWithWinningCoef, RoundStatus } from '@/src/lib/types';
+import { type IRoundTicket, type IRoundTicketWithWinningCoef, RoundStatus } from '@/src/lib/types';
 import { compareLines } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { type FC, useMemo } from 'react';
