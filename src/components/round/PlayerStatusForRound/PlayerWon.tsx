@@ -2,7 +2,7 @@ import { useGetRoundFromParams, useRoundTicketsByPlayer, useWinningLine } from '
 import type { ILine, IRoundTicket } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { CopyLocation } from '../../shared/CopyLocation';
@@ -56,7 +56,6 @@ interface PlayerWonProps {
 export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, tickets, placedAmount, winingAmount }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const multiplier = Number(winingAmount) / Number(placedAmount);
-
 	const applyPagination = tickets.length > 1;
 	return (
 		<div className="min-h-[430px] mt-[111px] min-w-[388px]">
@@ -86,8 +85,9 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, ticket
 					</div>
 					<div className="text-base">
 						<div className="flex items-center gap-2">
-							<CopyLocation toastMessage={t('copiedCurrentRoundRef')} className="w-4 h-4" />
-							<div>{t('share')}</div>
+							<CopyLocation toastMessage={t('copiedCurrentRoundRef')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
+								<div className="cursor-pointer">{t('share')}</div>
+							</CopyLocation>
 						</div>
 					</div>
 				</div>
