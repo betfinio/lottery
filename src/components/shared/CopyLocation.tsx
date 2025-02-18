@@ -31,7 +31,7 @@ export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toa
 			{addressCopied ? (
 				<CheckIcon className={cn('text-success', iconClassName)} />
 			) : (
-				<CopyIcon className={cn('text-secondary-foreground cursor-pointer ', iconClassName)} onClick={handleCopyRoundAddress} />
+				<CopyIcon className={cn('text-secondary-foreground cursor-pointer ', iconClassName)} />
 			)}
 			{children}
 		</div>

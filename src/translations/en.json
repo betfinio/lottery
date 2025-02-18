@@ -116,6 +116,8 @@
 		"users": "Users",
 		"betVolume": "Bet Volume",
 		"backToCurrentRound": "Back To Current Round",
-		"youWon": "You Won"
+		"youWon": "You Won",
+		"ticketLines": "Lines",
+		"volume": "Volume"
 	}
 }
