@@ -42,7 +42,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 							value={BigInt(currentJackpot?.claimed ?? 0)}
 						/>
 					</div>
-					<div className="flex gap-4 items-center justify-center whitespace-nowrap">
+					<div className="flex gap-1 items-center justify-center whitespace-nowrap">
 						{currentJackpot?.tickets.length}
 						<Ticket className={'w-4 h-4'} />
 					</div>

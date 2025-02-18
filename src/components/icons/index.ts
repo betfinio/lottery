@@ -6,3 +6,4 @@ export type CustomIconProps = ForwardRefExoticComponent<Omit<LucideProps, 'ref'>
 export * from './GoldStar';
 export * from './BronzeStar';
 export * from './SilverStar';
+export * from './Ticket';

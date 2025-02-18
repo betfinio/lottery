@@ -32,7 +32,7 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 			itemsPerPage={itemsPerPage}
 			className="w-full h-full"
 			additionalFooter={
-				<div className="text-sm text-muted-foreground">
+				<div className="text-sm text-muted-foreground px-2">
 					Total: <span className="text-foreground">{tickets.length}</span>
 				</div>
 			}

@@ -52,7 +52,7 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			},
 			cell: (props) => (
 				<a href={`${ETHSCAN}/nft/${LOTTERY_ADDRESS}/${props.row.original.tokenId}`} target="_blank" rel="noreferrer">
-					{Number(props.row.original.tokenId)}
+					#{Number(props.row.original.tokenId)}
 				</a>
 			),
 		}),
