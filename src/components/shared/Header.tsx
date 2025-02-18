@@ -6,7 +6,7 @@ import { useMediaQuery } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
 import { useChatbot } from 'betfinio_context/lib/context';
-import { AlertCircle, BookOpenCheck, CircleAlert, CircleEqual, CircleHelp, X, XIcon } from 'lucide-react';
+import { AlertCircle, AlertTriangleIcon, BookOpenCheck, CircleAlert, CircleEqual, CircleHelp, X, XIcon } from 'lucide-react';
 import { NumberComponent, SymbolElement } from '../Line';
 import Ticket from '../icons/Ticket';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
@@ -28,8 +28,8 @@ const Header = () => {
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
 				<Dialog>
 					<DialogTrigger className={'flex flex-col items-center'}>
-						<BookOpenCheck className={'w-6 h-6'} />
-						<span className={'hidden sm:inline text-xs'}>Combinations</span>
+						<AlertCircle className={'w-6 h-6'} />
+						<span className={'hidden sm:inline text-xs'}>Paytable</span>
 					</DialogTrigger>
 					<PayoutContent />
 				</Dialog>
@@ -45,7 +45,7 @@ const Header = () => {
 					<span className={'hidden sm:inline text-xs'}>How to play</span>
 				</a>
 				<div className={'flex flex-col items-center text-secondary-foreground group lg:text-foreground hover:text-secondary-foreground text-xs cursor-pointer'}>
-					<AlertCircle className={'w-6 h-6'} onClick={handleReport} />
+					<AlertTriangleIcon className={'w-6 h-6'} onClick={handleReport} />
 					<span className={'hidden md:block'}>Report</span>
 				</div>
 			</div>
