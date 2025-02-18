@@ -1,5 +1,5 @@
 import { useGetRoundFromParams, useRoundTicketsByPlayer, useWinningLine } from '@/src/lib/query';
-import type { IRoundTicket } from '@/src/lib/types';
+import type { ILine, IRoundTicket } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
 import { type FC, useMemo } from 'react';
@@ -46,16 +46,18 @@ export const itemsList = [
 	},
 ] as IRoundTicket[];
 
-export const PlayerWon: FC = () => {
-	const { address = ZeroAddress } = useAccount();
-	const round = useGetRoundFromParams();
-	const { data: tickets = [] } = useRoundTicketsByPlayer(round, address);
-
+interface PlayerWonProps {
+	winningLine: ILine | null | undefined;
+	winningCoef: bigint;
+	tickets: IRoundTicket[];
+	placedAmount: bigint;
+	winingAmount: bigint;
+}
+export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, tickets, placedAmount, winingAmount }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
-	const { data: winningLine } = useWinningLine(round);
-	console.log(winningLine, 'winningLine');
+	const multiplier = Number(winingAmount) / Number(placedAmount);
 
-	const applyPagination = tickets.length > 2;
+	const applyPagination = tickets.length > 1;
 	return (
 		<div className="min-h-[430px] mt-[111px] min-w-[388px]">
 			<div className="border-2 border-aura rounded-lg relative pt-[104px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
@@ -63,8 +65,10 @@ export const PlayerWon: FC = () => {
 				<div className="absolute h-[208px] w-[320px] -top-[104px] left-1/2 -translate-x-1/2">
 					<div className="relative">
 						<JackpotFrame animateStars className="text-gold " />
-						<div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-							<BetValue className="text-secondary-foreground" value={200} />
+
+						<div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+							<div>{t('youWon')}</div>
+							<BetValue className="text-secondary-foreground text-lg font-bold" value={winingAmount} withMillify={false} />
 						</div>
 					</div>
 				</div>
@@ -73,12 +77,12 @@ export const PlayerWon: FC = () => {
 					<div className="flex flex-col items-center">
 						<div>{t('betSize')}</div>
 						<div className="text-secondary-foreground">
-							<BetValue className="text-secondary-foreground" value={200} withIcon />
+							<BetValue className="text-secondary-foreground" value={placedAmount} withIcon withMillify={false} />
 						</div>
 					</div>
 					<div className="flex flex-col items-center">
 						<div>{t('multiplicator')}</div>
-						<div>1</div>
+						<div>x {multiplier.toFixed(2)}</div>
 					</div>
 					<div className="text-base">
 						<div className="flex items-center gap-2">
@@ -101,7 +105,7 @@ export const PlayerWon: FC = () => {
 							/>
 						</div>
 					) : (
-						<div className="flex flex-col gap-2 justify-center h-full">
+						<div className="flex flex-col gap-2 justify-center">
 							<div className="text-muted-foreground text-base mb-2">{t('yourWinningTickets')}</div>
 							{tickets.map((ticket: IRoundTicket, index: number) => (
 								<TicketCard key={index} ticket={ticket} winningLine={winningLine} />

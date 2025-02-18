@@ -108,13 +108,14 @@
 		"betSize": "Bet size",
 		"multiplicator": "Multiplicator",
 		"share": "Share",
-		"copiedCurrentRoundRef": "Copied current round link",
+		"copiedCurrentRoundRef": "Selected round link copied",
 		"yourWinningTickets": "Your winning tickets",
 		"roundIsOver": "Round Is Over",
 		"youCouldWin": "You Could Win",
 		"tickets": "Tickets",
 		"users": "Users",
 		"betVolume": "Bet Volume",
-		"backToCurrentRound": "Back To Current Round"
+		"backToCurrentRound": "Back To Current Round",
+		"youWon": "You Won"
 	}
 }

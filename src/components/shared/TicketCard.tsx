@@ -24,7 +24,7 @@ export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine }) => {
 
 				<div className={'text text-muted-foreground'}>{lines.length} lines</div>
 			</div>
-			<div className="flex flex-col gap-2 max-h-40 overflow-y-auto justify-center">
+			<div className="flex flex-col gap-2 max-h-36 overflow-y-auto justify-start">
 				{lines.map((line, index) => (
 					<div key={index} className="flex flex-row gap-2 items-center justify-center">
 						{line.numbers.map((number, index) => (

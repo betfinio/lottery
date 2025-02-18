@@ -154,8 +154,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 
 export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; className?: string }>> = ({ children, isSymbol = false, className = '' }) => {
 	return (
-		// biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
-		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol }, className)}>
+		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol }, className)} role="presentation">
 			<polygon
 				points="10 1, 23 1, 32 10, 32 22,
 				23 32, 10 32, 1 23, 1 10"

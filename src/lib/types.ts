@@ -28,6 +28,12 @@ export interface IRoundTicket {
 	isLocal?: boolean;
 }
 
+export interface IRoundTicketWithWinningCoef extends IRoundTicket {
+	winningCoef: bigint;
+	winingAmount: bigint;
+	placedAmount: bigint;
+}
+
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';
 
 export enum RoundState {

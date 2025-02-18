@@ -1,4 +1,5 @@
 import { PlayerStatusForRound } from '@/src/components/round/PlayerStatusForRound/PlayerStatusForRound';
+import { PlayerStatusRoundPrecheck } from '@/src/components/round/PlayerStatusForRound/PlayerStatusRoundPrecheck';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
 import { RoundJackpots } from '@/src/components/round/RoundJackpots/RoundJackpots';
@@ -22,8 +23,9 @@ function HistoryRoundPage() {
 	const round = useGetRoundFromParams();
 	const { data: tickets = [], isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
 	const { data: roundStatus, isLoading } = useRoundStatus(round);
+	const showJackpotsTable = !isFetchingTickets && roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 
-	const showJackpotsTable = tickets.length === 0 && !isFetchingTickets && roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
+	const showChainDetails = roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 
 	if (roundStatus === undefined || isLoading) return null;
 	if (!statusesAllowedToSeeRound.includes(roundStatus)) {
@@ -36,15 +38,13 @@ function HistoryRoundPage() {
 			<div className="lottery   p-2 md:p-3 lg:p-4 f 2xl:pr-0">
 				<RoundHeader />
 				<RoundTotalsDetails />
-				<div className="mt-4 md:min-h-[541px] flex justify-center items-center">
-					<PlayerStatusForRound />
-				</div>
+				<PlayerStatusRoundPrecheck />
 				{showJackpotsTable && (
 					<div className="mt-4">
 						<RoundJackpots />
 					</div>
 				)}
-				<RoundChainDetails />
+				{showChainDetails && <RoundChainDetails />}
 			</div>
 			<Toaster />
 		</>

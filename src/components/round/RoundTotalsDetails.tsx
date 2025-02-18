@@ -25,7 +25,7 @@ export function RoundTotalsDetails() {
 			</div>
 			<div className="border border-border rounded-lg p-2 py-6 flex flex-row items-center justify-center gap-4">
 				<div className="flex flex-col items-center">
-					<div className="text-tertiary-foreground">{t('luckyNumbers')}</div>
+					<div className="text-tertiary-foreground mb-2">{t('luckyNumbers')}</div>
 					<WinningLine round={round} />
 				</div>
 			</div>
