@@ -1,4 +1,3 @@
-import { PlayerStatusForRound } from '@/src/components/round/PlayerStatusForRound/PlayerStatusForRound';
 import { PlayerStatusRoundPrecheck } from '@/src/components/round/PlayerStatusForRound/PlayerStatusRoundPrecheck';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
@@ -8,7 +7,7 @@ import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer } from '
 import { RoundStatus } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useAccount } from 'wagmi';
 
 const statusesAllowedToSeeRound = [RoundStatus.CLAIMING, RoundStatus.DONE, RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING];
@@ -21,7 +20,7 @@ function HistoryRoundPage() {
 	const navigate = useNavigate();
 	const { address = ZeroAddress } = useAccount();
 	const round = useGetRoundFromParams();
-	const { data: tickets = [], isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
+	const { isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
 	const { data: roundStatus, isLoading } = useRoundStatus(round);
 	const showJackpotsTable = !isFetchingTickets && roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 

@@ -1,4 +1,5 @@
-import { useGetRoundFromParams, useRoundDetails, useRoundTicketsByPlayer, useTicketPrice } from '@/src/lib/query';
+import { MAX_SHARES } from '@/src/globals';
+import { useAdditionalJackpot, useGetRoundFromParams, useRoundDetails, useRoundTicketsByPlayer, useTicketPrice } from '@/src/lib/query';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -11,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { StatBox } from '../../shared/StatBox';
 
-export const PlayerDidNotWin: FC = () => {
+export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets }) => {
 	const { address = ZeroAddress } = useAccount();
 
 	const round = useGetRoundFromParams();
@@ -20,11 +21,15 @@ export const PlayerDidNotWin: FC = () => {
 	const { data: roundDetails, isLoading } = useRoundDetails(round);
 	const { data: ticketPrice, isLoading: isTicketPriceLoading } = useTicketPrice(round);
 	const { data: tickets = [], isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
+	const { data: additionalJackpot } = useAdditionalJackpot();
 
 	const youCouldWinAmount = useMemo(() => {
 		if (!ticketPrice) return 0n;
-		const hasTicketsForMainJackpot = tickets.some((ticket) => ticket.lines.length >= 3);
-		return hasTicketsForMainJackpot ? ticketPrice * 40_000n : 15_000n;
+		if (playerHasBets) {
+			const hasTicketsForMainJackpot = tickets.some((ticket) => ticket.lines.length >= 3);
+			return hasTicketsForMainJackpot ? ticketPrice * 40_000n : 15_000n;
+		}
+		return BigInt(MAX_SHARES) * BigInt(ticketPrice) + (additionalJackpot ?? 0n);
 	}, [ticketPrice, roundDetails]);
 	return (
 		<div className="h-[430px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center shadow-[0_0_10px_0] shadow-aura">
