@@ -116,3 +116,10 @@ query GetRoundJackpots($round: String!) {
 		...Jackpot
 	}
 }
+
+
+query GetPlayerTickets($player: Bytes, $round: Bytes) {
+	tickets(where: { owner: $player, round_: { round: $round } }, orderBy: created, orderDirection: desc) {
+		...Ticket
+	}
+}

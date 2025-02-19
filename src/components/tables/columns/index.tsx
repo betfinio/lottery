@@ -4,11 +4,12 @@ import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import type { TFunction } from 'i18next';
 import Count from './Count';
 import Finish from './Finish';
+import MyLinesCount from './MyLinesCount';
 import Result from './Result';
 import Round from './Round';
 import RoundActions from './RoundActions';
 
-export const defineColumns = (t: TFunction<'lottery', 'tables'>): ColumnDef<IRound, never>[] => {
+export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): ColumnDef<IRound, never>[] => {
 	const columnHelper = createColumnHelper<IRound>();
 
 	return [
@@ -34,11 +35,13 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>): ColumnDef<IRou
 			cell: (props) => <Finish timestamp={props.getValue()} />,
 		}),
 		columnHelper.accessor('linesCount', {
-			header: t('headers.linesCount'),
+			header: isMy ? t('headers.myLinesCount') : t('headers.linesCount'),
 			meta: {
 				className: 'min-w-[100px]',
 			},
-			cell: (props) => <Count count={props.getValue()} />,
+			cell: (props) => (
+				<div className="flex items-center gap-1">{isMy ? <MyLinesCount round={props.row.original.address} /> : <Count count={props.getValue()} />}</div>
+			),
 		}),
 		columnHelper.accessor('bank', {
 			header: t('headers.bank'),

@@ -18,6 +18,7 @@ import {
 import {
 	fetchActiveRounds,
 	fetchActiveTickets,
+	fetchMyLinesSold,
 	fetchOldRounds,
 	fetchOldTickets,
 	fetchPlayerRounds,
@@ -252,5 +253,12 @@ export const useFinishedRoundTransactionByRoundAddress = (round: Address) => {
 		queryKey: ['lottery', 'round', 'finishedRoundTransaction', round],
 		queryFn: () => fetchFinishedRoundTransactionByRoundAddress(config, round, roundFinish),
 		enabled: !!roundFinish && !isRoundFinishLoading,
+	});
+};
+
+export const useMyLinesSold = (round: Address, player: Address) => {
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'lines', player],
+		queryFn: () => fetchMyLinesSold(round, player),
 	});
 };

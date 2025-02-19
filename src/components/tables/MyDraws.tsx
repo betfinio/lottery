@@ -10,14 +10,14 @@ import { defineColumns } from './columns';
 function MyDraws() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'tables' });
 	const navigate = useNavigate();
-	const columns = defineColumns(t);
+	const columns = defineColumns(t, true);
 	const { address = ZeroAddress } = useAccount();
 
 	const handleRowClick = (row: IRound) => {
 		navigate({ to: '/games/lottery/lotto/$round', params: { round: row.address } });
 	};
 	const { data: rounds = [] } = usePlayerRounds(address);
-	return <DataTable data={rounds} columns={columns} onRowClick={handleRowClick} />;
+	return <DataTable enableSorting={true} data={rounds} columns={columns} onRowClick={handleRowClick} />;
 }
 
 export default MyDraws;
