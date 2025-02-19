@@ -55,7 +55,7 @@ query GetTickets($player: Bytes, $now: BigInt) {
 	active: tickets(where: { owner: $player, round_: { timestamp_gte: $now } }, orderBy: tokenId, orderDirection: desc) {
 		...Ticket
 	}
-	old: tickets(where: { owner: $player, round_: { timestamp_lt: $now } }, orderBy: tokenId, orderDirection: asc) {
+	old: tickets(where: { owner: $player, round_: { timestamp_lt: $now } }, orderBy: tokenId, orderDirection: desc) {
 		...Ticket
 	}
 }

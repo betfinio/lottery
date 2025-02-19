@@ -35,7 +35,7 @@ export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ clas
 				<defs>
 					<linearGradient id="gradient" x1="100%" y1="0%" x2="0%" y2="0%">
 						<stop offset="0%" stopColor="#1d1a3d" />
-						<stop offset="40%" stopColor="#7366ff" />
+						<stop offset="40%" stopColor="#3c367c" />
 						<stop offset="100%" stopColor="#1d1a3d" />
 					</linearGradient>
 				</defs>

@@ -28,7 +28,7 @@ function SharedLine({
 	const filled3 = useMemo(() => filledLines.length >= 3, [filledLines]);
 
 	useEffect(() => {
-		if (symbolUnlocked && filled3) {
+		if (symbolUnlocked && filled3 && line.symbol !== 0) {
 			symbolControls.start({
 				scale: [1, 1.2, 1],
 				boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
@@ -44,7 +44,7 @@ function SharedLine({
 				boxShadow: '0 0 0 0 hsl(var(--primary))',
 			});
 		}
-	}, [symbolUnlocked, filled3]);
+	}, [symbolUnlocked, filled3, line.symbol]);
 
 	return (
 		<div className={cn('flex gap-2 items-center', className)} onClick={onClick}>

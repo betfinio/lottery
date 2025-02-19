@@ -9,6 +9,7 @@ import { cn } from '@betfinio/components';
 import { Badge, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilLineIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import logger from '../config/logger';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
@@ -89,6 +90,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 							</DialogTrigger>
 						)}
 						<div className={'text text-muted-foreground'}>{lines.length} lines</div>
+						{old && <div className={'text-muted-foreground/50 text-sm'}>{DateTime.fromSeconds(finish).toFormat('DD, T')}</div>}
 					</div>
 					{old ? <TicketStatus ticket={ticket} /> : <Countdown size={30} finish={finish} className={cn('text-muted-foreground')} />}
 				</motion.div>

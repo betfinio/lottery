@@ -1,6 +1,6 @@
 import { cn } from '@betfinio/components';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 interface PaginationProps<T> {
 	items: T[];
@@ -9,10 +9,25 @@ interface PaginationProps<T> {
 	className?: string;
 	additionalFooter?: ReactNode;
 	renderItemClassName?: string;
+	onPageChange?: (page: number) => void;
 }
 
-const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, renderItemClassName, additionalFooter }: PaginationProps<T>) => {
+const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, renderItemClassName, additionalFooter, onPageChange }: PaginationProps<T>) => {
 	const [offset, setOffset] = useState(0);
+
+	useEffect(() => {
+		if (onPageChange) {
+			onPageChange(offset / itemsPerPage);
+		}
+	}, [offset]);
+
+	// navigate to correct page one item is added
+	useEffect(() => {
+		if (items.length > 0) {
+			const newOffset = Math.floor((items.length - 1) / itemsPerPage) * itemsPerPage;
+			setOffset(newOffset);
+		}
+	}, [items]);
 
 	const handleNext = () => {
 		if (offset + itemsPerPage >= items.length) return;
@@ -24,6 +39,27 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, render
 		setOffset((prev) => prev - itemsPerPage);
 	};
 
+	const currentPage = Math.floor(offset / itemsPerPage);
+	const totalPages = Math.ceil(items.length / itemsPerPage);
+
+	const renderPageNumbers = () => {
+		const pages = [];
+		if (totalPages <= 6) {
+			for (let i = 0; i < totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			if (currentPage <= 2) {
+				pages.push(0, 1, 2, 3, -1, totalPages - 1);
+			} else if (currentPage >= totalPages - 3) {
+				pages.push(0, -1, totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1);
+			} else {
+				pages.push(0, -1, currentPage - 1, currentPage, currentPage + 1, -1, totalPages - 1);
+			}
+		}
+		return pages;
+	};
+
 	return (
 		<div className={cn('flex flex-col justify-between h-full', className)}>
 			<div className={cn('flex flex-col gap-2 flex-grow ', renderItemClassName)}>
@@ -33,18 +69,24 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, render
 				{additionalFooter}
 				<ChevronLeft className={cn('w-5 h-5 cursor-pointer', offset === 0 && 'text-muted-foreground')} onClick={handlePrev} />
 				<div className={'flex flex-row gap-1'}>
-					{Array.from({ length: Math.ceil(items.length / itemsPerPage) }).map((_, i) => (
-						<div
-							onClick={() => setOffset(i * itemsPerPage)}
-							key={i}
-							className={cn(
-								'rounded-md w-6 h-6 flex items-center justify-center text-sm cursor-pointer',
-								i === Math.floor(offset / itemsPerPage) ? 'text-foreground' : 'text-muted-foreground',
-							)}
-						>
-							{i + 1}
-						</div>
-					))}
+					{renderPageNumbers().map((pageIndex, i) =>
+						pageIndex === -1 ? (
+							<div key={`ellipsis-${i}`} className="w-6 h-6 flex items-center justify-center text-sm text-muted-foreground">
+								...
+							</div>
+						) : (
+							<div
+								onClick={() => setOffset(pageIndex * itemsPerPage)}
+								key={pageIndex}
+								className={cn(
+									'rounded-md w-6 h-6 flex items-center justify-center text-sm cursor-pointer',
+									pageIndex === currentPage ? 'text-foreground' : 'text-muted-foreground',
+								)}
+							>
+								{pageIndex + 1}
+							</div>
+						),
+					)}
 				</div>
 				<ChevronRight className={cn('w-5 h-5 cursor-pointer', offset + itemsPerPage >= items.length && 'text-muted-foreground')} onClick={handleNext} />
 			</div>

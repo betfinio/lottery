@@ -276,6 +276,10 @@
 
     "@ecies/ciphers": ["@ecies/ciphers@0.2.2", "", { "peerDependencies": { "@noble/ciphers": "^1.0.0" } }, "sha512-ylfGR7PyTd+Rm2PqQowG08BCKA22QuX8NzrL+LxAAvazN10DMwdJ2fWwAzRj05FI/M8vNFGm3cv9Wq/GFWCBLg=="],
 
+    "@emotion/is-prop-valid": ["@emotion/is-prop-valid@0.8.8", "", { "dependencies": { "@emotion/memoize": "0.7.4" } }, "sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA=="],
+
+    "@emotion/memoize": ["@emotion/memoize@0.7.4", "", {}, "sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw=="],
+
     "@envelop/core": ["@envelop/core@5.0.3", "", { "dependencies": { "@envelop/types": "5.0.0", "tslib": "^2.5.0" } }, "sha512-SE3JxL7odst8igN6x77QWyPpXKXz/Hs5o5Y27r+9Br6WHIhkW90lYYVITWIJQ/qYgn5PkpbaVgeFY9rgqQaZ/A=="],
 
     "@envelop/extended-validation": ["@envelop/extended-validation@4.1.0", "", { "dependencies": { "@graphql-tools/utils": "^10.0.0", "tslib": "^2.5.0" }, "peerDependencies": { "@envelop/core": "^5.0.2", "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" } }, "sha512-S90LQanW+xg3Lkp2sNiHa2KJnXXpKLucKys05Wk5zpiV0vL0SDX+/cuV+tnDhShWJucunAGi34n8xFCXsUUOkA=="],
