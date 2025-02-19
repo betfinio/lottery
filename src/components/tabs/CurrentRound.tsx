@@ -1,5 +1,4 @@
 // @ts-ignore
-import Jackpot from '@/src/assets/jackpot.svg?react';
 import Countdown from '@/src/components/Countdown.tsx';
 import { ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
 import { useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
@@ -23,7 +22,6 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { data: potentialJackpot = 0n } = usePotentialJackpot(round.address);
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
 	const animationRef = useRef<NodeJS.Timer>();
-
 	const totalJackpot = useMemo(
 		() => round.ticketPrice * BigInt(MAX_SHARES) + additionalJackpot + potentialJackpot,
 		[round, additionalJackpot, potentialJackpot],

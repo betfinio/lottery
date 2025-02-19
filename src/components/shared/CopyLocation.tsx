@@ -1,7 +1,7 @@
 import { cn } from '@betfinio/components';
 import { useToast } from '@betfinio/components/hooks';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import { type FC, forwardRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 
 interface CopyLocationProps {
 	toastMessage: string;
