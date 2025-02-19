@@ -4,7 +4,6 @@ import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { useModal } from 'connectkit';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -216,7 +215,9 @@ const TicketList = () => {
 					) : (
 						<Button
 							variant={'outline'}
-							className={cn('border-primary text-secondary-foreground gap-1 hover:scale-105 transition-all', { 'col-span-2': state !== RoundState.FILLING })}
+							className={cn('border-primary text-secondary-foreground gap-1 hover:scale-105 transition-all', {
+								'col-span-2': state !== RoundState.FILLING,
+							})}
 							onClick={handleAddLine}
 						>
 							<PlusCircleIcon className={'w-4 h-4'} />
