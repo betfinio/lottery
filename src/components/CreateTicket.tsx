@@ -7,7 +7,7 @@ import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useConnect } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';

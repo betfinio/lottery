@@ -23,17 +23,6 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const tickets = currentJackpot?.tickets ?? [];
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const columns = [
-		columnHelper.accessor('betAddress', {
-			header: t('betId'),
-			meta: {
-				className: 'h-[50px]',
-			},
-			cell: (props) => (
-				<a href={`${ETHSCAN}/address/${props.row.original.betAddress}`} target="_blank" rel="noreferrer">
-					{truncateEthAddress(props.row.original.betAddress as Address)}
-				</a>
-			),
-		}),
 		columnHelper.accessor('owner', {
 			header: t('ticketOwner'),
 			meta: {
@@ -42,6 +31,17 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			cell: (props) => (
 				<a href={`${ETHSCAN}/address/${props.row.original.owner}`} target="_blank" rel="noreferrer">
 					{truncateEthAddress(props.row.original.owner as Address)}
+				</a>
+			),
+		}),
+		columnHelper.accessor('betAddress', {
+			header: t('betId'),
+			meta: {
+				className: 'h-[50px]',
+			},
+			cell: (props) => (
+				<a href={`${ETHSCAN}/address/${props.row.original.betAddress}`} target="_blank" rel="noreferrer">
+					{truncateEthAddress(props.row.original.betAddress as Address)}
 				</a>
 			),
 		}),

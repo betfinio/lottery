@@ -73,17 +73,17 @@ function PayoutContent() {
 		symbol: 1,
 	};
 	const jackpots = [
-		{ coef: 40000n, line: correctLine, name: '5+1' },
-		{ coef: 15000n, line: { numbers: [1, 2, 3, 4, 5], symbol: 2 }, name: '5' },
-		{ coef: 400n, line: { numbers: [1, 2, 3, 4, 6], symbol: 1 }, name: '4+1' },
-		{ coef: 50n, line: { numbers: [1, 2, 3, 4, 6], symbol: 2 }, name: '4' },
-		{ coef: 5n, line: { numbers: [1, 2, 3, 6, 7], symbol: 1 }, name: '3+1' },
-		{ coef: 1n, line: { numbers: [1, 2, 3, 6, 7], symbol: 2 }, name: '3' },
-		{ coef: 1n, line: { numbers: [1, 2, 6, 7, 8], symbol: 1 }, name: '2+1' },
+		{ coef: 40000n, line: correctLine, name: 'Jackpot 1', subtitle: '1 : 265,650' },
+		{ coef: 15000n, line: { numbers: [1, 2, 3, 4, 5], symbol: 2 }, name: 'Jackpot 2', subtitle: '1 : 66,412' },
+		{ coef: 400n, line: { numbers: [1, 2, 3, 4, 6], symbol: 1 }, name: 'Jackpot 3', subtitle: '1 : 2,656' },
+		{ coef: 50n, line: { numbers: [1, 2, 3, 4, 6], symbol: 2 }, name: 'Jackpot 4', subtitle: '1 : 664' },
+		{ coef: 5n, line: { numbers: [1, 2, 3, 6, 7], symbol: 1 }, name: 'Jackpot 5', subtitle: '1 : 140' },
+		{ coef: 1n, line: { numbers: [1, 2, 3, 6, 7], symbol: 2 }, name: 'Jackpot 6', subtitle: '1 : 35' },
+		{ coef: 1n, line: { numbers: [1, 2, 6, 7, 8], symbol: 1 }, name: 'Jackpot 7', subtitle: '1 : 23' },
 	];
 	return (
 		<DialogContent className={'lottery'}>
-			<div className={'w-[98vw] md:max-w-[550px] p-2 overflow-y-scroll max-h-[90vh]'}>
+			<div className={'w-[98vw] md:max-w-[650px] p-2 overflow-y-scroll max-h-[90vh]'}>
 				<DialogHeader>
 					<DialogTitle className="flex justify-between font-normal p-2 text-xl">
 						Winning combinations
@@ -111,9 +111,10 @@ function PayoutContent() {
 										/>
 										<div className={'absolute top-1 left-0 w-full h-full flex flex-col items-center justify-center'}>
 											<div className={' font-semibold'}>{jackpot.name}</div>
+											<div className={' font-semibold text-xs text-muted-foreground'}>{jackpot.subtitle}</div>
 										</div>
 									</div>
-									<div className={'col-span-3 md:col-span-2 flex felx-row gap-2 items-center'}>
+									<div className={'col-span-3 md:col-span-2 flex felx-row gap-2 items-center md:mx-5'}>
 										{jackpot.line.numbers
 											.sort((a, b) => a - b)
 											.map((number, i) => (
