@@ -75,8 +75,8 @@ export const useDrawInfoTab = () => {
 		initialData: 'draw',
 	});
 
-	const setTab = (tab: string) => {
-		if (tab === 'draw' || tab === 'tickets') {
+	const setTab = (tab: DrawTab) => {
+		if (tab === 'draw' || tab === 'active' || tab === 'old') {
 			queryClient.setQueryData(['drawInfoTab'], tab);
 		}
 	};
