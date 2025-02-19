@@ -21,6 +21,14 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, render
 		}
 	}, [offset]);
 
+	// navigate to correct page one item is added
+	useEffect(() => {
+		if (items.length > 0) {
+			const newOffset = Math.floor((items.length - 1) / itemsPerPage) * itemsPerPage;
+			setOffset(newOffset);
+		}
+	}, [items]);
+
 	const handleNext = () => {
 		if (offset + itemsPerPage >= items.length) return;
 		setOffset((prev) => prev + itemsPerPage);

@@ -1,7 +1,7 @@
 // @ts-ignore
 import Jackpot from '@/src/assets/jackpot.svg?react';
 import Countdown from '@/src/components/Countdown.tsx';
-import { MAX_SHARES } from '@/src/globals.ts';
+import { ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
 import { useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
 import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { truncateEthAddress } from '@betfinio/abi';
@@ -68,9 +68,9 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 
 	const renderPartners = () => (
 		<div className="w-full grid grid-cols-3 text-muted-foreground">
-			<PartnerLink text="Open Source" icon={<Polygon className="w-6 h-6 text-purple-700" />} />
-			<PartnerLink text="Powered by" icon={<HexagonIcon className="w-6 h-6 text-blue-400 stroke-[4px]" />} />
-			<PartnerLink text="Audited by" icon={<Certik className="w-6 h-6 text-foreground" />} />
+			<PartnerLink text="Open Source" icon={<Polygon className="w-6 h-6 text-purple-700" />} link={`${ETHSCAN}/address/${LOTTERY_ADDRESS}`} />
+			<PartnerLink text="Powered by" icon={<HexagonIcon className="w-6 h-6 text-blue-400 stroke-[4px]" />} link={'https://vrf.chain.link'} />
+			<PartnerLink text="Audited by" icon={<Certik className="w-6 h-6 text-foreground" />} link={'https://skynet.certik.com/projects/betfin'} />
 		</div>
 	);
 
@@ -102,12 +102,13 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 interface PartnerLinkProps {
 	text: string;
 	icon: React.ReactNode;
+	link: string;
 }
 
-const PartnerLink: FC<PartnerLinkProps> = ({ text, icon }) => (
-	<div className="flex flex-row gap-1 items-center text-sm underline underline-offset-4 justify-center">
+const PartnerLink: FC<PartnerLinkProps> = ({ text, icon, link }) => (
+	<a href={link} target="_blank" rel="noreferrer" className="flex flex-row gap-1 items-center text-sm underline underline-offset-4 justify-center">
 		{text} {icon}
-	</div>
+	</a>
 );
 
 export default CurrentRound;

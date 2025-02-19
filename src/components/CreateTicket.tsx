@@ -4,9 +4,11 @@ import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { useModal } from 'connectkit';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRightIcon, CircleHelp, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAccount, useConnect } from 'wagmi';
 import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import Line from './Line.tsx';
@@ -32,7 +34,16 @@ const CreateTicket = () => {
 				'border border-foreground/50': isDisabled,
 			})}
 		>
-			<div className={'uppercase text-secondary-foreground text-lg flex justify-center'}>{isDisabled ? 'Your ticket' : 'Fill new ticket'}</div>
+			<div className={'uppercase text-secondary-foreground text-lg flex justify-center items-center gap-1'}>
+				{isDisabled ? (
+					<>
+						<LockIcon className="w-4 h-4" />
+						Your ticket
+					</>
+				) : (
+					'Fill new ticket'
+				)}
+			</div>
 			<nav className={'flex justify-between'}>
 				<div
 					className={cn('flex flex-row items-center gap-1', {
@@ -83,6 +94,7 @@ const TicketList = () => {
 	const { data: draftTickets = [], setTickets } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { state, updateState } = useRoundState(round?.address);
+	const { address } = useAccount();
 
 	const updateTicket = (index: number, newTicket: ILine) => {
 		const updatedTickets = [...draftTickets];
@@ -110,6 +122,14 @@ const TicketList = () => {
 	};
 
 	const handleProceed = () => {
+		if (!address) {
+			toast({
+				title: 'Error',
+				description: 'You must connect your wallet',
+				variant: 'destructive',
+			});
+			return;
+		}
 		updateState(RoundState.PLACING);
 	};
 	const handleEdit = () => {
@@ -212,10 +232,16 @@ const TicketList = () => {
 										className="gap-1 hover:scale-105 transition-all"
 										variant={'success'}
 										onClick={handleProceed}
-										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length}
+										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length || address === undefined}
 									>
-										Proceed ({filledLines.length} lines)
-										<ArrowRightIcon className={'w-4 h-4'} />
+										{address ? (
+											<>
+												Proceed ({filledLines.length} lines)
+												<ArrowRightIcon className={'w-4 h-4'} />
+											</>
+										) : (
+											<>Connect wallet</>
+										)}
 									</Button>
 								</TooltipTrigger>
 								{duplicates && (
