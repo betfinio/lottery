@@ -31,7 +31,7 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 		);
 	}
 
-	if (status === 1n && roundStatus === RoundStatus.WAITING_FOR_REQUEST) {
+	if ((status === 1n && roundStatus === RoundStatus.WAITING_FOR_REQUEST) || roundStatus === RoundStatus.DONE) {
 		return <Badge className="bg-muted/10 text-muted-foreground">Waiting</Badge>;
 	}
 }

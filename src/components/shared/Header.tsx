@@ -121,6 +121,7 @@ function PayoutContent() {
 													key={i}
 													className={cn({
 														'stroke-success': correctLine && partlyEquals(jackpot.line, correctLine, i),
+														'opacity-40': !correctLine || !partlyEquals(jackpot.line, correctLine, i),
 													})}
 												>
 													{number || '-'}
@@ -131,6 +132,7 @@ function PayoutContent() {
 											isSymbol
 											className={cn({
 												'stroke-success': correctLine && jackpot.line.symbol === correctLine.symbol,
+												'opacity-40': !correctLine || jackpot.line.symbol !== correctLine.symbol,
 											})}
 										>
 											<SymbolElement symbol={jackpot.line.symbol} />
