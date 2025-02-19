@@ -65,7 +65,7 @@ export const PlayerStatusForRound: FC = () => {
 		[ticketsWithCountedCoef],
 	);
 
-	const showPlayerDidNotWin = !showCalculating && playerHasBets && !hasWinningTicket && ticketPrice;
+	const showPlayerDidNotWin = !showCalculating && !hasWinningTicket && ticketPrice;
 	const showPlayerWon = !showCalculating && playerHasBets && hasWinningTicket;
 
 	if (showCalculating) {
@@ -79,14 +79,12 @@ export const PlayerStatusForRound: FC = () => {
 	if (showPlayerDidNotWin) {
 		return (
 			<div className="flex flex-col items-center">
-				<div className="text-lg mb-4 font-semibold">{t('yourTicketsInDraw')}</div>
+				{playerHasBets && <div className="text-lg mb-4  font-semibold">{t('yourTicketsInDraw')}</div>}
 				<div className="flex gap-5 flex-wrap justify-end ">
 					<div className="mt-auto">
-						<PlayerDidNotWin />
+						<PlayerDidNotWin playerHasBets={playerHasBets} />
 					</div>
-					<div>
-						<PlayerTickets />
-					</div>
+					<div>{playerHasBets && <PlayerTickets />}</div>
 				</div>
 			</div>
 		);

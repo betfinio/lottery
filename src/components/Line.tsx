@@ -4,7 +4,7 @@ import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
-import { LockIcon, PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
 import SharedLine from './shared/SharedLine';
 

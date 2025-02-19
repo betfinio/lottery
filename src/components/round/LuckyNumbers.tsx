@@ -1,0 +1,34 @@
+import Line from '@/src/components/shared/SharedLine';
+import { useWinningLine } from '@/src/lib/query';
+import { useManualRequest } from '@/src/lib/query/mutations';
+import type { ILine } from '@/src/lib/types';
+import { randomize } from '@/src/lib/utils';
+import { cn } from '@betfinio/components';
+import { type FC, useEffect, useMemo, useState } from 'react';
+import type { Address } from 'viem';
+
+interface LuckyNumbersProps {
+	round: Address;
+}
+export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
+	const { data = null, isFetching } = useWinningLine(round);
+	const [currentLine, setCurrentLine] = useState<ILine>(randomize());
+
+	useEffect(() => {
+		if (data || !isFetching) return; // Stop animation when real data arrives
+
+		const interval = setInterval(() => {
+			setCurrentLine(randomize());
+		}, 200);
+
+		return () => clearInterval(interval); // Cleanup on unmount
+	}, [data, isFetching]);
+
+	const line = data || currentLine;
+
+	return (
+		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
+			<Line line={line} />
+		</div>
+	);
+};
