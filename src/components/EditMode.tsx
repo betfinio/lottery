@@ -6,27 +6,29 @@ import { motion } from 'framer-motion';
 import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Address } from 'viem';
 import { useDraftLines, useLinesAvailability, useSelectedRound } from '../lib/query';
 import { isDuplicate, randomize } from '../lib/utils';
 import { AnimatedGridOfNumbners } from './shared/AnimatedGridOfNumbners';
 import { TicketGridOfSymbols } from './shared/TicketGridOfSymbols';
-
 const animationDuration = 1000;
 const animationInterval = 100;
 
 const EditMode: FC<{
 	ticket: ILine;
 	onBack: () => void;
+	round?: Address;
 	onSave?: (ticket: ILine) => void;
 	order: number;
 	editMode: boolean;
-}> = ({ order, onBack, ticket, onSave, editMode }) => {
+	checkAvailability?: boolean;
+}> = ({ order, onBack, ticket, onSave, editMode, checkAvailability = true, round }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
 	const { data: draftLines = [] } = useDraftLines();
-	const { data: round } = useSelectedRound();
-	const { data: availability, isFetched } = useLinesAvailability(round?.address, [{ numbers, symbol }], true);
+	const { data: selectedRound } = useSelectedRound();
+	const { data: availability, isFetched } = useLinesAvailability(round ?? selectedRound?.address, [{ numbers, symbol }], true);
 
 	useEffect(() => {
 		setNumbers(ticket.numbers);
@@ -84,12 +86,11 @@ const EditMode: FC<{
 		// validate duplicates
 		if (duplicates) return t('duplicates');
 		// validate availability
-		if (isFetched && availability && availability.length === 1 && availability[0] === false) return t('notAvailable');
+		if (isFetched && availability && availability.length === 1 && availability[0] === false && !isSame) return t('notAvailable');
 		return '';
 	}, [symbol, numbers, ticket, availability]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
-	const isFilled = numbers.every((n) => n !== 0) && symbol !== 0;
 
 	return (
 		<motion.div
@@ -125,7 +126,7 @@ const EditMode: FC<{
 					<div className="flex flex-row justify-center text-sm text-muted-foreground">The symbol activates with 3 filled lines</div>
 					<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={changeSymbol} />
 				</div>
-				<div className={'text-destructive h-6 text-sm'}>{validation}</div>
+				<div className={'text-destructive h-6 text-sm py-1'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
 					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />

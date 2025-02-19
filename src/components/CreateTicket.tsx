@@ -152,6 +152,7 @@ const TicketList = () => {
 		<AnimatePresence mode={'popLayout'}>
 			<div className={'flex flex-col justify-between h-full'}>
 				<Pagination
+					isLive={true}
 					items={draftTickets}
 					itemsPerPage={3}
 					additionalFooter={

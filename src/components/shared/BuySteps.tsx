@@ -44,7 +44,6 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 	const { mutateAsync: logsByHash } = useLoadMintedTokens();
 	const { setTickets } = useDraftLines();
 	const { setTab } = useDrawInfoTab();
-	const { setTab: setTicketsTab } = useTicketsTab();
 	// Reset step when dialog opens
 	useEffect(() => {
 		if (isOpen) {
@@ -68,8 +67,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			setTickets([EMPTY_LINE]);
 			shootConfetti();
 			updateState(RoundState.FILLING);
-			setTab('tickets');
-			setTicketsTab('active');
+			setTab('active');
 
 			// Merge fresh on-chain data with subgraph data
 			logsByHash({ hash: data as Address }).then((newTickets) => {

@@ -22,9 +22,10 @@ export interface TicketProps {
 	onToggleExpand?: () => void;
 	onUpdate?: (ticket: IRoundTicket) => void;
 	old?: boolean;
+	isExpandable?: boolean;
 }
 
-function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false }: TicketProps) {
+function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true }: TicketProps) {
 	const { data: finish = 0 } = useRoundFinish(ticket.round);
 	const { data: winningLine } = useWinningLine(ticket.round);
 	const [editing, setEditing] = useState(-1);
@@ -37,7 +38,6 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 	}, [ticket.lines, winningLine]);
 
 	// Handlers
-	const handleOpenEditMode = () => logger.log('edit');
 	const handleFullMode = () => onToggleExpand?.();
 
 	const changeLine = (line: ILine, index: number) => {
@@ -69,7 +69,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 			animate={{ height: editing === -1 ? 'auto' : 450 }}
 			className={cn('border border-purple-box rounded-xl p-2', {
 				'bg-gradient-to-b from-background to-background via-primary/20 via-60%': mode === 'full' || mode === 'expanded',
-				'border-primary shadow': ticket.isLocal,
+				'border-primary create-shadow': ticket.isLocal,
 			})}
 		>
 			<Dialog open={open} onOpenChange={setOpen}>
@@ -80,17 +80,17 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 					}}
 					className={'flex flex-row items-center justify-between'}
 				>
-					<div className={'flex flex-row items-center gap-2'}>
+					<div className={'flex flex-row items-center gap-2 whitespace-nowrap'}>
 						<a href={`${ETHSCAN}/nft/${LOTTERY_ADDRESS}/${ticket.token}`} target="_blank" rel="noreferrer">
 							#{ticket.token}
 						</a>
 						{mode !== 'expanded' && !old && (
 							<DialogTrigger>
-								<PencilLineIcon className={'w-4 h-4 text-secondary-foreground cursor-pointer'} onClick={handleOpenEditMode} />
+								<PencilLineIcon className={'w-4 h-4 text-secondary-foreground cursor-pointer'} />
 							</DialogTrigger>
 						)}
-						<div className={'text text-muted-foreground'}>{lines.length} lines</div>
-						{old && <div className={'text-muted-foreground/50 text-sm'}>{DateTime.fromSeconds(finish).toFormat('DD, T')}</div>}
+						<div className={'text text-muted-foreground text-sm'}>{lines.length} lines</div>
+						{old && <div className={'text-muted-foreground/50 text-sm'}>{DateTime.fromSeconds(finish).toFormat('dd/MM T')}</div>}
 					</div>
 					{old ? <TicketStatus ticket={ticket} /> : <Countdown size={30} finish={finish} className={cn('text-muted-foreground')} />}
 				</motion.div>
@@ -103,7 +103,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						{(mode === 'full' || mode === 'expanded') && (
 							<div className="flex flex-row items-center justify-center gap-1 text-sm text-muted-foreground">
 								Round:
-								<a href={`${ETHSCAN}/${ticket.round}`} target="_blank" rel="noreferrer">
+								<a href={`${ETHSCAN}/address/${ticket.round}`} target="_blank" rel="noreferrer">
 									{truncateEthAddress(ticket.round)}
 								</a>
 							</div>
@@ -142,12 +142,20 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 											animate={{ rotate: mode === 'full' ? 180 : 0 }}
 											className={cn('cursor-pointer', {
 												'opacity-0': index > 0 || lines.length === 1,
+												hidden: !isExpandable,
 											})}
 											onClick={handleFullMode}
 										>
 											<ChevronDown className={'w-6 h-6'} />
 										</motion.div>
-										<EditMode ticket={line} editMode={editing === index} onSave={(e) => handleEdit(e, index)} onBack={() => setEditing(-1)} order={index} />
+										<EditMode
+											checkAvailability={false}
+											ticket={line}
+											editMode={editing === index}
+											onSave={(e) => handleEdit(e, index)}
+											onBack={() => setEditing(-1)}
+											order={index}
+										/>
 									</motion.div>
 								))}
 						</AnimatePresence>

@@ -10,9 +10,19 @@ interface PaginationProps<T> {
 	additionalFooter?: ReactNode;
 	renderItemClassName?: string;
 	onPageChange?: (page: number) => void;
+	isLive?: boolean;
 }
 
-const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, renderItemClassName, additionalFooter, onPageChange }: PaginationProps<T>) => {
+const Pagination = <T,>({
+	items,
+	itemsPerPage = 3,
+	renderItem,
+	className,
+	renderItemClassName,
+	additionalFooter,
+	onPageChange,
+	isLive = false,
+}: PaginationProps<T>) => {
 	const [offset, setOffset] = useState(0);
 
 	useEffect(() => {
@@ -23,11 +33,11 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, render
 
 	// navigate to correct page one item is added
 	useEffect(() => {
-		if (items.length > 0) {
+		if (items.length > 0 && isLive) {
 			const newOffset = Math.floor((items.length - 1) / itemsPerPage) * itemsPerPage;
 			setOffset(newOffset);
 		}
-	}, [items]);
+	}, [items, isLive]);
 
 	const handleNext = () => {
 		if (offset + itemsPerPage >= items.length) return;
