@@ -6,9 +6,11 @@ import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
+import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
+import PayoutContent from '../shared/PayoutContent';
 import { StatBox } from '../shared/StatBox';
 
 interface CurrentRoundProps {
@@ -78,18 +80,20 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 				<div className="w-full text-center text-purple-box">Next Draw {truncateEthAddress(round.address).toLowerCase()}</div>
 				{status === RoundStatus.BETTING && <Countdown finish={finish} />}
 			</div>
-
-			<div className="relative flex items-center justify-center">
-				<div className="">
-					<JackpotFrame animateStars className="text-gold" />
-				</div>
-				<div className="absolute top-20 text-2xl text-secondary-foreground flex flex-col items-center">
-					<div className="text-foreground text-lg">Total Winnings</div>
-					<div className="flex flex-row gap-1 items-center">
-						<BetValue value={displayedJackpot} withMillify={false} iconClassName="w-5 h-5" /> BET
+			<Dialog>
+				<DialogTrigger className={'flex flex-col items-center'}>
+					<div className="relative flex items-center justify-center">
+						<JackpotFrame animateStars className="text-gold" />
+						<div className="absolute top-20 text-2xl text-secondary-foreground flex flex-col items-center">
+							<div className="text-foreground text-lg">Total Winnings</div>
+							<div className="flex flex-row gap-1 items-center">
+								<BetValue value={displayedJackpot} withMillify={false} iconClassName="w-5 h-5" /> BET
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
+				</DialogTrigger>
+				<PayoutContent />
+			</Dialog>
 
 			{renderPartners()}
 			{renderStats()}
