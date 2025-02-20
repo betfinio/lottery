@@ -10,7 +10,7 @@ export interface IUseRoundState {
 	updateState: (state: RoundState) => void;
 }
 
-export const useRoundState = (address: Address): IUseRoundState => {
+export const useRoundState = (address?: Address): IUseRoundState => {
 	const queryClient = useQueryClient();
 
 	const query = useQuery<RoundState>({
@@ -23,7 +23,7 @@ export const useRoundState = (address: Address): IUseRoundState => {
 	};
 
 	return {
-		state: query.data,
+		state: query.data ?? RoundState.FILLING,
 		updateState,
 	};
 };

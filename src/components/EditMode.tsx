@@ -21,8 +21,7 @@ const EditMode: FC<{
 	onSave?: (ticket: ILine) => void;
 	order: number;
 	editMode: boolean;
-	checkAvailability?: boolean;
-}> = ({ order, onBack, ticket, onSave, editMode, checkAvailability = true, round }) => {
+}> = ({ order, onBack, ticket, onSave, editMode, round }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
@@ -75,8 +74,9 @@ const EditMode: FC<{
 		const newLine = { numbers: numbers, symbol };
 		// check if edited line is the same as the ticket
 		const isSame = ticket.numbers.length === numbers.length && ticket.numbers.every((n, index) => n === numbers[index]) && ticket.symbol === symbol;
-		console.log(draftLines, newLine);
+
 		const filledLines = draftLines.filter((line) => line.numbers.every((n) => n > 0) && line.symbol > 0);
+
 		const duplicates = isSame ? false : isDuplicate([...filledLines, newLine]);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);

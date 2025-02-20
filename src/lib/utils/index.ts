@@ -48,13 +48,17 @@ export const parseLine = (line: Address): ILine => {
 };
 
 export const randomize = (): ILine => {
-	// generate 5 uniques numbers from 1 to 25
-	const numbers = Array.from({ length: 25 }, (_, i) => i + 1) // [1, 2, ..., 25]
-		.sort(() => Math.random() - 0.5)
-		.slice(0, 5);
+	// Fisher-Yates shuffle algorithm for better randomization
+	const numbers = Array.from({ length: 25 }, (_, i) => i + 1); // [1, 2, ..., 25]
+	for (let i = numbers.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+	}
+	// Take first 5 numbers after shuffle
+	const selectedNumbers = numbers.slice(0, 5).sort((a, b) => a - b);
 	// select a random symbol
 	const symbol = Math.floor(Math.random() * 5) + 1;
-	return { symbol, numbers };
+	return { symbol, numbers: selectedNumbers };
 };
 
 export const equals = (a: ILine, b: ILine): boolean => {
