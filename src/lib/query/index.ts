@@ -18,6 +18,7 @@ import {
 import {
 	fetchActiveRounds,
 	fetchActiveTickets,
+	fetchMyLinesSold,
 	fetchOldRounds,
 	fetchOldTickets,
 	fetchPlayerRounds,
@@ -37,7 +38,7 @@ import { encodeLine } from '../utils';
  *  Example of hook that reads data from fetcher(api
  */
 
-export const useTicketPrice = (round: Address) => {
+export const useTicketPrice = (round?: Address) => {
 	const config = useConfig();
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'ticketPrice', round],
@@ -215,7 +216,7 @@ export const usePlayerRounds = (address?: Address) => {
 	});
 };
 
-export const useLinesAvailability = (round: Address, lines: ILine[], enabled: boolean) => {
+export const useLinesAvailability = (round: Address | undefined, lines: ILine[], enabled: boolean) => {
 	const config = useConfig();
 	return useQuery<boolean[]>({
 		queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'],
@@ -252,5 +253,12 @@ export const useFinishedRoundTransactionByRoundAddress = (round: Address) => {
 		queryKey: ['lottery', 'round', 'finishedRoundTransaction', round],
 		queryFn: () => fetchFinishedRoundTransactionByRoundAddress(config, round, roundFinish),
 		enabled: !!roundFinish && !isRoundFinishLoading,
+	});
+};
+
+export const useMyLinesSold = (round: Address, player: Address) => {
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'lines', player],
+		queryFn: () => fetchMyLinesSold(round, player),
 	});
 };

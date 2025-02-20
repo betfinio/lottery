@@ -3,12 +3,12 @@ import { useManualDistributeJackpot, useManualDistributeRefund, useManualRefund,
 import { RoundStatus } from '@/src/lib/types';
 import { DropdownMenuItem } from '@betfinio/components/ui';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@betfinio/components/ui';
-import { MoreHorizontal, SearchIcon } from 'lucide-react';
-import { useMemo } from 'react';
+import { MoreHorizontal } from 'lucide-react';
+import { type MouseEvent, useMemo } from 'react';
 import type { Address } from 'viem';
 
 interface RoundActionsProps {
-	handler: () => void;
+	handler: (e: MouseEvent) => void;
 	title: string;
 }
 
@@ -20,25 +20,29 @@ function RoundActions({ round }: { round: Address }) {
 	const { mutate: distributeRefund } = useManualDistributeRefund();
 	const { mutate: distributeJackpot } = useManualDistributeJackpot();
 
-	const handleRequest = () => {
+	const handleRequest = (e: MouseEvent) => {
+		e.stopPropagation();
 		const result = confirm('Are you sure you want to request the result?');
 		if (result) {
 			request({ round });
 		}
 	};
-	const handleRefund = () => {
+	const handleRefund = (e: MouseEvent) => {
+		e.stopPropagation();
 		const result = confirm('Are you sure you want to refund the round?');
 		if (result) {
 			refund({ round });
 		}
 	};
-	const handleDistributeRefund = () => {
+	const handleDistributeRefund = (e: MouseEvent) => {
+		e.stopPropagation();
 		const result = confirm('Are you sure you want to distribute the refund?');
 		if (result) {
 			distributeRefund({ round });
 		}
 	};
-	const handleJackpot = () => {
+	const handleJackpot = (e: MouseEvent) => {
+		e.stopPropagation();
 		const result = confirm('Are you sure you want to distribute the jackpot?');
 		if (result) {
 			distributeJackpot({ round });
@@ -65,12 +69,6 @@ function RoundActions({ round }: { round: Address }) {
 				title: 'Distribute Refund',
 			});
 		}
-		if (data === RoundStatus.ENDED_WITHOUT_BETS) {
-			options.push({
-				handler: handleRequest,
-				title: 'Request',
-			});
-		}
 		if (data === RoundStatus.DONE) {
 			options.push({
 				handler: handleJackpot,
@@ -80,6 +78,10 @@ function RoundActions({ round }: { round: Address }) {
 
 		return options;
 	}, [data, handleDistributeRefund, handleJackpot, handleRequest, handleRefund]);
+
+	if (actions.length === 0) {
+		return null;
+	}
 
 	return (
 		<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">

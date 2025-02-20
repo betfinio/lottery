@@ -3,7 +3,7 @@
 	"create": {
 		"line": "line",
 		"addMore": "Fill {count, plural, =1 {1 more line} =2 {2 more lines} other {# more lines}}",
-		"addMoreTooltip": "Create a ticket with 3 rows to enable symbol",
+		"addMoreTooltip": "Create a ticket with 3 lines to enable symbol",
 		"symbolUnlocked": "Symbol unlocked",
 		"validation": {
 			"symbol": "Symbol must be selected",
@@ -20,6 +20,7 @@
 			"round": "Draw",
 			"finish": "Draw Date",
 			"linesCount": "Lines Sold",
+			"myLinesCount": "My lines",
 			"result": "Result",
 			"bank": "Total bets"
 		}

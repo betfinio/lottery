@@ -21,8 +21,7 @@ const EditMode: FC<{
 	onSave?: (ticket: ILine) => void;
 	order: number;
 	editMode: boolean;
-	checkAvailability?: boolean;
-}> = ({ order, onBack, ticket, onSave, editMode, checkAvailability = true, round }) => {
+}> = ({ order, onBack, ticket, onSave, editMode, round }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
@@ -62,6 +61,11 @@ const EditMode: FC<{
 		setNumbers([]);
 		setSymbol(0);
 	};
+	const handleBack = () => {
+		setNumbers(ticket.numbers);
+		setSymbol(ticket.symbol);
+		onBack();
+	};
 	const handleSave = () => {
 		onSave?.({ numbers: numbers.sort(), symbol });
 	};
@@ -70,7 +74,10 @@ const EditMode: FC<{
 		const newLine = { numbers: numbers, symbol };
 		// check if edited line is the same as the ticket
 		const isSame = ticket.numbers.length === numbers.length && ticket.numbers.every((n, index) => n === numbers[index]) && ticket.symbol === symbol;
-		const duplicates = isSame ? false : isDuplicate([...draftLines, newLine]);
+
+		const filledLines = draftLines.filter((line) => line.numbers.every((n) => n > 0) && line.symbol > 0);
+
+		const duplicates = isSame ? false : isDuplicate([...filledLines, newLine]);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
 		// validate numbers are 5
@@ -86,7 +93,7 @@ const EditMode: FC<{
 		// validate duplicates
 		if (duplicates) return t('duplicates');
 		// validate availability
-		if (isFetched && availability && availability.length === 1 && availability[0] === false && !isSame) return t('notAvailable');
+		if (isFetched && availability && availability.length === 1 && availability[0] === false) return t('notAvailable');
 		return '';
 	}, [symbol, numbers, ticket, availability]);
 
@@ -105,7 +112,7 @@ const EditMode: FC<{
 			className={'left-0 absolute inset-0 p-4 bg-background-light rounded-xl z-[100] w-full h-full flex flex-col'}
 		>
 			<nav className={'flex justify-between w-full items-center'}>
-				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={onBack}>
+				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>
 					<ChevronLeft className={'w-5 h-5'} />
 					Back to all lines
 				</Button>

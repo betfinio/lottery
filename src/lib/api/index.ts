@@ -13,7 +13,8 @@ import { getContractEvents } from 'viem/actions';
  *  Example of function that reads data from blockchain
  */
 
-export const fetchTicketPrice = async (round: Address, config: Config): Promise<bigint> => {
+export const fetchTicketPrice = async (round: Address | undefined, config: Config): Promise<bigint> => {
+	if (!round) return 0n;
 	return await readContract(config, {
 		address: round,
 		abi: LotteryRoundABI,
@@ -312,7 +313,8 @@ export const fetchPotentialJackpot = async (round: Address, config: Config) => {
 	return (balance * BigInt(4)) / BigInt(100);
 };
 
-export const fetchLinesAvailability = async (round: Address, lines: ILine[], config: Config): Promise<boolean[]> => {
+export const fetchLinesAvailability = async (round: Address | undefined, lines: ILine[], config: Config): Promise<boolean[]> => {
+	if (!round) return [];
 	logger.start('fetchLinesAvailability:', round);
 	const encodedLines = encodeLines(lines);
 	const data = await multicall(config, {

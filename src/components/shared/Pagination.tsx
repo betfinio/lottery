@@ -24,6 +24,7 @@ const Pagination = <T,>({
 	isLive = false,
 }: PaginationProps<T>) => {
 	const [offset, setOffset] = useState(0);
+	const [length, setLength] = useState(0);
 
 	useEffect(() => {
 		if (onPageChange) {
@@ -33,10 +34,11 @@ const Pagination = <T,>({
 
 	// navigate to correct page one item is added
 	useEffect(() => {
-		if (items.length > 0 && isLive) {
+		if (items.length > 0 && isLive && length !== items.length) {
 			const newOffset = Math.floor((items.length - 1) / itemsPerPage) * itemsPerPage;
 			setOffset(newOffset);
 		}
+		setLength(items.length);
 	}, [items, isLive]);
 
 	const handleNext = () => {

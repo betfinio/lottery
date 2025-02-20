@@ -7,6 +7,8 @@ import {
 	type GetPlayerRoundsQuery,
 	GetPlayerTicketByRoundDocument,
 	type GetPlayerTicketByRoundQuery,
+	GetPlayerTicketsDocument,
+	type GetPlayerTicketsQuery,
 	GetRoundDetailsDocument,
 	type GetRoundDetailsQuery,
 	GetRoundJackpotsDocument,
@@ -87,6 +89,16 @@ export const fetchOldTickets = async (address?: Address): Promise<IRoundTicket[]
 		return result.data.old.map(populateTickets);
 	}
 	return [];
+};
+
+export const fetchMyLinesSold = async (round: Address, player: Address): Promise<number> => {
+	logger.start('fetching my lines sold');
+	const result: ExecutionResult<GetPlayerTicketsQuery> = await execute(GetPlayerTicketsDocument, { round: round, player: player });
+	logger.success('fetched my lines sold', result.data?.tickets);
+	if (result.data) {
+		return result.data.tickets.reduce((acc, ticket) => acc + Number(ticket.linesCount), 0);
+	}
+	return 0;
 };
 
 const populateRound = (round: RoundFragment): IRound => {

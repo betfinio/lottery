@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 export const RoundHeader = () => {
 	const round = useGetRoundFromParams();
 	const { data: roundDetails, isLoading: isRoundDetailsLoading } = useRoundDetails(round);
-	truncateEthAddress;
+
 	const { t } = useTranslation('lottery', {
 		keyPrefix: 'round',
 	});
