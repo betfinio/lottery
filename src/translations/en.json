@@ -118,6 +118,7 @@
 		"backToCurrentRound": "Back To Current Round",
 		"youWon": "You Won",
 		"ticketLines": "Lines",
-		"volume": "Volume"
+		"volume": "Volume",
+		"ticketsClaimed": "Tickets Claimed"
 	}
 }

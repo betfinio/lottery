@@ -1,10 +1,7 @@
-import { useGetRoundFromParams, useRoundTicketsByPlayer, useWinningLine } from '@/src/lib/query';
 import type { ILine, IRoundTicket } from '@/src/lib/types';
-import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
-import { type FC, useMemo, useRef } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAccount } from 'wagmi';
 import { CopyLocation } from '../../shared/CopyLocation';
 import { JackpotFrame } from '../../shared/JackpotTiara/JackpotFrame';
 import Pagination from '../../shared/Pagination';
@@ -49,7 +46,7 @@ export const itemsList = [
 interface PlayerWonProps {
 	winningLine: ILine | null | undefined;
 	winningCoef: bigint;
-	tickets: IRoundTicket[];
+	tickets: (IRoundTicket & { totalLines: number })[];
 	placedAmount: bigint;
 	winingAmount: bigint;
 }
@@ -100,15 +97,15 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, ticket
 							<Pagination
 								items={tickets}
 								itemsPerPage={1}
-								renderItem={(ticket: IRoundTicket, index: number) => <TicketCard ticket={ticket} winningLine={winningLine} />}
+								renderItem={(ticket, index: number) => <TicketCard ticket={ticket} winningLine={winningLine} totalLines={ticket.totalLines} />}
 								className="flex-grow h-auto"
 							/>
 						</div>
 					) : (
 						<div className="flex flex-col gap-2 justify-center">
 							<div className="text-muted-foreground text-base mb-2">{t('yourWinningTickets')}</div>
-							{tickets.map((ticket: IRoundTicket, index: number) => (
-								<TicketCard key={index} ticket={ticket} winningLine={winningLine} />
+							{tickets.map((ticket, index: number) => (
+								<TicketCard key={index} ticket={ticket} winningLine={winningLine} totalLines={ticket.totalLines} />
 							))}
 						</div>
 					)}

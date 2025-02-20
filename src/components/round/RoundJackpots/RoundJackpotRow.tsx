@@ -27,8 +27,8 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 					<div className="flex gap-2 items-center">
 						<div className="w-24 relative">
 							{jackpot.icon}
-							<div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-								<div className="text-xs font-semibold">{jackpot.name}</div>
+							<div className="absolute inset-0 flex flex-col items-center justify-center">
+								<div className="mt-1.5 text-xs font-semibold">{jackpot.name}</div>
 							</div>
 						</div>
 					</div>

@@ -22,16 +22,6 @@ export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ clas
 			className={cn(className)}
 		>
 			<g clipPath="url(#clip0_6001_54972)">
-				<rect y="18" width="320" height="190" fill="url(#pattern0_6001_54972)" />
-				<path
-					d="M159.999 193.578C158.963 193.578 157.933 193.436 156.935 193.156L23.0922 155.299C20.6934 154.621 18.5809 153.18 17.0743 151.194C15.5677 149.208 14.749 146.785 14.7422 144.292V81.7349C14.7428 79.2385 15.5609 76.8109 17.0713 74.8233C18.5817 72.8356 20.7014 71.3971 23.1065 70.7278L156.921 32.8706C157.923 32.5921 158.959 32.4504 159.999 32.4492C161.035 32.4495 162.066 32.5913 163.064 32.8706L296.906 70.7278C299.306 71.405 301.419 72.846 302.926 74.8323C304.433 76.8185 305.251 79.2418 305.256 81.7349V144.264C305.249 146.758 304.428 149.182 302.919 151.169C301.409 153.155 299.294 154.595 296.892 155.271L163.078 193.128C162.077 193.416 161.041 193.567 159.999 193.578Z"
-					stroke="white"
-					strokeWidth="4"
-					filter="drop-shadow(0 0 6px currentColor)"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				/>
-				<rect x="1.42773" y="19.4297" width="317.143" height="187.143" fill="url(#pattern1_6001_54972)" />
 				<defs>
 					<linearGradient id="gradient" x1="100%" y1="0%" x2="0%" y2="0%">
 						<stop offset="0%" stopColor="#1d1a3d" />
@@ -56,10 +46,6 @@ export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ clas
 				<pattern id="pattern1_6001_54972" patternContentUnits="objectBoundingBox" width="1" height="1">
 					<use xmlnsXlink="http://www.w3.org/1999/xlink" xlinkHref="#image1_6001_54972" transform="scale(0.00225225 0.00381679)" />
 				</pattern>
-				<clipPath id="clip0_6001_54972">
-					<rect width="320" height="208" fill="white" />
-				</clipPath>
-				<GradientImage />
 			</defs>
 		</svg>
 	);

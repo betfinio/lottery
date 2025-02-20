@@ -47,7 +47,7 @@ function SharedLine({
 	}, [symbolUnlocked, filled3, line.symbol]);
 
 	return (
-		<div className={cn('flex gap-2 items-center', className)} onClick={onClick}>
+		<div className={cn('flex gap-2 items-center overflow-hidden', className)} onClick={onClick}>
 			{line.numbers
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
@@ -85,7 +85,7 @@ function SharedLine({
 				}}
 				animate={symbolControls}
 			>
-				<NumberComponent isSymbol className={symbolClassName}>
+				<NumberComponent isSymbol className={cn(symbolClassName)}>
 					<AnimatePresence mode="wait">
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}

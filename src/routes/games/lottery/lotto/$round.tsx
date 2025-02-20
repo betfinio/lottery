@@ -3,6 +3,7 @@ import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
 import { RoundJackpots } from '@/src/components/round/RoundJackpots/RoundJackpots';
 import { RoundTotalsDetails } from '@/src/components/round/RoundTotalsDetails';
+import ClaimingProgressBar from '@/src/components/shared/ClaimingProgress';
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer } from '@/src/lib/query';
 import { RoundStatus } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
@@ -38,11 +39,13 @@ function HistoryRoundPage() {
 				<RoundHeader />
 				<RoundTotalsDetails />
 				<PlayerStatusRoundPrecheck />
+				<ClaimingProgressBar />
 				{showJackpotsTable && (
 					<div className="mt-4">
 						<RoundJackpots />
 					</div>
 				)}
+
 				{showChainDetails && <RoundChainDetails />}
 			</div>
 			<Toaster />

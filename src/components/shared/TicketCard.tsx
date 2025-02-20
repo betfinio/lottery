@@ -9,8 +9,9 @@ import { NumberComponent, SymbolElement } from '../Line';
 interface TicketCardProps {
 	ticket: IRoundTicket;
 	winningLine: ILine | null | undefined;
+	totalLines: number;
 }
-export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine }) => {
+export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine, totalLines }) => {
 	const lines = useMemo(
 		() => ticket.lines.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0)),
 		[ticket.lines, winningLine],
@@ -22,7 +23,9 @@ export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine }) => {
 					#{ticket.token}
 				</a>
 
-				<div className={'text text-muted-foreground'}>{lines.length} lines</div>
+				<div className={'text text-muted-foreground'}>
+					{lines.length} of {totalLines} lines
+				</div>
 			</div>
 			<div className="flex flex-col gap-2 max-h-36 overflow-y-auto justify-start">
 				{lines.map((line, index) => (

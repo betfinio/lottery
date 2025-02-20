@@ -4,7 +4,7 @@ import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
-import { ArrowLeftIcon } from 'lucide-react';
+import { Undo2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export const RoundHeader = () => {
@@ -17,10 +17,9 @@ export const RoundHeader = () => {
 	return (
 		<div className="grid  grid-cols-3">
 			<div className="col-span-1">
-				<Button variant="outline" asChild>
+				<Button variant="ghost" asChild>
 					<Link to={'/games/lottery/lotto'}>
-						<ArrowLeftIcon className="w-4 h-4 md:hidden" />
-						<span className="hidden md:inline-block">{t('backToCurrentRound')}</span>
+						<Undo2Icon className="w-4 h-4 text-secondary-foreground" />
 					</Link>
 				</Button>
 			</div>
