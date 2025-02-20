@@ -39,7 +39,7 @@ const Header = () => {
 			</div>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
 				<Dialog>
-					<DialogTrigger className={'flex flex-col items-center'}>
+					<DialogTrigger className={'flex flex-col items-center text-secondary-foreground hover:text-secondary-foreground lg:text-foreground duration-300'}>
 						<AlertCircle className={'w-6 h-6'} />
 						<span className={'hidden sm:inline text-xs'}>Paytable</span>
 					</DialogTrigger>
