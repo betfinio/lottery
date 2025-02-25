@@ -10,7 +10,7 @@ export function RoundTotalsDetails() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const round = useGetRoundFromParams();
 	const { data: lines = 10n, isLoading: isLinesLoading } = useLinesCount(round);
-	const { data: price = 99n ** 8n, isLoading: isPriceLoading } = useTicketPrice(round);
+	const { isLoading: isPriceLoading } = useTicketPrice(round);
 	const { data: roundDetails } = useRoundDetails(round);
 	const { data: jackpots } = useRoundJackpots(round);
 	const bank = roundDetails?.bank || 0n;

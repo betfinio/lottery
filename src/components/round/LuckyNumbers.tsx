@@ -1,10 +1,9 @@
 import Line from '@/src/components/shared/SharedLine';
 import { useWinningLine } from '@/src/lib/query';
-import { useManualRequest } from '@/src/lib/query/mutations';
 import type { ILine } from '@/src/lib/types';
 import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
-import { type FC, useEffect, useMemo, useState } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import type { Address } from 'viem';
 
 interface LuckyNumbersProps {

@@ -16,7 +16,6 @@ export const PlayerStatusForRound: FC = () => {
 	const { data: roundStatus } = useRoundStatus(round);
 	const { data: tickets = [], isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
 	const { data: winningLine } = useWinningLine(round);
-
 	const { data: ticketPrice } = useTicketPrice(round);
 
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
@@ -42,13 +41,16 @@ export const PlayerStatusForRound: FC = () => {
 
 	const playerWinningTicketsWithWinningLines = useMemo(() => {
 		if (!ticketsWithCountedCoef) return [];
-		return ticketsWithCountedCoef.reduce((acc, ticket) => {
-			if (ticket.winningCoef > 0n && winningLine) {
-				const ticketLines = ticket.lines.filter((line) => compareLines(line, winningLine) > 0);
-				acc.push({ ...ticket, lines: ticketLines });
-			}
-			return acc;
-		}, [] as IRoundTicket[]);
+		return ticketsWithCountedCoef.reduce(
+			(acc, ticket) => {
+				if (ticket.winningCoef > 0n && winningLine) {
+					const ticketLines = ticket.lines.filter((line) => compareLines(line, winningLine) > 0);
+					acc.push({ ...ticket, lines: ticketLines, totalLines: ticket.lines.length });
+				}
+				return acc;
+			},
+			[] as (IRoundTicket & { totalLines: number })[],
+		);
 	}, [ticketsWithCountedCoef]);
 
 	const hasWinningTicket = ticketsWithCountedCoef.some((ticket) => ticket.winningCoef > 0);
@@ -65,10 +67,10 @@ export const PlayerStatusForRound: FC = () => {
 		[ticketsWithCountedCoef],
 	);
 
-	const showPlayerDidNotWin = !showCalculating && !hasWinningTicket && ticketPrice;
+	const showPlayerDidNotWin = !showCalculating && !hasWinningTicket && ticketPrice && roundStatus && !isFetchingTickets;
 	const showPlayerWon = !showCalculating && playerHasBets && hasWinningTicket;
 
-	if (showCalculating) {
+	if (roundStatus && showCalculating) {
 		return (
 			<div className="pb-8 h-full flex flex-col items-center justify-center">
 				<RoundNotCalculated />
