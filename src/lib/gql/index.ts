@@ -109,6 +109,7 @@ const populateRound = (round: RoundFragment): IRound => {
 		linesCount: Number(round.linesCount),
 		bank: BigInt(round.bank),
 		ticketPrice: BigInt(round.ticketPrice),
+		ticketClaimedCount: Number(round.ticketClaimedCount),
 	};
 };
 
