@@ -5,7 +5,8 @@ import type { JackpotCombination } from '@/src/lib/types';
 import { truncateEthAddress } from '@betfinio/abi';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import type { FC } from 'react';
+import type { Table } from '@tanstack/react-table';
+import { type FC, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 
@@ -22,6 +23,8 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const currentJackpot = jackpotData[id][0];
 	const tickets = currentJackpot?.tickets ?? [];
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
+
+	console.log(currentJackpot, 'currentJackpot');
 	const columns = [
 		columnHelper.accessor('owner', {
 			header: t('ticketOwner'),
@@ -68,5 +71,6 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			},
 		}),
 	] as ColumnDef<Ticket>[];
-	return <DataTable className="w-full" hidePagination={true} state={{ pagination: undefined }} columns={columns} data={tickets} />;
+
+	return <DataTable className="w-full" columns={columns} data={tickets} />;
 };
