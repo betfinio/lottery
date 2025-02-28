@@ -14,10 +14,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const Route = createFileRoute('/games/lottery/lotto/')({
-	component: RouteComponent,
+	component: LotteryPage,
 });
 
-function RouteComponent() {
+export function LotteryPage() {
 	const { data: round } = useSelectedRound();
 	const { state } = useRoundState(round?.address);
 	const showPlaceBet = state === RoundState.PLACING;
