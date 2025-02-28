@@ -36,6 +36,7 @@ export default defineConfig({
 				'./styles': './src/styles.ts',
 				'./routes/index': './src/routes/games/lottery/lotto/index.tsx',
 				'./routes/$round': './src/routes/games/lottery/lotto/$round.tsx',
+				'./i18n': './src/i18n.ts',
 			},
 			manifest: true,
 			dts: true,
