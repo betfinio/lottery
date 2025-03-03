@@ -62,9 +62,9 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, ticket
 					<div className="relative">
 						<JackpotFrame animateStars className="text-gold " />
 
-						<div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+						<div className="absolute text-2xl top-0 left-0 w-full h-full flex flex-col items-center justify-center">
 							<div>{t('youWon')}</div>
-							<BetValue className="text-secondary-foreground text-lg font-bold" value={winingAmount} withMillify={false} />
+							<BetValue className="text-secondary-foreground text-2xl font-bold" value={winingAmount} withMillify={false} />
 						</div>
 					</div>
 				</div>
