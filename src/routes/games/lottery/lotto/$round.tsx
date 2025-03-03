@@ -17,7 +17,7 @@ export const Route = createFileRoute('/games/lottery/lotto/$round')({
 	component: HistoryRoundPage,
 });
 
-function HistoryRoundPage() {
+export function HistoryRoundPage() {
 	const navigate = useNavigate();
 	const { address = ZeroAddress } = useAccount();
 	const round = useGetRoundFromParams();

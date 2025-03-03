@@ -13,6 +13,8 @@ export const ClaimingProgressBar = () => {
 	const { data: roundDetails } = useRoundDetails(round);
 	const { data: jackpots } = useRoundJackpots(round);
 
+	console.log(roundDetails);
+
 	const claimedJackpotTickets = useMemo(() => {
 		if (!jackpots) return 0n;
 
@@ -33,7 +35,7 @@ export const ClaimingProgressBar = () => {
 			</div>
 			<div className={'flex items-center gap-1'}>
 				<span className={' font-semibold text-lg'}>
-					{Number(ticketsClaimed)} /{' '}
+					{Number(roundDetails?.ticketClaimedCount)} /{' '}
 					<span
 						className={cn('', {
 							'text-muted-foreground': !isAllClaimed,

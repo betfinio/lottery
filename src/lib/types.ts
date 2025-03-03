@@ -17,6 +17,7 @@ export interface IRound {
 	linesCount: number;
 	bank: bigint;
 	ticketPrice: bigint;
+	ticketClaimedCount: number;
 }
 
 export interface IRoundTicket {

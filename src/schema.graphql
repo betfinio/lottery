@@ -19,6 +19,7 @@ fragment Round on Round {
 	ticketsCount
 	linesCount
 	bank
+	ticketClaimedCount
 }
 
 fragment Ticket on Ticket {

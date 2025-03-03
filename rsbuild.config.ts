@@ -32,6 +32,12 @@ export default defineConfig({
 			remotes: {
 				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
 			},
+			exposes: {
+				'./styles': './src/styles.ts',
+				'./routes/index': './src/routes/games/lottery/lotto/index.tsx',
+				'./routes/$round': './src/routes/games/lottery/lotto/$round.tsx',
+				'./i18n': './src/i18n.ts',
+			},
 			manifest: true,
 			dts: true,
 			shared: {
