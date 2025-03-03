@@ -4,7 +4,6 @@ sources:
       graphql:
         endpoint: ${PUBLIC_LOTTERY_GRAPH_URL}
 
-
 codegen:
   scalars:
     BigInt: bigint
