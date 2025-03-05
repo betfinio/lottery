@@ -1,4 +1,12 @@
-import { useActiveRounds, useDraftLines, useLinesAvailability, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import {
+	linesAvailabilityQuery,
+	useActiveRounds,
+	useDraftLines,
+	useLinesAvailability,
+	useMultiAllowance,
+	useSelectedRound,
+	useTicketPrice,
+} from '@/src/lib/query';
 import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
@@ -25,26 +33,31 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@betfinio/components/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
-import { useAccount } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { ETHSCAN } from '../globals';
+import { fetchLinesAvailability } from '../lib/api';
 import { useRoundState } from '../lib/query/state';
 import BuySteps from './shared/BuySteps';
 
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });
 
+	const queryClient = useQueryClient();
+	const config = useConfig();
 	// Queries
 	const { data: rounds = [] } = useActiveRounds();
 	const { data: lines = [] } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
+	const { data: draftLines = [] } = useDraftLines();
 
 	// Mutations
 	const { mutate: buyTicket, isPending } = useBuyTicket();
@@ -74,6 +87,15 @@ const PlaceBet = () => {
 	const isValidRecipient = recipient && isAddress(recipient as string, { strict: false });
 	const roundsAsDates = rounds.map((e: IRound) => new Date(e.finish * 1000));
 	const selectedDates = selectedRounds.map((e) => new Date(e.finish * 1000));
+
+	const getHasCollisions = async () => {
+		const queries = selectedRounds.map((round) => {
+			const query = queryClient.ensureQueryData(linesAvailabilityQuery(round.address, draftLines, config));
+			return query;
+		});
+		const queriesResult = await Promise.all(queries);
+		return queriesResult.some((e) => e?.some((e) => e === false));
+	};
 
 	// Handlers
 	const handleToggle = (value: Address[]) => {
@@ -148,7 +170,14 @@ const PlaceBet = () => {
 		updateState(RoundState.FILLING);
 	};
 
-	const handleOpen = () => {
+	const handleOpen = async () => {
+		if (await getHasCollisions()) {
+			toast({
+				title: 'Lines are already taken',
+				variant: 'destructive',
+			});
+			return;
+		}
 		setIsOpen(true);
 	};
 

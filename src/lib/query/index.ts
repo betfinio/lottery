@@ -31,7 +31,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import type { Address } from 'viem';
-import { useConfig } from 'wagmi';
+import { type Config, useConfig } from 'wagmi';
 import { encodeLine } from '../utils';
 
 /**
@@ -216,11 +216,13 @@ export const usePlayerRounds = (address?: Address) => {
 	});
 };
 
+export const linesAvailabilityQuery = (round: Address | undefined, lines: ILine[], config: Config) => {
+	return { queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'], queryFn: () => fetchLinesAvailability(round, lines, config) };
+};
 export const useLinesAvailability = (round: Address | undefined, lines: ILine[], enabled: boolean) => {
 	const config = useConfig();
 	return useQuery<boolean[]>({
-		queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'],
-		queryFn: () => fetchLinesAvailability(round, lines, config),
+		...linesAvailabilityQuery(round, lines, config),
 		enabled,
 	});
 };
