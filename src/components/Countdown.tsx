@@ -33,6 +33,7 @@ function Countdown({ finish, size = 40, className = '', onFinish }: CountdownPro
 	};
 
 	useEffect(() => {
+		if (finish === 0) return;
 		const now = Math.floor(Date.now() / 1000);
 
 		if (finish < now) {

@@ -13,8 +13,6 @@ export const ClaimingProgressBar = () => {
 	const { data: roundDetails } = useRoundDetails(round);
 	const { data: jackpots } = useRoundJackpots(round);
 
-	console.log(roundDetails);
-
 	const claimedJackpotTickets = useMemo(() => {
 		if (!jackpots) return 0n;
 

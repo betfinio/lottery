@@ -5,15 +5,19 @@ import { equals } from '@/src/lib/utils';
 import { Button, DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
 import { LoaderIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { useActiveTickets } from '../lib/query';
 
 export interface EditTicketProps {
 	ticket: IRoundTicket;
 	onClose: () => void;
 }
 function EditTicket({ ticket, onClose }: EditTicketProps) {
+	const { address } = useAccount();
 	const [saveEnabled, setSaveEnabled] = useState(false);
+	const { refetch: refetchActiveTickets } = useActiveTickets(address);
 	const [newLines, setNewLines] = useState(ticket.lines);
-	const { mutate: edit, isPending, isSuccess, data } = useUpdateTicket();
+	const { mutateAsync: edit, isPending, isSuccess, data } = useUpdateTicket();
 
 	const handleUpdate = (newTicket: IRoundTicket) => {
 		const edited = ticket.lines.filter((e, index) => !equals(e, newTicket.lines[index]));
@@ -29,8 +33,9 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 			onClose();
 		}
 	}, [isSuccess, data]);
-	const onSave = () => {
-		edit({ ticket: { ...ticket, lines: newLines } });
+	const onSave = async () => {
+		await edit({ ticket: { ...ticket, lines: newLines } });
+		refetchActiveTickets();
 	};
 	return (
 		<div className={'max-w-[384px] w-[98vw] mx-auto p-2 md:p-3 lg:p-4 flex flex-col gap-2 md:gap-3 lg:gap-4'}>
