@@ -1,12 +1,13 @@
 // @ts-ignore
 import Countdown from '@/src/components/Countdown.tsx';
 import { ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
-import { useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
+import { useActiveRounds, useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
 import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
+import { useNavigate } from '@tanstack/react-router';
 import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
@@ -18,8 +19,10 @@ interface CurrentRoundProps {
 }
 
 const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
+	const navigate = useNavigate();
+	const { refetch: refetchActiveRounds } = useActiveRounds();
 	const { data: finish = 0 } = useRoundFinish(round.address);
-	const { data: status } = useRoundStatus(round.address);
+	const { data: status, refetch: refetchStatus } = useRoundStatus(round.address);
 	const { data: additionalJackpot = 0n } = useAdditionalJackpot();
 	const { data: potentialJackpot = 0n } = usePotentialJackpot(round.address);
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
@@ -78,7 +81,22 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		<div className="p-3 flex flex-col gap-4 justify-between h-full">
 			<div className="flex flex-col gap-3 h-10">
 				<div className="w-full text-center text-purple-box">Next Draw {truncateEthAddress(round.address).toLowerCase()}</div>
-				{status === RoundStatus.BETTING && <Countdown finish={finish} />}
+				{status === RoundStatus.BETTING && (
+					<Countdown
+						onFinish={async () => {
+							await refetchStatus();
+							await refetchActiveRounds();
+
+							navigate({
+								to: '/games/lottery/lotto/$round',
+								params: {
+									round: round.address,
+								},
+							});
+						}}
+						finish={finish}
+					/>
+				)}
 			</div>
 			<Dialog>
 				<DialogTrigger className={'flex flex-col items-center'}>

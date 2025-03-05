@@ -9,9 +9,10 @@ import { RoundStatus } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 
-const statusesAllowedToSeeRound = [RoundStatus.CLAIMING, RoundStatus.DONE, RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING];
+export const statusesAllowedToSeeRound = [RoundStatus.CLAIMING, RoundStatus.DONE, RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING];
 
 export const Route = createFileRoute('/games/lottery/lotto/$round')({
 	component: HistoryRoundPage,
@@ -27,11 +28,15 @@ export function HistoryRoundPage() {
 
 	const showChainDetails = roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 
+	const showProgressBar = roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
+	useEffect(() => {
+		if (roundStatus === undefined) return;
+		if (!statusesAllowedToSeeRound.includes(roundStatus)) {
+			navigate({ to: '/games/lottery/lotto', replace: true });
+			return;
+		}
+	}, [roundStatus]);
 	if (roundStatus === undefined || isLoading) return null;
-	if (!statusesAllowedToSeeRound.includes(roundStatus)) {
-		navigate({ to: '/games/lottery/lotto', replace: true });
-		return;
-	}
 
 	return (
 		<>
@@ -39,7 +44,7 @@ export function HistoryRoundPage() {
 				<RoundHeader />
 				<RoundTotalsDetails />
 				<PlayerStatusRoundPrecheck />
-				<ClaimingProgressBar />
+				{showProgressBar && <ClaimingProgressBar />}
 				{showJackpotsTable && (
 					<div className="mt-4">
 						<RoundJackpots />
