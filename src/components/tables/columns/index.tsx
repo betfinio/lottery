@@ -4,6 +4,7 @@ import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import type { TFunction } from 'i18next';
 import Count from './Count';
 import Finish from './Finish';
+import MyLinesBank from './MyLinesBank';
 import MyLinesCount from './MyLinesCount';
 import Result from './Result';
 import Round from './Round';
@@ -48,7 +49,13 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 			meta: {
 				className: 'min-w-[100px]',
 			},
-			cell: (props) => <BetValue value={props.getValue()} withIcon />,
+			cell: (props) => {
+				return isMy ? (
+					<MyLinesBank round={props.row.original.address} ticketPrice={props.row.original.ticketPrice} />
+				) : (
+					<BetValue value={(props.row.original.ticketPrice ?? 0n) * BigInt(props.row.original.linesCount)} />
+				);
+			},
 		}),
 		columnHelper.display({
 			id: 'actions',

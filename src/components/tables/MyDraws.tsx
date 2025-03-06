@@ -1,4 +1,4 @@
-import { usePlayerRounds } from '@/src/lib/query';
+import { usePlayerRounds, useTicketPrice } from '@/src/lib/query';
 import type { IRound, RoundStatus } from '@/src/lib/types';
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { ZeroAddress } from '@betfinio/abi';
@@ -23,6 +23,7 @@ function MyDraws() {
 		}
 	};
 	const { data: rounds = [] } = usePlayerRounds(address);
+
 	return <DataTable enableSorting={true} data={rounds} columns={columns} onRowClick={handleRowClick} />;
 }
 

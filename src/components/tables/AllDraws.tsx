@@ -1,4 +1,4 @@
-import { useActiveRounds, useOldRounds } from '@/src/lib/query';
+import { useActiveRounds, useOldRounds, useTicketPrice } from '@/src/lib/query';
 import type { IRound, RoundStatus } from '@/src/lib/types';
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { DataTable } from '@betfinio/components/shared';
@@ -10,7 +10,7 @@ import { defineColumns } from './columns';
 function AllDraws() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'tables' });
 
-	const columns = defineColumns(t);
+	const columns = defineColumns(t, false);
 	const navigate = useNavigate();
 
 	const { data: oldRounds = [] } = useOldRounds();
