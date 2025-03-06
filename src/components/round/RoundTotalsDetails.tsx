@@ -19,7 +19,7 @@ export function RoundTotalsDetails() {
 		if (!jackpots) return 0n;
 
 		return Object.values(jackpots).reduce((acc, jackpot) => {
-			return acc + BigInt(jackpot[0].claimed || 0n);
+			return acc + BigInt(jackpot?.[0]?.claimed || 0n);
 		}, 0n);
 	}, [jackpots]);
 

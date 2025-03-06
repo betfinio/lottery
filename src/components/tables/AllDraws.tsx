@@ -1,5 +1,6 @@
-import { useActiveRounds, useOldRounds } from '@/src/lib/query';
-import type { IRound } from '@/src/lib/types';
+import { useActiveRounds, useOldRounds, useTicketPrice } from '@/src/lib/query';
+import type { IRound, RoundStatus } from '@/src/lib/types';
+import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { DataTable } from '@betfinio/components/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
@@ -9,7 +10,7 @@ import { defineColumns } from './columns';
 function AllDraws() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'tables' });
 
-	const columns = defineColumns(t);
+	const columns = defineColumns(t, false);
 	const navigate = useNavigate();
 
 	const { data: oldRounds = [] } = useOldRounds();
@@ -18,7 +19,7 @@ function AllDraws() {
 	const queryClient = useQueryClient();
 	const handleRowClick = (row: IRound) => {
 		const data = queryClient.getQueryData(['lottery', 'round', row.address, 'status']);
-		if (row.finish <= Math.floor(Date.now() / 1000) && (data === 3 || data === 4)) {
+		if (row.finish <= Math.floor(Date.now() / 1000) && statusesAllowedToSeeRound.includes(data as RoundStatus)) {
 			navigate({ to: '/games/lottery/lotto/$round', params: { round: row.address } });
 		}
 	};

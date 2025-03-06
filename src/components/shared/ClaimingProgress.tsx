@@ -13,13 +13,11 @@ export const ClaimingProgressBar = () => {
 	const { data: roundDetails } = useRoundDetails(round);
 	const { data: jackpots } = useRoundJackpots(round);
 
-	console.log(roundDetails);
-
 	const claimedJackpotTickets = useMemo(() => {
 		if (!jackpots) return 0n;
 
 		return Object.values(jackpots).reduce((acc, jackpot) => {
-			return acc + BigInt(jackpot[0].tickets.length || 0n);
+			return acc + BigInt(jackpot?.[0]?.tickets.length || 0n);
 		}, 0n);
 	}, [jackpots]);
 

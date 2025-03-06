@@ -1,8 +1,11 @@
-import { usePlayerRounds } from '@/src/lib/query';
-import type { IRound } from '@/src/lib/types';
+import { usePlayerRounds, useTicketPrice } from '@/src/lib/query';
+import type { IRound, RoundStatus } from '@/src/lib/types';
+import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { ZeroAddress } from '@betfinio/abi';
 import { DataTable } from '@betfinio/components/shared';
+import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { defineColumns } from './columns';
@@ -12,12 +15,38 @@ function MyDraws() {
 	const navigate = useNavigate();
 	const columns = defineColumns(t, true);
 	const { address = ZeroAddress } = useAccount();
+	const queryClient = useQueryClient();
 
 	const handleRowClick = (row: IRound) => {
-		navigate({ to: '/games/lottery/lotto/$round', params: { round: row.address } });
+		const data = queryClient.getQueryData(['lottery', 'round', row.address, 'status']);
+		if (row.finish <= Math.floor(Date.now() / 1000) && statusesAllowedToSeeRound.includes(data as RoundStatus)) {
+			navigate({ to: '/games/lottery/lotto/$round', params: { round: row.address } });
+		}
 	};
 	const { data: rounds = [] } = usePlayerRounds(address);
-	return <DataTable enableSorting={true} data={rounds} columns={columns} onRowClick={handleRowClick} />;
+
+	const sortedRounds = useMemo(() => {
+		const currentTimestamp = Math.floor(Date.now() / 1000);
+
+		return [...rounds].sort((a, b) => {
+			const aIsActive = a.finish > currentTimestamp;
+			const bIsActive = b.finish > currentTimestamp;
+
+			// If one is active and other isn't, active goes first
+			if (aIsActive && !bIsActive) return -1;
+			if (!aIsActive && bIsActive) return 1;
+
+			// If both are active, sort by finish time (earliest first)
+			if (aIsActive && bIsActive) {
+				return a.finish - b.finish;
+			}
+
+			// If neither is active, maintain original order
+			return 0;
+		});
+	}, [rounds]); // Only re-run when rounds data changes
+
+	return <DataTable enableSorting={true} data={sortedRounds} columns={columns} onRowClick={handleRowClick} />;
 }
 
 export default MyDraws;

@@ -8,7 +8,7 @@ import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 import { useDraftLines, useLinesAvailability, useSelectedRound } from '../lib/query';
-import { isDuplicate, randomize } from '../lib/utils';
+import { equals, isDuplicate, randomize } from '../lib/utils';
 import { AnimatedGridOfNumbners } from './shared/AnimatedGridOfNumbners';
 import { TicketGridOfSymbols } from './shared/TicketGridOfSymbols';
 const animationDuration = 1000;
@@ -21,13 +21,23 @@ const EditMode: FC<{
 	onSave?: (ticket: ILine) => void;
 	order: number;
 	editMode: boolean;
-}> = ({ order, onBack, ticket, onSave, editMode, round }) => {
+	shouldValidateAvaliability?: boolean;
+}> = ({ order, onBack, ticket, onSave, editMode, round, shouldValidateAvaliability = false }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
 	const { data: draftLines = [] } = useDraftLines();
 	const { data: selectedRound } = useSelectedRound();
-	const { data: availability, isFetched } = useLinesAvailability(round ?? selectedRound?.address, [{ numbers, symbol }], true);
+
+	const linesHasChanged = useMemo(() => {
+		return !equals(ticket, { numbers, symbol });
+	}, [ticket, numbers]);
+
+	const { data: availability, isFetched } = useLinesAvailability(
+		round ?? selectedRound?.address,
+		[{ numbers, symbol }],
+		linesHasChanged && shouldValidateAvaliability,
+	);
 
 	useEffect(() => {
 		setNumbers(ticket.numbers);
@@ -93,7 +103,8 @@ const EditMode: FC<{
 		// validate duplicates
 		if (duplicates) return t('duplicates');
 		// validate availability
-		if (isFetched && availability && availability.length === 1 && availability[0] === false) return t('notAvailable');
+		if (shouldValidateAvaliability && linesHasChanged && isFetched && availability && availability.length === 1 && availability[0] === false)
+			return t('notAvailable');
 		return '';
 	}, [symbol, numbers, ticket, availability]);
 

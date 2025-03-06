@@ -1,35 +1,80 @@
 import { type TimeDiff, getDiff } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface CountdownProps {
 	finish: number;
 	size?: number;
 	className?: string;
+	onFinish?: () => void;
 }
-function Countdown({ finish, size = 40, className = '' }: CountdownProps) {
+function Countdown({ finish, size = 40, className = '', onFinish }: CountdownProps) {
 	const [diff, setDiff] = useState<TimeDiff>({
 		days: 0,
 		hours: 0,
 		minutes: 0,
 		seconds: 0,
 	});
+	const [isFinished, setIsFinished] = useState(false);
+	const hasFinishedRef = useRef(false);
 
 	const updateDiff = () => {
 		const now = Math.floor(Date.now() / 1000);
-		setDiff(getDiff(now, finish));
+		if (now >= finish) {
+			if (!hasFinishedRef.current) {
+				setIsFinished(true);
+				hasFinishedRef.current = true;
+				if (onFinish) onFinish();
+			}
+			return;
+		}
+		const newDiff = getDiff(now, finish);
+		setDiff(newDiff);
 	};
 
 	useEffect(() => {
+		if (finish === 0) return;
 		const now = Math.floor(Date.now() / 1000);
+
 		if (finish < now) {
+			if (!hasFinishedRef.current) {
+				setIsFinished(true);
+				hasFinishedRef.current = true;
+				if (onFinish) onFinish();
+			}
+			return;
 		}
+
 		updateDiff();
 		const interval = setInterval(() => {
 			updateDiff();
 		}, 1000);
+
 		return () => clearInterval(interval);
-	}, [finish]);
+	}, [finish, onFinish]);
+
+	if (isFinished) {
+		return (
+			<div className={cn('flex flex-row items-center justify-center text-foreground text-sm gap-1', className)}>
+				<div style={{ width: `${size}px` }} className={'aspect-square rounded-lg bg-secondary flex items-center justify-center'}>
+					0d
+				</div>
+				:
+				<div style={{ width: `${size}px` }} className={'aspect-square rounded-lg bg-secondary flex items-center justify-center'}>
+					0h
+				</div>{' '}
+				:
+				<div style={{ width: `${size}px` }} className={'aspect-square rounded-lg bg-secondary flex items-center justify-center'}>
+					0m
+				</div>{' '}
+				:
+				<div style={{ width: `${size}px` }} className={'aspect-square rounded-lg bg-secondary flex items-center justify-center'}>
+					0s
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className={cn('flex flex-row items-center justify-center text-foreground text-sm gap-1', className)}>
 			<div style={{ width: `${size}px` }} className={'aspect-square rounded-lg bg-secondary flex items-center justify-center'}>

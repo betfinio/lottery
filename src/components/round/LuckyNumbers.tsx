@@ -12,19 +12,19 @@ interface LuckyNumbersProps {
 export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	const { data = null, isFetching } = useWinningLine(round);
 	const [currentLine, setCurrentLine] = useState<ILine>(randomize());
-
+	console.log(data, 'data');
 	useEffect(() => {
-		if (data || !isFetching) return; // Stop animation when real data arrives
+		if (data) return; // Stop animation when real data arrives
 
 		const interval = setInterval(() => {
 			setCurrentLine(randomize());
-		}, 200);
+		}, 600);
 
 		return () => clearInterval(interval); // Cleanup on unmount
 	}, [data, isFetching]);
 
 	const line = data || currentLine;
-
+	console.log(line, 'line');
 	return (
 		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
 			<Line line={line} />

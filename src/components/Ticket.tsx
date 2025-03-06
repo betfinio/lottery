@@ -3,15 +3,14 @@ import EditMode from '@/src/components/EditMode.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
 import { useRoundFinish, useWinningLine } from '@/src/lib/query';
 import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { compareLines, equals, partlyEquals, randomize } from '@/src/lib/utils';
+import { compareLines, partlyEquals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Badge, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
+import { Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilLineIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
-import logger from '../config/logger';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
 import { NumberComponent, SymbolElement } from './Line.tsx';
 import TicketStatus from './TicketStatus.tsx';
@@ -64,6 +63,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 			onUpdate({ ...ticket, lines });
 		}
 	}, [lines, ticket, onUpdate]);
+
 	return (
 		<motion.div
 			animate={{ height: editing === -1 ? 'auto' : 450 }}
@@ -148,7 +148,14 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 										>
 											<ChevronDown className={'w-6 h-6'} />
 										</motion.div>
-										<EditMode ticket={line} editMode={editing === index} onSave={(e) => handleEdit(e, index)} onBack={() => setEditing(-1)} order={index} />
+										<EditMode
+											shouldValidateAvaliability
+											ticket={line}
+											editMode={editing === index}
+											onSave={(e) => handleEdit(e, index)}
+											onBack={() => setEditing(-1)}
+											order={index}
+										/>
 									</motion.div>
 								))}
 						</AnimatePresence>

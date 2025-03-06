@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi';
 function ActiveTicketsList() {
 	const { address } = useAccount();
 	const { data: tickets = [], isLoading } = useActiveTickets(address);
-
 	if (isLoading) {
 		return (
 			<div className="flex justify-center items-center h-full">

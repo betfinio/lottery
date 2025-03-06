@@ -24,7 +24,6 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const tickets = currentJackpot?.tickets ?? [];
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 
-	console.log(currentJackpot, 'currentJackpot');
 	const columns = [
 		columnHelper.accessor('owner', {
 			header: t('ticketOwner'),
