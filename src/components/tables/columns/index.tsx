@@ -53,7 +53,7 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 				return isMy ? (
 					<MyLinesBank round={props.row.original.address} ticketPrice={props.row.original.ticketPrice} />
 				) : (
-					<BetValue value={(props.row.original.ticketPrice ?? 0n) * BigInt(props.row.original.linesCount)} />
+					<BetValue value={(props.row.original.ticketPrice ?? 0n) * BigInt(props.row.original.linesCount)} withIcon />
 				);
 			},
 		}),
