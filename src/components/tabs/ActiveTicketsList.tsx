@@ -13,6 +13,13 @@ function ActiveTicketsList() {
 			</div>
 		);
 	}
+	if (tickets.length === 0) {
+		return (
+			<div className={'flex flex-col items-center justify-center h-full'}>
+				<div className={'flex flex-col items-center justify-center gap-2'}>No tickets yet</div>
+			</div>
+		);
+	}
 	return <TicketsList tickets={tickets} />;
 }
 

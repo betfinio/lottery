@@ -66,5 +66,5 @@ export interface JackpotCombination {
 	ticketNumber: number;
 }
 
-export type DrawTab = 'draw' | 'active' | 'old';
+export type DrawTab = 'draw' | 'active' | 'old' | 'bonus';
 export type TicketsTab = 'active' | 'old';
