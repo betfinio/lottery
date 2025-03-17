@@ -132,7 +132,7 @@ const EditMode: FC<{
 						'shiny-gold w-7 h-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold absolute -top-3.5 left-1/2 -ml-3',
 					)}
 				>
-					{order}
+					{order + 1}
 				</div>
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full '}>

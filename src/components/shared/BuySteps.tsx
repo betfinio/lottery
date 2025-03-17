@@ -120,62 +120,64 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 							<XIcon className="w-4 h-4" />
 						</DialogClose>
 					</DialogTitle>
-					<DialogDescription className="flex flex-col gap-2">
-						{/* Unlock step indicator */}
-						<div className={cn('flex items-center gap-2', isUnlocked && 'text-success')}>
-							<div
-								className={cn(
-									'w-6 h-6 rounded-full bg-border flex items-center justify-center',
-									isUnlocked && 'bg-success text-success-foreground',
-									step === 'unlock' && 'bg-primary text-primary-foreground',
-								)}
-							>
-								{isUnlockPending ? (
-									<LoaderIcon className="w-3 h-3 animate-spin" />
-								) : isUnlocked ? (
-									<CheckIcon className="w-3 h-3" />
-								) : (
-									<LockIcon className="w-3 h-3" />
-								)}
+					<DialogDescription className="flex flex-col gap-2" asChild>
+						<div className="flex flex-col gap-2">
+							{/* Unlock step indicator */}
+							<div className={cn('flex items-center gap-2', isUnlocked && 'text-success')}>
+								<div
+									className={cn(
+										'w-6 h-6 rounded-full bg-border flex items-center justify-center',
+										isUnlocked && 'bg-success text-success-foreground',
+										step === 'unlock' && 'bg-primary text-primary-foreground',
+									)}
+								>
+									{isUnlockPending ? (
+										<LoaderIcon className="w-3 h-3 animate-spin" />
+									) : isUnlocked ? (
+										<CheckIcon className="w-3 h-3" />
+									) : (
+										<LockIcon className="w-3 h-3" />
+									)}
+								</div>
+								<div>Unlock multibet contract</div>
 							</div>
-							<div>Unlock multibet contract</div>
-						</div>
 
-						<Separator orientation="vertical" className="h-4 ml-3" />
+							<Separator orientation="vertical" className="h-4 ml-3" />
 
-						{/* Buy step indicator */}
-						<div className={cn('flex items-center gap-2', isBuySuccess && 'text-success')}>
-							<div
-								className={cn(
-									'w-6 h-6 rounded-full bg-border flex items-center justify-center',
-									isBuySuccess && 'bg-success text-success-foreground',
-									step === 'buy' && 'bg-primary text-primary-foreground',
-								)}
-							>
-								{isBuyPending ? (
-									<LoaderIcon className="w-3 h-3 animate-spin" />
-								) : isBuySuccess ? (
-									<CheckIcon className="w-3 h-3" />
-								) : (
-									<ShoppingCartIcon className="w-3 h-3" />
-								)}
+							{/* Buy step indicator */}
+							<div className={cn('flex items-center gap-2', isBuySuccess && 'text-success')}>
+								<div
+									className={cn(
+										'w-6 h-6 rounded-full bg-border flex items-center justify-center',
+										isBuySuccess && 'bg-success text-success-foreground',
+										step === 'buy' && 'bg-primary text-primary-foreground',
+									)}
+								>
+									{isBuyPending ? (
+										<LoaderIcon className="w-3 h-3 animate-spin" />
+									) : isBuySuccess ? (
+										<CheckIcon className="w-3 h-3" />
+									) : (
+										<ShoppingCartIcon className="w-3 h-3" />
+									)}
+								</div>
+								<div className="flex items-center flex-row gap-1">
+									Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
+								</div>
 							</div>
-							<div className="flex items-center flex-row gap-1">
-								Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
-							</div>
-						</div>
 
-						{/* Action buttons */}
-						<div className="grid grid-cols-2 gap-2 mt-2">
-							<DialogClose asChild>
-								<Button variant={'ghost'} size="sm">
-									Cancel
+							{/* Action buttons */}
+							<div className="grid grid-cols-2 gap-2 mt-2">
+								<DialogClose asChild>
+									<Button variant={'ghost'} size="sm">
+										Cancel
+									</Button>
+								</DialogClose>
+								<Button size={'sm'} onClick={onNext} className="gap-2">
+									{isBuyPending || isUnlockPending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : null}
+									Proceed
 								</Button>
-							</DialogClose>
-							<Button size={'sm'} onClick={onNext} className="gap-2">
-								{isBuyPending || isUnlockPending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : null}
-								Proceed
-							</Button>
+							</div>
 						</div>
 					</DialogDescription>
 				</div>

@@ -1,13 +1,5 @@
-import {
-	linesAvailabilityQuery,
-	useActiveRounds,
-	useDraftLines,
-	useLinesAvailability,
-	useMultiAllowance,
-	useSelectedRound,
-	useTicketPrice,
-} from '@/src/lib/query';
-import { useBuyTicket, useUnlockMultibet } from '@/src/lib/query/mutations.ts';
+import { linesAvailabilityQuery, useActiveRounds, useDraftLines, useLinesAvailability, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useBuyTicket } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
@@ -35,9 +27,9 @@ import {
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, LockIcon, PlusCircleIcon, ShuffleIcon } from 'lucide-react';
+import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { type FC, useEffect, useMemo, useRef, useState } from 'react';
+import { type FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount, useConfig } from 'wagmi';
@@ -45,21 +37,19 @@ import { ETHSCAN } from '../globals';
 import { useRoundState } from '../lib/query/state';
 import BuySteps from './shared/BuySteps';
 
+const EMPTY_ARRAY: IRound[] = [];
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });
 
 	const queryClient = useQueryClient();
 	const config = useConfig();
 	// Queries
-	const { data: rounds = [] } = useActiveRounds();
+	const { data: rounds = EMPTY_ARRAY } = useActiveRounds();
 	const { data: lines = [] } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
-
-	// Mutations
-	const { mutate: buyTicket, isPending } = useBuyTicket();
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -72,9 +62,8 @@ const PlaceBet = () => {
 
 	// Effects
 	useEffect(() => {
-		if (rounds.length > 0) {
-			setSelectedRounds(rounds.slice(0, 1));
-		}
+		setSelectedRounds(rounds.slice(0, 1));
+		setVisibleRounds(rounds.slice(0, 3));
 	}, [rounds]);
 
 	// Computed values
@@ -277,7 +266,7 @@ const PlaceBet = () => {
 						variant={'success'}
 						className={'w-full gap-1 xl:col-span-3 col-span-2'}
 						onClick={handleOpen}
-						disabled={isPending || totalAmount === 0n || !isValidRecipient}
+						disabled={totalAmount === 0n || !isValidRecipient}
 					>
 						<motion.div initial={{ scale: 0 }} animate={{ scale: isOpen ? 1 : 0 }} exit={{ scale: 0 }}>
 							<LoaderIcon className={'w-4 h-4 animate-spin'} />
