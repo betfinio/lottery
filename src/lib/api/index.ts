@@ -29,7 +29,7 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 	const finish: bigint = await readContract(config, {
 		address: round,
 		abi: LotteryRoundABI,
-		functionName: 'getFinish',
+		functionName: 'finish',
 		args: [],
 	});
 
@@ -68,7 +68,7 @@ export const fetchLinesCount = async (round: Address, config: Config) => {
 	return await readContract(config, {
 		address: round,
 		abi: LotteryRoundABI,
-		functionName: 'getTicketsCount',
+		functionName: 'ticketsCount',
 		args: [],
 	});
 };
@@ -78,7 +78,7 @@ export const fetchRoundFinish = async (round: Address, config: Config) => {
 		await readContract(config, {
 			address: round,
 			abi: LotteryRoundABI,
-			functionName: 'getFinish',
+			functionName: 'finish',
 			args: [],
 		}),
 	);
@@ -207,7 +207,7 @@ export const manualDistributeRefund = async (round: Address, config: Config) => 
 	const betsCount = await readContract(config, {
 		abi: LotteryRoundABI,
 		address: round,
-		functionName: 'getBetsCount',
+		functionName: 'betsCount',
 		args: [],
 	});
 	return writeContract(config, {
@@ -325,6 +325,7 @@ export const fetchLinesAvailability = async (round: Address | undefined, lines: 
 			args: [encodeAbiParameters(parseAbiParameters(['uint8 symbol', 'uint32 numbers']), [symbol, numbers])],
 		})),
 	});
+	logger.success('fetchLinesAvailability:', data);
 	return data.map(({ result }) => result === true);
 };
 

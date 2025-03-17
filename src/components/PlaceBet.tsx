@@ -42,7 +42,6 @@ import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount, useConfig } from 'wagmi';
 import { ETHSCAN } from '../globals';
-import { fetchLinesAvailability } from '../lib/api';
 import { useRoundState } from '../lib/query/state';
 import BuySteps from './shared/BuySteps';
 
@@ -72,10 +71,6 @@ const PlaceBet = () => {
 	const toastShown = useRef(false);
 
 	// Effects
-	useEffect(() => {
-		setVisibleRounds(rounds.slice(0, 3));
-	}, [rounds]);
-
 	useEffect(() => {
 		if (rounds.length > 0) {
 			setSelectedRounds(rounds.slice(0, 1));
