@@ -190,7 +190,7 @@ const PlaceBet = () => {
 				<div className="flex flex-row justify-end w-full px-2">
 					<div>{selectedRounds.length} selected</div>
 				</div>
-				<ScrollArea className={cn('w-full', 'h-[300px]')}>
+				<ScrollArea className={cn('w-full', 'h-[300px]')} type="auto">
 					<div className={'flex flex-col gap-2'}>
 						{visibleRounds.map((date: IRound) => (
 							<RoundInfo
@@ -288,8 +288,16 @@ export const RoundInfo: FC<{
 	const { data: draftLines = [] } = useDraftLines();
 	const { data: linesAvailability = [], isLoading } = useLinesAvailability(round.address, draftLines, isSelected);
 	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
+	const ref = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (ref.current) {
+			ref.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+		}
+	}, []);
+
 	return (
 		<div
+			ref={ref}
 			className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
 			onClick={() => toggleSelect([round.address])}
 		>
@@ -307,7 +315,7 @@ export const RoundInfo: FC<{
 };
 
 const NewRecipientDialog = ({ onSave, onCancel }: { onSave: (address: Address) => void; onCancel: () => void }) => {
-	const [recipient, setRecipient] = useState<Address>('0x');
+	const [recipient, setRecipient] = useState<Address>('' as Address);
 	const [changed, setChanged] = useState(false);
 	const { address = ZeroAddress } = useAccount();
 
@@ -320,7 +328,7 @@ const NewRecipientDialog = ({ onSave, onCancel }: { onSave: (address: Address) =
 	return (
 		<div className="flex flex-col gap-2 bg-background-light p-4 rounded-lg md:w-[450px] w-[98vw]">
 			<DialogTitle className={'font-normal'}>Enter recipient address</DialogTitle>
-			<Input autoComplete="off" placeholder={'Enter address'} value={recipient} onChange={handleChange} />
+			<Input autoComplete="off" placeholder={'0x1234567890abcdefabcd1234567890abcdefabcd'} value={recipient} onChange={handleChange} />
 			{!validAddress && changed && <div className="text-destructive text-sm">Invalid address</div>}
 			{isMe && <div className="text-destructive text-sm">Enter another address</div>}
 			<div className="grid grid-cols-3">
