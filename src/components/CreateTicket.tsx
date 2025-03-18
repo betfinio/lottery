@@ -4,6 +4,7 @@ import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { usePrivy } from '@privy-io/react-auth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -94,6 +95,7 @@ const TicketList = () => {
 	const { data: round } = useSelectedRound();
 	const { state, updateState } = useRoundState(round?.address);
 	const { address } = useAccount();
+	const { connectWallet } = usePrivy();
 
 	const updateTicket = (index: number, newTicket: ILine) => {
 		const updatedTickets = [...draftTickets];
@@ -114,7 +116,7 @@ const TicketList = () => {
 		if (draftTickets.length >= 9)
 			return toast({
 				title: 'Error',
-				description: 'You cannot add more lines',
+				description: 'You can not add more lines',
 				variant: 'destructive',
 			});
 		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
@@ -122,12 +124,29 @@ const TicketList = () => {
 
 	const handleProceed = () => {
 		if (!address) {
-			toast({
+			connectWallet();
+			return;
+		}
+		if (duplicates) {
+			return toast({
 				title: 'Error',
-				description: 'You must connect your wallet',
+				description: 'You can not proceed with duplicate lines',
 				variant: 'destructive',
 			});
-			return;
+		}
+		if (filledLines.length === 0) {
+			return toast({
+				title: 'Error',
+				description: 'You must fill at least one line',
+				variant: 'destructive',
+			});
+		}
+		if (filledLines.length !== draftTickets.length) {
+			return toast({
+				title: 'Error',
+				description: 'You must fill all lines',
+				variant: 'destructive',
+			});
 		}
 		updateState(RoundState.PLACING);
 	};
@@ -169,8 +188,8 @@ const TicketList = () => {
 									isValid={filledLines.length > 1}
 								>
 									<div className="flex flex-col">
-										<div className="text-lg font-semibold">Do you really want to delete all draft lines?</div>
-										<div className="text-sm text-muted-foreground">This action cannot be undone</div>
+										<div className="text-lg font-semibold">Do you really want to delete all drafted lines?</div>
+										<div className="text-sm text-muted-foreground">This action can not be undone</div>
 									</div>
 								</Alert>
 
@@ -230,12 +249,7 @@ const TicketList = () => {
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<Button
-										className="gap-1 hover:scale-105 transition-all"
-										variant={'success'}
-										onClick={handleProceed}
-										disabled={filledLines.length === 0 || duplicates || filledLines.length !== draftTickets.length || address === undefined}
-									>
+									<Button className="gap-1 hover:scale-105 transition-all" variant={!address ? 'default' : 'success'} onClick={handleProceed}>
 										{address ? (
 											<>
 												Proceed ({filledLines.length} lines)
@@ -248,7 +262,7 @@ const TicketList = () => {
 								</TooltipTrigger>
 								{duplicates && (
 									<TooltipContent>
-										<div>You cannot proceed with duplicate lines</div>
+										<div>You can not proceed with duplicate lines</div>
 									</TooltipContent>
 								)}
 								{filledLines.length !== draftTickets.length && (
