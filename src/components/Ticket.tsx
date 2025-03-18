@@ -154,7 +154,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 											editMode={editing === index}
 											onSave={(e) => handleEdit(e, index)}
 											onBack={() => setEditing(-1)}
-											order={index}
+											order={index + 1}
 										/>
 									</motion.div>
 								))}

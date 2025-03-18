@@ -1,4 +1,3 @@
-import { SymbolElement } from '@/src/components/Line.tsx';
 import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
@@ -120,7 +119,7 @@ const EditMode: FC<{
 				ease: 'easeInOut',
 			}}
 			style={{ transformStyle: 'preserve-3d', pointerEvents: 'auto' }}
-			className={'left-0 absolute inset-0 p-4 bg-background-light rounded-xl z-[100] w-full h-full flex flex-col'}
+			className={'left-0 absolute inset-0 p-4 bg-background-light rounded-xl z-[10] w-full h-full flex flex-col'}
 		>
 			<nav className={'flex justify-between w-full items-center'}>
 				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>
@@ -132,14 +131,14 @@ const EditMode: FC<{
 						'shiny-gold w-7 h-7 rounded-full flex items-center justify-center text-primary-foreground font-semibold absolute -top-3.5 left-1/2 -ml-3',
 					)}
 				>
-					{order + 1}
+					{order}
 				</div>
 			</nav>
-			<section className={'flex flex-col items-center justify-between h-full '}>
-				<div className={'uppercase  font-semibold text-lg flex flex-row gap-1 mt-4'}>
+			<section className={'flex flex-col items-center justify-between h-full w-full '}>
+				<div className={'uppercase font-semibold text-lg flex flex-row gap-1 mt-4'}>
 					Pick <span className="text-success text-xl">5</span> numbers +<span className="text-secondary-foreground">symbol</span>
 				</div>
-				<div className={'w-full gap-4 flex flex-col'}>
+				<div className={'gap-2 md:gap-4 flex flex-col justify-between w-full max-w-[360px]'}>
 					<AnimatedGridOfNumbners numbers={numbers} toggleNumber={toggleNumber} />
 					<div className="flex flex-row justify-center text-sm text-muted-foreground">The symbol activates with 3 filled lines</div>
 					<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={changeSymbol} />

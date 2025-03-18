@@ -207,7 +207,7 @@ const TicketList = () => {
 					)}
 				/>
 
-				<footer className={cn('grid grid-cols-2 gap-2')}>
+				<footer className={cn('grid grid-cols-2 gap-4')}>
 					{isDisabled ? (
 						<Button className={'col-span-2 gap-2  border-primary text-secondary-foreground'} variant={'outline'} onClick={handleEdit}>
 							<PencilIcon className={'w-3.5 h-3.5'} />
