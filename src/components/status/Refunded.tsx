@@ -2,8 +2,10 @@ import { useRoundStatus, useTicketClaimed, useTicketStatus } from '@/src/lib/que
 import { useClaimTicket } from '@/src/lib/query/mutations';
 import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { Badge } from '@betfinio/components/ui';
+import { useTranslation } from 'react-i18next';
 
 function Refunded({ ticket }: { ticket: IRoundTicket }) {
+	const { t } = useTranslation('lottery');
 	const { data: status } = useTicketStatus(ticket.betAddress);
 	const { data: roundStatus } = useRoundStatus(ticket.round);
 	const { data: isClaimed } = useTicketClaimed(ticket.betAddress);
@@ -25,11 +27,11 @@ function Refunded({ ticket }: { ticket: IRoundTicket }) {
 	}
 
 	if (status === 1n && roundStatus === RoundStatus.READY_FOR_REFUND) {
-		return <Badge className="bg-muted/10 text-muted-foreground">Waiting for refund</Badge>;
+		return <Badge className="bg-muted/10 text-muted-foreground">{t('waitingForRefund')}</Badge>;
 	}
 
 	if (isClaimed && status === 6n) {
-		return <Badge variant="destructive">Refunded</Badge>;
+		return <Badge variant="destructive">{t('refunded')}</Badge>;
 	}
 }
 

@@ -22,7 +22,7 @@ const EditMode: FC<{
 	editMode: boolean;
 	shouldValidateAvaliability?: boolean;
 }> = ({ order, onBack, ticket, onSave, editMode, round, shouldValidateAvaliability = false }) => {
-	const { t } = useTranslation('lottery', { keyPrefix: 'create.validation' });
+	const { t } = useTranslation('lottery');
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
 	const { data: draftLines = [] } = useDraftLines();
@@ -90,20 +90,20 @@ const EditMode: FC<{
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
 		// validate numbers are 5
-		if (actualNumbers.length < 5 || sum === 0) return t('remaining', { count: 5 - actualNumbers.length });
+		if (actualNumbers.length < 5 || sum === 0) return t('validatation.remaining', { count: 5 - actualNumbers.length });
 		// validate symbol is 1-5
-		if (symbol < 1 || symbol > 5) return t('symbol');
+		if (symbol < 1 || symbol > 5) return t('validatation.symbol');
 		// validate numbers are unique
-		if (new Set(numbers).size !== numbers.length) return t('unique');
+		if (new Set(numbers).size !== numbers.length) return t('validatation.unique');
 		// validate numbers are 1-25
-		if (numbers.some((n) => n < 1 || n > 25)) return t('1to25');
+		if (numbers.some((n) => n < 1 || n > 25)) return t('validatation.1to25');
 		// check if numbers length is 5
-		if (actualNumbers.length > 5) return t('5numbers');
+		if (actualNumbers.length > 5) return t('validatation.5numbers');
 		// validate duplicates
-		if (duplicates) return t('duplicates');
+		if (duplicates) return t('validatation.duplicates');
 		// validate availability
 		if (shouldValidateAvaliability && linesHasChanged && isFetched && availability && availability.length === 1 && availability[0] === false)
-			return t('notAvailable');
+			return t('validatation.notAvailable');
 		return '';
 	}, [symbol, numbers, ticket, availability, linesHasChanged]);
 
@@ -124,7 +124,7 @@ const EditMode: FC<{
 			<nav className={'flex justify-between w-full items-center'}>
 				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>
 					<ChevronLeft className={'w-5 h-5'} />
-					Back to all lines
+					{t('backToAllLines')}
 				</Button>
 				<div
 					className={cn(
@@ -136,22 +136,22 @@ const EditMode: FC<{
 			</nav>
 			<section className={'flex flex-col items-center justify-between h-full w-full '}>
 				<div className={'uppercase font-semibold text-lg flex flex-row gap-1 mt-4'}>
-					Pick <span className="text-success text-xl">5</span> numbers +<span className="text-secondary-foreground">symbol</span>
+					{t('pick')} <span className="text-success text-xl">5</span> {t('numbers')} +<span className="text-secondary-foreground">{t('symbol')}</span>
 				</div>
 				<div className={'gap-2 md:gap-4 flex flex-col justify-between w-full max-w-[360px]'}>
 					<AnimatedGridOfNumbners numbers={numbers} toggleNumber={toggleNumber} />
-					<div className="flex flex-row justify-center text-sm text-muted-foreground">The symbol activates with 3 filled lines</div>
+					<div className="flex flex-row justify-center text-sm text-muted-foreground">{t('symbolActivatesWith3FilledLines')}</div>
 					<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={changeSymbol} />
 				</div>
 				<div className={'text-destructive h-6 text-sm py-1'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
 					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />
-						Clear
+						{t('clear')}
 					</Button>
 					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleRandomize}>
 						<ShuffleIcon className={'w-3.5 h-3.5'} />
-						Quick pick
+						{t('quickPick')}
 					</Button>
 					<Button
 						variant={'success'}
@@ -162,7 +162,7 @@ const EditMode: FC<{
 						disabled={validation !== ''}
 					>
 						<CheckCircle className={'w-3.5 h-3.5'} />
-						Save
+						{t('save')}
 					</Button>
 				</footer>
 			</section>

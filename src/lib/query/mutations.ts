@@ -6,6 +6,7 @@ import {
 	manualDistributeRefund,
 	manualRefund,
 	manualRequest,
+	unlockEdit,
 	unlockMultibet,
 	updateTicket,
 } from '@/src/lib/api';
@@ -27,7 +28,7 @@ export interface BuyTicketProps {
 }
 
 export const useUnlockMultibet = () => {
-	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.unlockMultibet' });
+	const { t } = useTranslation('lottery');
 	useTranslation('shared', { keyPrefix: 'errors' });
 	const config = useConfig();
 	const queryClient = useQueryClient();
@@ -37,8 +38,8 @@ export const useUnlockMultibet = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const { id, update } = toast({
-					title: t('sent.title'),
-					description: t('sent.description'),
+					title: t('transactionPending'),
+
 					variant: 'loading',
 					duration: 60 * 1000,
 				});
@@ -47,8 +48,46 @@ export const useUnlockMultibet = () => {
 				});
 				await queryClient.invalidateQueries({ queryKey: ['lottery', 'allowance'] });
 				update({
-					title: t('sent.title'),
-					description: t('sent.description'),
+					title: t('transactionSubmitted'),
+
+					variant: 'default',
+					duration: 5 * 1000,
+					id: id,
+					action: getTransactionLink(data),
+				});
+			} else {
+				toast({
+					title: 'Error',
+					variant: 'destructive',
+				});
+			}
+		},
+	});
+};
+
+export const useUnlockEdit = () => {
+	const { t } = useTranslation('lottery');
+
+	const config = useConfig();
+	const queryClient = useQueryClient();
+	return useMutation<WriteContractReturnType, WriteContractErrorType>({
+		mutationKey: ['lottery', 'unlockEdit'],
+		mutationFn: () => unlockEdit(config),
+		onSuccess: async (data) => {
+			if (data !== undefined) {
+				const { id, update } = toast({
+					title: t('transactionPending'),
+
+					variant: 'loading',
+					duration: 60 * 1000,
+				});
+				await waitForTransactionReceipt(config.getClient(), {
+					hash: data,
+				});
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'allowance'] });
+				update({
+					title: t('transactionSubmitted'),
+
 					variant: 'default',
 					duration: 5 * 1000,
 					id: id,
