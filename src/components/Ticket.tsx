@@ -1,20 +1,19 @@
 import Countdown from '@/src/components/Countdown.tsx';
-import EditMode from '@/src/components/EditMode.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
 import { useRoundFinish, useWinningLine } from '@/src/lib/query';
 import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { compareLines, partlyEquals } from '@/src/lib/utils';
+import { compareLines } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Badge, Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
+import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilLineIcon, SendIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
-import { NumberComponent, SymbolElement } from './Line.tsx';
 import TicketStatus from './TicketStatus.tsx';
 import SharedLine from './shared/SharedLine.tsx';
+import Claim from './status/Claim.tsx';
 
 export interface TicketProps {
 	ticket: IRoundTicket;
@@ -28,7 +27,7 @@ export interface TicketProps {
 
 function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true, className }: TicketProps) {
 	const { data: winningLine } = useWinningLine(ticket.round);
-	const [editing, setEditing] = useState(-1);
+	const { data: finish = 0 } = useRoundFinish(ticket.round);
 	const [lines, setLines] = useState(ticket.lines);
 
 	// Update lines when ticket changes
@@ -39,19 +38,6 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 	// Handlers
 	const handleFullMode = () => onToggleExpand?.();
 
-	const changeLine = (line: ILine, index: number) => {
-		setLines((prev) => {
-			const newLines = [...prev];
-			newLines[index] = line;
-			return newLines;
-		});
-	};
-
-	const handleEdit = (line: ILine, index: number) => {
-		changeLine(line, index);
-		setEditing(-1);
-	};
-
 	// Update parent when lines change
 	useEffect(() => {
 		if (onUpdate) {
@@ -61,24 +47,42 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 
 	const isExpanded = mode === 'expanded';
 	const isMinimal = mode === 'minimal';
-	const isCompact = mode === 'compact';
+	const isHidden = mode === 'hidden';
 	const linesCount = lines.length;
+
 	return (
-		<AnimatePresence mode="wait">
+		<AnimatePresence mode="sync">
 			<motion.div
-				animate={{
-					height: isExpanded ? (linesCount + 3) * 40.52 : isMinimal ? 37 * 2 : 121.56,
-					gridTemplateRows: isExpanded ? `repeat(${linesCount + 3}, minmax(0, 1fr))` : isMinimal ? 'repeat(1, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))',
+				initial={{
+					height: 0,
+					opacity: 0,
 				}}
-				className={cn('border border-purple-box rounded-xl', className, {
-					'grid grid-rows-3': isCompact,
-					'grid grid-rows-1': isMinimal,
+				animate={{
+					opacity: isHidden ? 0 : 1,
+					marginTop: isHidden ? -10 : 0, // needed to remove empty space when hidden
+					height: isHidden ? 0 : isExpanded ? (linesCount + 3) * 40.52 : isMinimal ? 37 * 2 : 121.56,
+				}}
+				exit={{
+					height: 0,
+					opacity: 0,
+				}}
+				className={cn('border border-purple-box rounded-xl flex flex-col overflow-hidden', className, {
 					'bg-gradient-to-b from-background to-background via-primary/20 via-60% grid': isExpanded,
+					'grid-rows-4': isExpanded && linesCount === 1,
+					'grid-rows-5': isExpanded && linesCount === 2,
+					'grid-rows-6': isExpanded && linesCount === 3,
+					'grid-rows-7': isExpanded && linesCount === 4,
+					'grid-rows-8': isExpanded && linesCount === 5,
+					'grid-rows-9': isExpanded && linesCount === 6,
+					'grid-rows-10': isExpanded && linesCount === 7,
+					'grid-rows-11': isExpanded && linesCount === 8,
+					'grid-rows-12': isExpanded && linesCount === 9,
 					'border-primary create-shadow': ticket.isLocal,
 				})}
 			>
-				{!isMinimal && <Header ticket={ticket} old={old} />}
+				<Header ticket={ticket} old={old} hidden={isMinimal} isExpanded={isExpanded} />
 				<motion.div
+					animate={{ height: isExpanded ? '100%' : isMinimal ? '100%' : '33%' }}
 					className={cn('flex flex-col items-center justify-center', {
 						'row-span-9 grid grid-rows-9': linesCount === 9 && isExpanded,
 						'row-span-8 grid grid-rows-8': linesCount === 8 && isExpanded,
@@ -90,24 +94,35 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						'row-span-2 grid grid-rows-2': linesCount === 2 && isExpanded,
 					})}
 				>
-					{lines
-						.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0))
-						.slice(0, isExpanded ? lines.length : 1)
-						.map((line, index) => (
-							<div key={index} className={'flex flex-row items-center gap-2'}>
-								<SharedLine line={line} />
+					<AnimatePresence mode="sync">
+						{lines
+							.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0))
+							.slice(0, isExpanded ? lines.length : 1)
+							.map((line, index) => (
 								<motion.div
-									animate={{ rotate: isExpanded ? 180 : 0 }}
-									className={cn('cursor-pointer', {
-										'opacity-0': index > 0 || lines.length === 1,
-										hidden: !isExpandable,
-									})}
+									exit={{ height: 0, opacity: 0, scale: 0 }}
+									initial={{ height: 0, opacity: 0, scale: 0 }}
+									animate={{ height: '100%', opacity: 1, scale: 1 }}
+									transition={{
+										delay: index * 0.02,
+									}}
 									onClick={handleFullMode}
+									key={index}
+									className={'flex flex-row items-center gap-2'}
 								>
-									<ChevronDown className={'w-6 h-6'} />
+									<SharedLine line={line} />
+									<motion.div
+										animate={{ rotate: isExpanded ? 180 : 0 }}
+										className={cn('cursor-pointer', {
+											'opacity-0': index > 0 || lines.length === 1,
+											hidden: !isExpandable,
+										})}
+									>
+										<ChevronDown className={'w-6 h-6'} />
+									</motion.div>
 								</motion.div>
-							</div>
-						))}
+							))}
+					</AnimatePresence>
 				</motion.div>
 				{isExpanded && (
 					<div className="flex flex-row items-center justify-center gap-1 text-sm text-muted-foreground row-span-1">
@@ -117,27 +132,41 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						</a>
 					</div>
 				)}
-				<motion.div className={'flex flex-row items-center justify-center px-2 gap-2'} animate={{ height: isMinimal ? 0 : 'auto', opacity: isMinimal ? 0 : 1 }}>
+				<motion.div
+					className={'flex flex-row items-center justify-center px-2 gap-2'}
+					initial={{ height: 0, opacity: 0 }}
+					animate={{
+						height: isExpanded ? '100%' : isMinimal ? 0 : '33%',
+						opacity: isMinimal ? 0 : 1,
+					}}
+					exit={{ height: 0, opacity: 0 }}
+				>
 					{!old && <SendPill ticket={ticket} />}
 					{!old && <EditPill ticket={ticket} />}
+					{old && <Claim ticket={ticket} />}
 				</motion.div>
 			</motion.div>
 		</AnimatePresence>
 	);
 }
 
-const Header: FC<{ ticket: IRoundTicket; old: boolean }> = ({ ticket, old }) => {
+const Header: FC<{
+	ticket: IRoundTicket;
+	old: boolean;
+	hidden: boolean;
+	isExpanded: boolean;
+}> = ({ ticket, old, hidden, isExpanded }) => {
 	const { data: finish = 0 } = useRoundFinish(ticket.round);
 	return (
 		<motion.div
-			className={'flex flex-row items-center justify-between px-2'}
+			className={'flex flex-row items-center justify-between px-2 row-start-1'}
 			initial={{
 				height: 0,
 				opacity: 0,
 			}}
 			animate={{
-				height: 'auto',
-				opacity: 1,
+				height: hidden ? 0 : isExpanded ? '100%' : '33%',
+				opacity: hidden ? 0 : 1,
 			}}
 			exit={{
 				height: 0,
@@ -158,7 +187,11 @@ const Header: FC<{ ticket: IRoundTicket; old: boolean }> = ({ ticket, old }) => 
 
 const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 	return (
-		<Button size="freeSize" shape="pill" className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2'}>
+		<Button
+			size="freeSize"
+			shape="pill"
+			className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
+		>
 			<SendIcon className={'w-3 h-3 cursor-pointer'} />
 			Send
 		</Button>
@@ -168,7 +201,11 @@ const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button size="freeSize" shape="pill" className={'flex flex-row items-center gap-1 cursor-pointer bg-primary text-primary-foreground py-0 px-2'}>
+				<Button
+					size="freeSize"
+					shape="pill"
+					className={'flex flex-row items-center gap-1 cursor-pointer bg-primary text-primary-foreground py-0 px-2 hover:scale-105 transition-all'}
+				>
 					<PencilLineIcon className={'w-3 h-3 cursor-pointer'} />
 					Edit
 				</Button>

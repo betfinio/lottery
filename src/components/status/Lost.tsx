@@ -26,7 +26,7 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 					<TooltipTrigger>
 						<Badge variant="destructive">Lost</Badge>
 					</TooltipTrigger>
-					<TooltipContent>This status is final and validated by blockchain</TooltipContent>
+					<TooltipContent asChild>This status is final and validated by blockchain</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		);

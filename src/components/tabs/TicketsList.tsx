@@ -1,7 +1,6 @@
 import Ticket from '@/src/components/Ticket.tsx';
 import Pagination from '@/src/components/shared/Pagination';
 import type { ActiveTicketMode, IRoundTicket } from '@/src/lib/types.ts';
-import { cn } from '@betfinio/components';
 import { useState } from 'react';
 
 export interface TicketsListProps {
@@ -37,12 +36,6 @@ const rowSpanMap = {
 function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsListProps) {
 	const [expanded, setExpanded] = useState<IRoundTicket | null>(null);
 
-	const getMode = (ticket: IRoundTicket): ActiveTicketMode => {
-		if (expanded === null) return 'compact';
-		if (expanded.token === ticket.token) return 'expanded';
-		return 'minimal';
-	};
-
 	const handleToggleExpand = (ticket: IRoundTicket) => {
 		setExpanded(expanded?.token === ticket.token ? null : ticket);
 	};
@@ -50,15 +43,13 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 	const renderItem = (ticket: IRoundTicket, index: number, ticketsInPage: IRoundTicket[]) => {
 		// Default compact view when nothing is expanded
 		if (expanded === null) {
-			return <Ticket className="row-span-3" old={old} ticket={ticket} key={index} mode="compact" onToggleExpand={() => handleToggleExpand(ticket)} />;
+			return <Ticket old={old} ticket={ticket} key={index} mode="compact" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Expanded ticket view
 		if (expanded.token === ticket.token) {
 			const lineCount = ticket.lines.length as keyof typeof rowSpanMap;
-			return (
-				<Ticket className={cn(rowSpanMap[lineCount])} old={old} ticket={ticket} key={index} mode="expanded" onToggleExpand={() => handleToggleExpand(ticket)} />
-			);
+			return <Ticket old={old} ticket={ticket} key={index} mode="expanded" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Minimal view for non-expanded tickets
@@ -67,16 +58,16 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 
 		// Special handling for 2-3 lines
 		if (expandedLength <= 3) {
-			return <Ticket className="row-span-2" old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
+			return <Ticket old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Hide some tickets based on expanded ticket size
 		const hide = ticketsToHide[expandedLength as keyof typeof ticketsToHide] || 0;
 		if (otherTickets.slice(0, hide).find((t) => t.token === ticket.token)) {
-			return null;
+			return <Ticket old={old} ticket={ticket} key={index} mode="hidden" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
-		return <Ticket className="row-span-2" old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
+		return <Ticket old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
 	};
 
 	return (
@@ -90,7 +81,7 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 				</div>
 			}
 			renderItem={renderItem}
-			className="grid grid-rows-13 grid-cols-1 gap-2"
+			className="flex flex-col gap-2"
 		/>
 	);
 }
