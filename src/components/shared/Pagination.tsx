@@ -5,24 +5,15 @@ import { type ReactNode, useEffect, useState } from 'react';
 interface PaginationProps<T> {
 	items: T[];
 	itemsPerPage?: number;
-	renderItem: (item: T, index: number) => ReactNode;
+	renderItem: (item: T, index: number, ticketInPage: T[]) => ReactNode;
 	className?: string;
 	additionalFooter?: ReactNode;
-	renderItemClassName?: string;
+	renderItemClassName?: string | ((item: T, index: number, ticketInPage: T[]) => string);
 	onPageChange?: (page: number) => void;
 	isLive?: boolean;
 }
 
-const Pagination = <T,>({
-	items,
-	itemsPerPage = 3,
-	renderItem,
-	className,
-	renderItemClassName,
-	additionalFooter,
-	onPageChange,
-	isLive = false,
-}: PaginationProps<T>) => {
+const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, additionalFooter, onPageChange, isLive = false }: PaginationProps<T>) => {
 	const [offset, setOffset] = useState(0);
 	const [length, setLength] = useState(0);
 
@@ -73,11 +64,9 @@ const Pagination = <T,>({
 	};
 
 	return (
-		<div className={cn('flex flex-col justify-between h-full', className)}>
-			<div className={cn('flex flex-col gap-2 flex-grow ', renderItemClassName)}>
-				{items.slice(offset, offset + itemsPerPage).map((item, index) => renderItem(item, index + offset))}
-			</div>
-			<div className={'flex flex-row justify-between py-2 items-center h-10'}>
+		<div className={cn('h-full', className)}>
+			{items.slice(offset, offset + itemsPerPage).map((item, index) => renderItem(item, index + offset, items.slice(offset, offset + itemsPerPage)))}
+			<div className={'flex flex-row justify-between py-2 items-center row-span-1 row-start-13'}>
 				{additionalFooter}
 				<ChevronLeft className={cn('w-5 h-5 cursor-pointer', offset === 0 && 'text-muted-foreground')} onClick={handlePrev} />
 				<div className={'flex flex-row gap-1'}>
