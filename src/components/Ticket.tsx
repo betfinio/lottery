@@ -2,16 +2,17 @@ import Countdown from '@/src/components/Countdown.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
 import { useRoundFinish, useWinningLine } from '@/src/lib/query';
 import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { compareLines } from '@/src/lib/utils';
+import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, PencilLineIcon, SendIcon } from 'lucide-react';
+import { ChevronDown, PencilIcon, PencilLineIcon, SendIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
+import EditMode from './EditMode.tsx';
 import TicketStatus from './TicketStatus.tsx';
 import SharedLine from './shared/SharedLine.tsx';
 import Claim from './status/Claim.tsx';
@@ -24,11 +25,13 @@ export interface TicketProps {
 	old?: boolean;
 	isExpandable?: boolean;
 	className?: string;
+	isEditable?: boolean;
 }
 
-function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true, className }: TicketProps) {
+function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true, className, isEditable = true }: TicketProps) {
 	const { data: winningLine } = useWinningLine(ticket.round);
 	const [lines, setLines] = useState(ticket.lines);
+	const [editMode, setEditMode] = useState<number>(-1);
 
 	// Update lines when ticket changes
 	useEffect(() => {
@@ -37,6 +40,11 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 
 	// Handlers
 	const handleFullMode = () => onToggleExpand?.();
+
+	const handleSave = (line: ILine) => {
+		setLines(lines.map((l, i) => (i === editMode ? line : l)));
+		setEditMode(-1);
+	};
 
 	// Update parent when lines change
 	useEffect(() => {
@@ -60,7 +68,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 				animate={{
 					opacity: isHidden ? 0 : 1,
 					marginTop: isHidden ? -10 : 0, // needed to remove empty space when hidden
-					height: isHidden ? 0 : isExpanded ? (linesCount + 3) * 40.52 : isMinimal ? 37 * 2 : 121.56,
+					height: editMode !== -1 ? 500 : isHidden ? 0 : isExpanded ? (linesCount + 3) * 40.52 : isMinimal ? 37 * 2 : 121.56,
 				}}
 				exit={{
 					height: 0,
@@ -111,6 +119,11 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 									className={'flex flex-row items-center gap-2'}
 								>
 									<SharedLine line={line} />
+									{!isEditable && (
+										<motion.div initial={{ scale: 0 }} animate={{ scale: isEditable ? 0 : 1 }} exit={{ scale: 0 }}>
+											<PencilIcon className={'w-4 h-4 cursor-pointer'} onClick={() => setEditMode(index)} />
+										</motion.div>
+									)}
 									<motion.div
 										animate={{ rotate: isExpanded ? 180 : 0 }}
 										className={cn('cursor-pointer', {
@@ -132,20 +145,32 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						</Link>
 					</div>
 				)}
-				<motion.div
-					className={'flex flex-row items-center justify-center px-2 gap-2'}
-					initial={{ height: 0, opacity: 0 }}
-					animate={{
-						height: isExpanded ? '100%' : isMinimal ? 0 : '33%',
-						opacity: isMinimal ? 0 : 1,
-					}}
-					exit={{ height: 0, opacity: 0 }}
-				>
-					{!old && <SendPill ticket={ticket} />}
-					{!old && <EditPill ticket={ticket} />}
-					{old && <Claim ticket={ticket} />}
-				</motion.div>
+				{isEditable && (
+					<motion.div
+						className={'flex flex-row items-center justify-center px-2 gap-2'}
+						initial={{ height: 0, opacity: 0 }}
+						animate={{
+							height: isExpanded ? '100%' : isMinimal ? 0 : '33%',
+							opacity: isMinimal ? 0 : 1,
+						}}
+						exit={{ height: 0, opacity: 0 }}
+					>
+						{!old && <SendPill ticket={ticket} />}
+						{!old && <EditPill ticket={ticket} />}
+						{old && <Claim ticket={ticket} />}
+					</motion.div>
+				)}
 			</motion.div>
+			{editMode !== -1 && (
+				<EditMode
+					shouldValidateAvaliability={true}
+					ticket={lines[editMode]}
+					onSave={(line) => handleSave(line)}
+					onBack={() => setEditMode(-1)}
+					order={editMode + 1}
+					editMode={editMode !== -1}
+				/>
+			)}
 		</AnimatePresence>
 	);
 }
