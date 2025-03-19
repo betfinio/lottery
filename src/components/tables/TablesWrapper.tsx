@@ -1,20 +1,22 @@
 import MyDraws from '@/src/components/tables/MyDraws.tsx';
 import { SwitchComponent, Tabs, TabsContent, TabsList, TabsTrigger, Toggle } from '@betfinio/components/ui';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import AllDraws from './AllDraws';
 
 function TablesWrapper() {
+	const { t } = useTranslation('lottery');
 	const [includeFutureDraws, setIncludeFutureDraws] = useState(false);
 	return (
 		<Tabs className={'w-full'} defaultValue={'all'}>
 			<div className="flex justify-between items-center">
 				<TabsList>
-					<TabsTrigger value="all">All draws</TabsTrigger>
-					<TabsTrigger value="my">My draws</TabsTrigger>
+					<TabsTrigger value="all">{t('allDraws')}</TabsTrigger>
+					<TabsTrigger value="my">{t('myDraws')}</TabsTrigger>
 				</TabsList>
 				<div className="flex items-center gap-2 text-sm flex-row">
 					<SwitchComponent className="scale-90" checked={includeFutureDraws} onCheckedChange={setIncludeFutureDraws} />
-					<div className="whitespace-nowrap">Include future draws</div>
+					<div className="whitespace-nowrap">{t('includeFutureDraws')}</div>
 				</div>
 			</div>
 			<TabsContent value="all">

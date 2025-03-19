@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
 import PayoutContent from '../shared/PayoutContent';
 import { StatBox } from '../shared/StatBox';
@@ -19,6 +20,7 @@ interface CurrentRoundProps {
 }
 
 const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
+	const { t } = useTranslation('lottery');
 	const navigate = useNavigate();
 	const { refetch: refetchActiveRounds } = useActiveRounds();
 	const { data: finish = 0 } = useRoundFinish(round.address);
@@ -103,7 +105,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 					<div className="relative flex items-center justify-center">
 						<JackpotFrame animateStars className="text-gold" />
 						<div className="absolute top-20 text-2xl text-secondary-foreground flex flex-col items-center">
-							<div className="text-foreground text-lg">Total Winnings</div>
+							<div className="text-foreground text-lg">{t('totalWinnings')}</div>
 							<div className="flex flex-row gap-1 items-center">
 								<BetValue value={displayedJackpot} withMillify={false} iconClassName="w-5 h-5" /> BET
 							</div>

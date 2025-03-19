@@ -1,9 +1,11 @@
 import TicketsList from '@/src/components/tabs/TicketsList.tsx';
 import { useActiveTickets } from '@/src/lib/query';
 import { LoaderIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
 function ActiveTicketsList() {
+	const { t } = useTranslation('lottery');
 	const { address } = useAccount();
 	const { data: tickets = [], isLoading } = useActiveTickets(address);
 	if (isLoading) {
@@ -16,7 +18,7 @@ function ActiveTicketsList() {
 	if (tickets.length === 0) {
 		return (
 			<div className={'flex flex-col items-center justify-center h-full'}>
-				<div className={'flex flex-col items-center justify-center gap-2'}>No tickets yet</div>
+				<div className={'flex flex-col items-center justify-center gap-2'}>{t('noTicketsYet')}</div>
 			</div>
 		);
 	}

@@ -1,19 +1,21 @@
 import WinningLine from '@/src/components/tables/columns/WinningLine.tsx';
 import { useRoundFinish, useRoundStatus } from '@/src/lib/query';
 import { RoundStatus } from '@/src/lib/types';
+import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 import Countdown from '../../Countdown';
 
 function Result({ round }: { round: Address }) {
+	const { t } = useTranslation('lottery');
 	const { data = 0 } = useRoundStatus(round);
 	const { data: finish = 0 } = useRoundFinish(round);
 
 	if (data === RoundStatus.ENDED_WITHOUT_BETS) {
-		return <div className={'text-muted-foreground'}>Ended</div>;
+		return <div className={'text-muted-foreground'}>{t('ended')}</div>;
 	}
 
 	if (data === RoundStatus.PENDING) {
-		return <div className={'text-muted-foreground'}>Waiting for result</div>;
+		return <div className={'text-muted-foreground'}>{t('waitingForResult')}</div>;
 	}
 
 	if (data === RoundStatus.BETTING) {
@@ -28,9 +30,9 @@ function Result({ round }: { round: Address }) {
 		return <WinningLine round={round} />;
 	}
 	if (data === RoundStatus.REFUND) {
-		return <div className={'text-muted-foreground'}>Refunded</div>;
+		return <div className={'text-muted-foreground'}>{t('refunded')}</div>;
 	}
-	return <div className={'text-muted-foreground'}>Waiting</div>;
+	return <div className={'text-muted-foreground'}>{t('waiting')}</div>;
 }
 
 export default Result;

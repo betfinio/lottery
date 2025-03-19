@@ -3,6 +3,7 @@ import type { IRoundTicket } from '@/src/lib/types.ts';
 import { equals } from '@/src/lib/utils';
 import { Button, DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import EditSteps from './shared/EditSteps';
 
 export interface EditTicketProps {
@@ -10,6 +11,7 @@ export interface EditTicketProps {
 	onClose: () => void;
 }
 function EditTicket({ ticket, onClose }: EditTicketProps) {
+	const { t } = useTranslation('lottery');
 	const [saveEnabled, setSaveEnabled] = useState(false);
 	const [newLines, setNewLines] = useState(ticket.lines);
 	const [isOpen, setIsOpen] = useState(false);
@@ -44,11 +46,11 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 				<div className={'flex justify-between'}>
 					<DialogClose asChild>
 						<Button className={'w-1/4'} variant={'destructive'}>
-							Cancel
+							{t('cancel')}
 						</Button>
 					</DialogClose>
 					<Button variant={'success'} className={'w-1/4'} onClick={onSave} disabled={!saveEnabled}>
-						Save
+						{t('save')}
 					</Button>
 				</div>
 			</div>
