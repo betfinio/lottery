@@ -1,7 +1,6 @@
-import { useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { type BuyTicketProps, useBuyTicket, useLoadMintedTokens, useUnlockMultibet } from '@/src/lib/query/mutations';
-import { useDrawInfoTab, useRoundState } from '@/src/lib/query/state';
-import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
+import { useActiveTickets, useEditAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useUnlockEdit, useUpdateTicket } from '@/src/lib/query/mutations';
+import type { IRoundTicket } from '@/src/lib/types';
 import { shootConfetti } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -10,24 +9,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
-// Steps for the ticket purchase flow
-export type Step = 'unlock' | 'buy' | 'done';
+// Steps for the ticket edit flow
+export type Step = 'unlock' | 'edit' | 'done';
 
-interface BuyStepsProps {
-	buy: BuyTicketProps; // Ticket purchase parameters
+interface EditStepsProps {
+	ticket: IRoundTicket; // Ticket purchase parameters
 	isOpen: boolean; // Dialog open state
 	setIsOpen: (isOpen: boolean) => void; // Dialog state setter
 }
 
-/**
- * BuySteps component handles the multi-step process of purchasing lottery tickets
- * Steps:
- * 1. Unlock multibet contract (if not already unlocked)
- * 2. Purchase tickets
- */
-function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
+function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 	const { t } = useTranslation('lottery');
 	// State and hooks
 	const [step, setStep] = useState<Step>('unlock');
@@ -36,16 +28,14 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	// Queries
 	const { data: selectedRound } = useSelectedRound();
-	const { data: unlocked = 0n } = useMultiAllowance(address);
+	const { data: unlocked = 0n } = useEditAllowance(address);
 	const { data: ticketPrice = 0n } = useTicketPrice(selectedRound?.address);
-	const { updateState } = useRoundState(selectedRound?.address);
+	const { refetch: refetchActiveTickets } = useActiveTickets(address);
 
 	// Mutations
-	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
-	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy, data } = useBuyTicket();
-	const { mutateAsync: logsByHash } = useLoadMintedTokens();
-	const { setTickets } = useDraftLines();
-	const { setTab } = useDrawInfoTab();
+	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockEdit();
+	const { mutateAsync: editTicket, isPending: isEditPending, isSuccess: isEditSuccess, data } = useUpdateTicket();
+
 	// Reset step when dialog opens
 	useEffect(() => {
 		if (isOpen) {
@@ -53,33 +43,20 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		}
 	}, [isOpen]);
 
-	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice;
-
 	// Auto-advance to buy step if already unlocked
 	useEffect(() => {
-		if (unlocked >= totalAmount && step === 'unlock') {
-			setStep('buy');
+		if (unlocked > (ticketPrice * 100n) / 10n && step === 'unlock') {
+			setStep('edit');
 		}
-	}, [unlocked, step, totalAmount]);
+	}, [unlocked, step]);
 
 	// Cleanup after purchase completion
 	useEffect(() => {
 		if (step === 'done') {
 			setIsOpen(false);
 			resetUnlock();
-			resetBuy();
-			setTickets([EMPTY_LINE]);
 			shootConfetti();
-			updateState(RoundState.FILLING);
-			setTab('active');
-
-			// Merge fresh on-chain data with subgraph data
-			logsByHash({ hash: data as Address }).then((newTickets) => {
-				queryClient.setQueryData<IRoundTicket[]>(['lottery', 'tickets', 'active', address?.toLowerCase()], (old = []) => [
-					...newTickets.map((t) => ({ ...t, isLocal: true })), // Mark fresh tickets
-					...old.filter((ot) => !newTickets.some((nt) => nt.token === ot.token)), // Remove duplicates
-				]);
-			});
+			refetchActiveTickets();
 		}
 	}, [step, address, queryClient]);
 
@@ -87,37 +64,39 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 	const handleUnlock = async () => {
 		try {
 			await unlock();
-			setStep('buy');
+			setStep('edit');
 		} catch (error) {
 			setStep('unlock');
 		}
 	};
 
-	const handleBuy = async () => {
+	const handleEdit = async () => {
 		try {
-			await buyTickets({ ...buy });
+			await editTicket({ ticket });
 			setStep('done');
 		} catch (error) {
-			setStep('buy');
+			setStep('edit');
 		}
 	};
 
 	const onNext = () => {
 		if (step === 'unlock') {
 			handleUnlock();
-		} else if (step === 'buy') {
-			handleBuy();
+		} else if (step === 'edit') {
+			handleEdit();
 		}
 	};
 
+	// Derived state
 	const isUnlocked = step !== 'unlock';
+	const totalAmount = (ticketPrice / 100n) * 10n;
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogContent className="lottery rounded-xl">
 				<div className="w-[300px] p-4 flex flex-col gap-4">
 					<DialogTitle className="font-normal flex justify-between text-muted-foreground">
-						{t('youAreBuyingTicket')}
+						{t('youAreEditingTicket')}
 						<DialogClose>
 							<XIcon className="w-4 h-4" />
 						</DialogClose>
@@ -141,30 +120,30 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 										<LockIcon className="w-3 h-3" />
 									)}
 								</div>
-								<div>{t('unlockMultibetContract')}</div>
+								<div>{t('unlockEditContract')}</div>
 							</div>
 
 							<Separator orientation="vertical" className="h-4 ml-3" />
 
 							{/* Buy step indicator */}
-							<div className={cn('flex items-center gap-2', isBuySuccess && 'text-success')}>
+							<div className={cn('flex items-center gap-2', isEditSuccess && 'text-success')}>
 								<div
 									className={cn(
 										'w-6 h-6 rounded-full bg-border flex items-center justify-center',
-										isBuySuccess && 'bg-success text-success-foreground',
-										step === 'buy' && 'bg-primary text-primary-foreground',
+										isEditSuccess && 'bg-success text-success-foreground',
+										step === 'edit' && 'bg-primary text-primary-foreground',
 									)}
 								>
-									{isBuyPending ? (
+									{isEditPending ? (
 										<LoaderIcon className="w-3 h-3 animate-spin" />
-									) : isBuySuccess ? (
+									) : isEditSuccess ? (
 										<CheckIcon className="w-3 h-3" />
 									) : (
 										<ShoppingCartIcon className="w-3 h-3" />
 									)}
 								</div>
 								<div className="flex items-center flex-row gap-1">
-									Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
+									{t('editTicketFor')} <BetValue value={totalAmount} withIcon />
 								</div>
 							</div>
 
@@ -176,7 +155,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 									</Button>
 								</DialogClose>
 								<Button size={'sm'} onClick={onNext} className="gap-2">
-									{isBuyPending || isUnlockPending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : null}
+									{isEditPending || isUnlockPending ? <LoaderIcon className="w-3 h-3 animate-spin" /> : null}
 									{t('proceed')}
 								</Button>
 							</div>
@@ -188,4 +167,4 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 	);
 }
 
-export default BuySteps;
+export default EditSteps;

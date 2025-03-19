@@ -10,6 +10,7 @@ import {
 	Checkbox,
 } from '@betfinio/components/ui';
 import { type MouseEvent, type PropsWithChildren, type ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface AlertProps extends PropsWithChildren {
 	storageKey: string;
@@ -19,6 +20,7 @@ export interface AlertProps extends PropsWithChildren {
 }
 
 function Alert({ storageKey, children, trigger, isValid, onSuccess }: AlertProps) {
+	const { t } = useTranslation('lottery');
 	const [isOpen, setOpen] = useState(false);
 
 	const { value = false, setValue } = useLocalStorage<boolean>(storageKey);
@@ -64,12 +66,12 @@ function Alert({ storageKey, children, trigger, isValid, onSuccess }: AlertProps
 				{children}
 				<div className="flex flex-row items-center gap-2 text-sm">
 					<Checkbox id={storageKey} onCheckedChange={handleCheckboxChange} />
-					<label htmlFor={storageKey}>Don't ask me again</label>
+					<label htmlFor={storageKey}>{t('dontAskAgain')}</label>
 				</div>
 				<div className="grid grid-cols-3 gap-2 items-center">
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
 					<AlertDialogAction className="col-start-3" onClick={handleSuccess}>
-						Confirm
+						{t('confirm')}
 					</AlertDialogAction>
 				</div>
 			</AlertDialogContent>

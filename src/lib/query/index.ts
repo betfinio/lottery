@@ -1,5 +1,6 @@
 import {
 	fetchAdditionalJackpot,
+	fetchEditAllowance,
 	fetchFinishedRoundTransactionByRoundAddress,
 	fetchLinesAvailability,
 	fetchLinesCount,
@@ -49,8 +50,16 @@ export const useTicketPrice = (round?: Address) => {
 export const useMultiAllowance = (address?: Address) => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'allowance', address],
+		queryKey: ['lottery', 'allowance', 'multibet', address],
 		queryFn: () => fetchMultiAllowance(address, config),
+	});
+};
+
+export const useEditAllowance = (address?: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'allowance', 'edit', address],
+		queryFn: () => fetchEditAllowance(address, config),
 	});
 };
 

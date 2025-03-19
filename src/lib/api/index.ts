@@ -97,6 +97,19 @@ export const fetchMultiAllowance = async (address: Address | undefined, config: 
 	return value;
 };
 
+export const fetchEditAllowance = async (address: Address | undefined, config: Config): Promise<bigint> => {
+	logger.start('fetchAllowance:', address);
+	if (!config || address === undefined || address === ZeroAddress) return 0n;
+	const value = (await readContract(config, {
+		abi: TokenABI,
+		address: TOKEN,
+		functionName: 'allowance',
+		args: [address, LOTTERY_ADDRESS],
+	})) as bigint;
+	logger.success('fetchAllowance:', value);
+	return value;
+};
+
 export const buyTicket = async (options: { lines: ILine[]; rounds: Address[]; recipient: Address }, config: Config) => {
 	const { lines, rounds, recipient } = options;
 	const datas: Address[] = [];
@@ -141,6 +154,14 @@ export const unlockMultibet = async (config: Config) => {
 		address: TOKEN,
 		functionName: 'approve',
 		args: [MULTIBET_ADDRESS, 1_000_000_000_000n * 10n ** 18n],
+	});
+};
+export const unlockEdit = async (config: Config) => {
+	return writeContract(config, {
+		abi: TokenABI,
+		address: TOKEN,
+		functionName: 'approve',
+		args: [LOTTERY_ADDRESS, 1_000_000_000_000n * 10n ** 18n],
 	});
 };
 

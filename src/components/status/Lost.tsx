@@ -1,10 +1,12 @@
-import { useRoundStatus, useTicketClaimed, useTicketStatus, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
+import { useRoundStatus, useTicketStatus, useWinningLine } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
 import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { compareLines } from '@/src/lib/utils';
-import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { useTranslation } from 'react-i18next';
 
 function Lost({ ticket }: { ticket: IRoundTicket }) {
+	const { t } = useTranslation('lottery');
 	const { data: status } = useTicketStatus(ticket.betAddress);
 	const { data: roundStatus } = useRoundStatus(ticket.round);
 	const { data: winningLine } = useWinningLine(ticket.round);
@@ -24,9 +26,9 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger>
-						<Badge variant="destructive">Lost</Badge>
+						<Badge variant="destructive">{t('lost')}</Badge>
 					</TooltipTrigger>
-					<TooltipContent asChild>This status is final and validated by blockchain</TooltipContent>
+					<TooltipContent>{t('thisStatusIsFinalAndValidatedByBlockchain')}</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		);
@@ -38,19 +40,17 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 				<Tooltip>
 					<TooltipTrigger>
 						<Badge className="bg-muted/10 text-muted-foreground" onClick={handleClaim}>
-							Lost
+							{t('lost')}
 						</Badge>
 					</TooltipTrigger>
-					<TooltipContent>
-						This status is not yet validated by blockchain. Click on the status and sign the transaction to validate the status by blockchain
-					</TooltipContent>
+					<TooltipContent>{t('thisStatusIsNotYetValidatedByBlockchain')}</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		);
 	}
 
 	if ((status === 1n && roundStatus === RoundStatus.WAITING_FOR_REQUEST) || roundStatus === RoundStatus.DONE) {
-		return <Badge className="bg-muted/10 text-muted-foreground">Waiting</Badge>;
+		return <Badge className="bg-muted/10 text-muted-foreground">{t('waiting')}</Badge>;
 	}
 }
 
