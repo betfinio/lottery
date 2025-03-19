@@ -53,7 +53,7 @@ function SharedLine({
 			{line.numbers
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
-					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(index))}>
+					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number))}>
 						<AnimatePresence mode="wait" custom={array[index]}>
 							<motion.div
 								key={number}

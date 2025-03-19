@@ -1,7 +1,9 @@
 import { randomize } from '@/src/lib/utils';
 import { type FC, useEffect, useState } from 'react';
 import { AnimatedGridOfNumbners } from '../../shared/AnimatedGridOfNumbners';
+import Pagination from '../../shared/Pagination';
 import { TicketGridOfSymbols } from '../../shared/TicketGridOfSymbols';
+import PlayerTickets from './PlayerTickets';
 export const RoundNotCalculated: FC = () => {
 	const [symbol, setSymbol] = useState(0);
 	const [numbers, setNumbers] = useState<number[]>([]);
@@ -22,10 +24,11 @@ export const RoundNotCalculated: FC = () => {
 				<AnimatedGridOfNumbners numbers={numbers} toggleNumber={() => {}} />
 				<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={() => {}} />
 			</div>
-			<div className="w-96 flex flex-col gap-4 blur">
+			<PlayerTickets className="!h-[360px]" />
+			{/* <div className="w-96 flex flex-col gap-4 blur">
 				<AnimatedGridOfNumbners numbers={numbers} toggleNumber={() => {}} />
 				<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={() => {}} />
-			</div>
+			</div> */}
 		</div>
 	);
 };

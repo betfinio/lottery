@@ -3,6 +3,7 @@ import { useClaimTicket } from '@/src/lib/query/mutations';
 import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { compareLines } from '@/src/lib/utils';
 import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { HelpCircleIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 function Lost({ ticket }: { ticket: IRoundTicket }) {
@@ -38,10 +39,11 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 	if (roundStatus === RoundStatus.CLAIMING && winningLine && sumCoef === 0 && status === 1n && allLinesCoef) {
 		return (
 			<TooltipProvider>
-				<Tooltip>
+				<Tooltip delayDuration={0}>
 					<TooltipTrigger>
-						<Badge className="bg-muted/10 text-muted-foreground" onClick={handleClaim}>
+						<Badge className="bg-muted/10 text-muted-foreground hover:scale-105 transition-all flex flex-row gap-1" onClick={handleClaim}>
 							{t('lost')}
+							<HelpCircleIcon className="w-3 h-3" />
 						</Badge>
 					</TooltipTrigger>
 					<TooltipContent>{t('thisStatusIsNotYetValidatedByBlockchain')}</TooltipContent>

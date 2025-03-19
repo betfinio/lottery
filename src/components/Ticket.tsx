@@ -123,7 +123,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 								>
 									<SharedLine
 										line={line}
-										dynamicNumberClassName={(index) => cn({ 'stroke-success': winningLine && line.numbers[index] === winningLine.numbers[index] })}
+										dynamicNumberClassName={(number) => cn({ 'stroke-success': winningLine?.numbers.includes(number) })}
 										symbolClassName={cn({ 'stroke-success': winningLine && line.symbol === winningLine.symbol })}
 									/>
 									{!isEditable && (
@@ -162,7 +162,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						}}
 						exit={{ height: 0, opacity: 0 }}
 					>
-						{/* {!old && <SendPill ticket={ticket} />} */}
+						{!old && <SendPill ticket={ticket} />}
 						{!old && <EditPill ticket={ticket} />}
 						{old && <Claim ticket={ticket} />}
 					</motion.div>
@@ -231,7 +231,6 @@ const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 		<Button
 			onClick={handleClick}
 			size="freeSize"
-			disabled
 			shape="pill"
 			className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
 		>

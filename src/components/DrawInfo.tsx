@@ -16,8 +16,8 @@ const DrawInfo = () => {
 				<TabsList className={'w-full flex flex-row items-center justify-between'}>
 					<div className={'grid grid-cols-3 gap-2'}>
 						<TabsTrigger value={'draw'}>Current draw</TabsTrigger>
-						<TabsTrigger value={'active'}>Active tickets</TabsTrigger>
-						<TabsTrigger value={'old'}>Old tickets</TabsTrigger>
+						<TabsTrigger value={'active'}>My tickets</TabsTrigger>
+						<TabsTrigger value={'old'}>My winnings</TabsTrigger>
 					</div>
 					<TabsTrigger value={'bonus'} className={'p-0 w-[34px] aspect-square hidden'}>
 						<StarIcon className={'w-4 h-4'} />
