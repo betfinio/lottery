@@ -5,6 +5,7 @@ import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
+import { toast } from '@betfinio/components/hooks';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -161,7 +162,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						}}
 						exit={{ height: 0, opacity: 0 }}
 					>
-						{!old && <SendPill ticket={ticket} />}
+						{/* {!old && <SendPill ticket={ticket} />} */}
 						{!old && <EditPill ticket={ticket} />}
 						{old && <Claim ticket={ticket} />}
 					</motion.div>
@@ -218,9 +219,19 @@ const Header: FC<{
 };
 
 const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
+	const handleClick = () => {
+		toast({
+			title: 'Coming soon',
+			description: 'This feature is coming soon',
+			variant: 'soon',
+		});
+	};
+
 	return (
 		<Button
+			onClick={handleClick}
 			size="freeSize"
+			disabled
 			shape="pill"
 			className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
 		>
