@@ -211,7 +211,7 @@ const TicketList = () => {
 							</div>
 						)
 					}
-					className={'flex-grow'}
+					className={'flex-grow flex flex-col justify-between'}
 					renderItem={(ticket: ILine, index: number) => (
 						<Line
 							key={index}

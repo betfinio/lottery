@@ -6,6 +6,7 @@ import { compareLines } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
+import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilLineIcon, SendIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -27,7 +28,6 @@ export interface TicketProps {
 
 function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true, className }: TicketProps) {
 	const { data: winningLine } = useWinningLine(ticket.round);
-	const { data: finish = 0 } = useRoundFinish(ticket.round);
 	const [lines, setLines] = useState(ticket.lines);
 
 	// Update lines when ticket changes
@@ -127,9 +127,9 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 				{isExpanded && (
 					<div className="flex flex-row items-center justify-center gap-1 text-sm text-muted-foreground row-span-1">
 						Round:
-						<a href={`${ETHSCAN}/address/${ticket.round}`} target="_blank" rel="noreferrer">
+						<Link to={'/games/lottery/lotto/$round'} params={{ round: ticket.round }}>
 							{truncateEthAddress(ticket.round)}
-						</a>
+						</Link>
 					</div>
 				)}
 				<motion.div
