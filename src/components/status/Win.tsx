@@ -11,7 +11,7 @@ function Win({ ticket }: { ticket: IRoundTicket }) {
 	if (!isPending && result[0] > 0n && roundStatus === RoundStatus.CLAIMING) {
 		return (
 			<div className={'flex flex-row items-center gap-2'}>
-				<Badge className="bg-green-500 text-white">{t('won')}</Badge>∏{' '}
+				<Badge className="bg-green-500 text-white">{t('won')}</Badge>
 			</div>
 		);
 	}
