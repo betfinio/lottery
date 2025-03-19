@@ -13,7 +13,10 @@ interface TicketCardProps {
 }
 export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine, totalLines }) => {
 	const lines = useMemo(
-		() => ticket.lines.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0)),
+		() =>
+			ticket.lines.toSorted((a, b) =>
+				winningLine ? (compareLines(b, winningLine, ticket.lines.length >= 3) > compareLines(a, winningLine, ticket.lines.length >= 3) ? 1 : -1) : 0,
+			),
 		[ticket.lines, winningLine],
 	);
 	return (
