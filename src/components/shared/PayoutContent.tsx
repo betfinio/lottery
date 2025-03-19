@@ -4,9 +4,9 @@ import { partlyEquals } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
-import { DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
+import { DialogClose, DialogDescription, DialogTitle, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { DialogContent, DialogHeader } from '@betfinio/components/ui';
-import { XIcon } from 'lucide-react';
+import { HelpCircleIcon, InfoIcon, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NumberComponent, SymbolElement } from '../Line';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
@@ -89,6 +89,18 @@ function PayoutContent() {
 									</div>
 									<div className={'flex flex-col items-center justify-center'}>
 										<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger>
+													{index === 0 && (
+														<div className={'text-xs text-muted-foreground flex flex-row items-center gap-1'}>
+															+ additional jackpot <HelpCircleIcon className={'w-3 h-3'} />
+														</div>
+													)}
+												</TooltipTrigger>
+												<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
 									</div>
 								</div>
 							))}

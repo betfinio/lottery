@@ -42,7 +42,7 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 			<div className={'max-w-[384px] w-[98vw] mx-auto p-2 md:p-3 lg:p-4 flex flex-col gap-2 md:gap-3 lg:gap-4'}>
 				<DialogTitle className={'hidden'} />
 				<DialogDescription aria-describedby={undefined} className={'hidden'} />
-				<Ticket ticket={ticket} mode={'expanded'} onUpdate={handleUpdate} isExpandable={false} />
+				<Ticket ticket={ticket} mode={'expanded'} onUpdate={handleUpdate} isExpandable={false} isEditable={false} />
 				<div className={'flex justify-between'}>
 					<DialogClose asChild>
 						<Button className={'w-1/4'} variant={'destructive'}>

@@ -6,9 +6,9 @@ import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
-import { Dialog, DialogTrigger } from '@betfinio/components/ui';
+import { Dialog, DialogTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { useNavigate } from '@tanstack/react-router';
-import { HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
+import { HelpCircleIcon, HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
@@ -108,6 +108,16 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 							<div className="text-foreground text-lg">{t('totalWinnings')}</div>
 							<div className="flex flex-row gap-1 items-center">
 								<BetValue value={displayedJackpot} withMillify={false} iconClassName="w-5 h-5" /> BET
+							</div>
+							<div className="text-muted-foreground text-sm">
+								<TooltipProvider>
+									<Tooltip>
+										<TooltipTrigger className="flex flex-row gap-1 items-center text-xs">
+											Incl. bonus jackpot of <BetValue value={additionalJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
+										</TooltipTrigger>
+										<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
 							</div>
 						</div>
 					</div>

@@ -37,7 +37,7 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 	if (!isPending && result[0] === 0n && roundStatus === RoundStatus.CLAIMING) {
 		return (
 			<div className={'flex flex-row items-center gap-2'}>
-				<Badge className="bg-muted/10 text-muted-foreground">Ticket did not win</Badge>
+				<Badge className="bg-muted/10 text-muted-foreground">Validate</Badge>
 			</div>
 		);
 	}

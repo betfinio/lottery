@@ -212,7 +212,7 @@ const TicketList = () => {
 							</div>
 						)
 					}
-					className={'flex-grow'}
+					className={'flex-grow flex flex-col justify-between'}
 					renderItem={(ticket: ILine, index: number) => (
 						<Line
 							key={index}
@@ -247,32 +247,35 @@ const TicketList = () => {
 					)}
 
 					{state === RoundState.FILLING && (
-						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button className="gap-1 hover:scale-105 transition-all" variant={!address ? 'default' : 'success'} onClick={handleProceed}>
-										{address ? (
-											<>
-												{t('proceed')} ({filledLines.length} ){t('lines')}
-												<ArrowRightIcon className={'w-4 h-4'} />
-											</>
-										) : (
-											t('connectWallet')
-										)}
-									</Button>
-								</TooltipTrigger>
-								{duplicates && (
-									<TooltipContent>
-										<div>{t('canNotProceedWithDuplicateLines')}</div>
-									</TooltipContent>
-								)}
-								{filledLines.length !== draftTickets.length && (
-									<TooltipContent>
-										<div>{t('mustFillAllLines')}</div>
-									</TooltipContent>
-								)}
-							</Tooltip>
-						</TooltipProvider>
+						<Alert
+							onSuccess={handleProceed}
+							trigger={
+								<Button className="gap-1 hover:scale-105 transition-all" variant={!address ? 'default' : 'success'}>
+									{address ? (
+										<>
+											{t('proceed')} ({filledLines.length} {t('lines')})
+											<ArrowRightIcon className={'w-4 h-4'} />
+										</>
+									) : (
+										t('connectWallet')
+									)}
+								</Button>
+							}
+							storageKey="lottery-unlockSymbol"
+							isValid={filledLines.length < 3}
+						>
+							<div className="flex flex-col">
+								<div className="text-lg font-semibold">Do you really want to continue without symbol?</div>
+								<div className="text-sm text-secondary-foreground my-2">
+									Symbol allows you to win:
+									<ul className="list-disc list-inside">
+										<li>Super Jackpot(5x more payout)</li>
+										<li>Free ticket with just 2 numbers</li>
+									</ul>
+								</div>
+								<div className="text-sm text-muted-foreground">Fill at least 3 lines to activate symbol</div>
+							</div>
+						</Alert>
 					)}
 				</footer>
 			</div>
@@ -288,8 +291,8 @@ const MoreLinesTooltip = () => {
 				<TooltipTrigger>
 					<CircleHelp className={'w-4 h-4 fill-foreground text-background'} />
 				</TooltipTrigger>
-				<TooltipContent>
-					<div>{t('addMoreTooltip')}</div>
+				<TooltipContent className="lottery">
+					<div className="max-w-[300px]">{t('addMoreTooltip')}</div>
 				</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>

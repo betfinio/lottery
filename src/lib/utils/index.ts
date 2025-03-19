@@ -69,13 +69,13 @@ export const partlyEquals = (a: ILine, b: ILine, numberIndex: number): boolean =
 	return b.numbers.includes(sortedA[numberIndex]);
 };
 
-export const compareLines = (a: ILine, b: ILine): number => {
+export const compareLines = (a: ILine, b: ILine, symbolUnlocked: boolean): number => {
 	// count same numbers
 	const sameBits = a.numbers.filter((n) => b.numbers.includes(n)).length;
 	// check if 5 numbers are same
 	if (sameBits === 5) {
 		// check if symbol is same
-		if (a.symbol === b.symbol) {
+		if (a.symbol === b.symbol && symbolUnlocked) {
 			return 40_000; // COMBINATION: 5+1
 		}
 		return 15_000; // COMBINATION: 5
@@ -83,7 +83,7 @@ export const compareLines = (a: ILine, b: ILine): number => {
 	// check if 4 numbers are same
 	if (sameBits === 4) {
 		// check if symbol is same
-		if (a.symbol === b.symbol) {
+		if (a.symbol === b.symbol && symbolUnlocked) {
 			return 400; // COMBINATION: 4+1
 		}
 		return 50; // COMBINATION: 4
@@ -91,7 +91,7 @@ export const compareLines = (a: ILine, b: ILine): number => {
 	// check if 3 numbers are same
 	if (sameBits === 3) {
 		// check if symbol is same
-		if (a.symbol === b.symbol) {
+		if (a.symbol === b.symbol && symbolUnlocked) {
 			return 5; // COMBINATION: 3+1
 		}
 		return 1; // COMBINATION: 3
@@ -99,7 +99,7 @@ export const compareLines = (a: ILine, b: ILine): number => {
 	// check if 2 numbers are same
 	if (sameBits === 2) {
 		// check if symbol is same
-		if (a.symbol === b.symbol) {
+		if (a.symbol === b.symbol && symbolUnlocked) {
 			return 1; // COMBINATION: 2+1
 		}
 	}

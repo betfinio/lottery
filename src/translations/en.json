@@ -3,7 +3,7 @@
 	"create": {
 		"line": "line",
 		"addMore": "Fill {count, plural, =1 {1 more line} =2 {2 more lines} other {# more lines}}",
-		"addMoreTooltip": "Create a ticket with 3 lines to enable symbol",
+		"addMoreTooltip": "Ticket with 3 or more lines has activated SYMBOL. Symbol is the only way to win SUPERJACKPOT with 5x higher payout (see paytable). Symbol also brings you higher probability of winning free ticket.",
 		"symbolUnlocked": "Symbol unlocked"
 	},
 	"tables": {

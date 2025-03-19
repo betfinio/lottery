@@ -50,7 +50,7 @@ interface PlayerWonProps {
 	placedAmount: bigint;
 	winingAmount: bigint;
 }
-export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, tickets, placedAmount, winingAmount }) => {
+export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmount, winingAmount }) => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const multiplier = Number(winingAmount) / Number(placedAmount);
 	const applyPagination = tickets.length > 1;
@@ -91,14 +91,13 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, winningCoef, ticket
 				{/* Tickets */}
 				<div className="flex-grow relative flex flex-col">
 					{applyPagination ? (
-						<div className="flex-grow flex-col flex">
-							{' '}
+						<div className="flex-grow flex-col flex gap-2">
 							<div className="text-muted-foreground text-base mb-2">{t('yourWinningTickets')}</div>
 							<Pagination
 								items={tickets}
 								itemsPerPage={1}
-								renderItem={(ticket, index: number) => <TicketCard ticket={ticket} winningLine={winningLine} totalLines={ticket.totalLines} />}
-								className="flex-grow h-auto"
+								renderItem={(ticket) => <TicketCard ticket={ticket} winningLine={winningLine} totalLines={ticket.totalLines} />}
+								className="flex-grow h-auto flex flex-col justify-center"
 							/>
 						</div>
 					) : (

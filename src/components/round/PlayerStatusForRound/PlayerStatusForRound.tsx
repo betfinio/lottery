@@ -28,7 +28,7 @@ export const PlayerStatusForRound: FC = () => {
 		if (!winningLine) return [];
 		return tickets.map((ticket) => {
 			const linesWithCoef = ticket.lines.reduce((acc, line) => {
-				return acc + BigInt(compareLines(line, winningLine));
+				return acc + BigInt(compareLines(line, winningLine, ticket.lines.length >= 3));
 			}, 0n);
 			return {
 				...ticket,
@@ -44,7 +44,7 @@ export const PlayerStatusForRound: FC = () => {
 		return ticketsWithCountedCoef.reduce(
 			(acc, ticket) => {
 				if (ticket.winningCoef > 0n && winningLine) {
-					const ticketLines = ticket.lines.filter((line) => compareLines(line, winningLine) > 0);
+					const ticketLines = ticket.lines.filter((line) => compareLines(line, winningLine, ticket.lines.length >= 3) > 0);
 					acc.push({ ...ticket, lines: ticketLines, totalLines: ticket.lines.length });
 				}
 				return acc;
