@@ -257,7 +257,7 @@ export const fetchTicketStatus = async (ticket: Address, config: Config) => {
 };
 
 export const fetchTicketResult = async (ticket: Address, winLine: GTicket, config: Config) => {
-	logger.start('fetchTicketResult:', ticket);
+	logger.start('fetchTicketResult:', ticket, winLine);
 	return readContract(config, {
 		abi: LotteryBetABI,
 		address: ticket,

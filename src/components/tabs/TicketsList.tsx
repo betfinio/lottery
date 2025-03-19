@@ -81,7 +81,7 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 				</div>
 			}
 			renderItem={renderItem}
-			className="flex flex-col gap-2"
+			className="flex flex-col gap-2 w-full"
 		/>
 	);
 }

@@ -9,12 +9,14 @@ function SharedLine({
 	line,
 	numberClassName,
 	symbolClassName,
+	dynamicNumberClassName,
 	className,
 	symbolUnlocked,
 	onClick,
 }: {
 	line: ILine;
 	numberClassName?: string;
+	dynamicNumberClassName?: (number: number) => string;
 	symbolClassName?: string;
 	className?: string;
 	symbolUnlocked?: boolean;
@@ -51,7 +53,7 @@ function SharedLine({
 			{line.numbers
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
-					<NumberComponent key={index} className={cn(numberClassName, 'relative')}>
+					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(index))}>
 						<AnimatePresence mode="wait" custom={array[index]}>
 							<motion.div
 								key={number}

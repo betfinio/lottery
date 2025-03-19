@@ -11,9 +11,9 @@ const PlayerTickets: FC = () => {
 	const { address = ZeroAddress } = useAccount();
 	const { data: tickets = [] } = useRoundTicketsByPlayer(round, address);
 	return (
-		<div className="flex flex-col mt-auto items-center justify-center min-w-[388px] border border-border rounded-lg h-[430px] px-2 md:px-3 lg:px-4">
-			<div className="font-medium text-muted-foreground my-4 w-full">{t('yourTickets')}</div>
-			<TicketsList tickets={tickets} old={true} itemsPerPage={3} />
+		<div className="flex flex-col mt-auto items-center justify-between min-w-[388px] border border-border rounded-lg h-[430px] px-2 md:px-3 lg:px-4">
+			<div className="font-medium text-muted-foreground py-4 w-full">{t('yourTickets')}</div>
+			<TicketsList tickets={tickets} old={true} itemsPerPage={2} />
 		</div>
 	);
 };

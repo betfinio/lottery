@@ -104,7 +104,9 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 				>
 					<AnimatePresence mode="sync">
 						{lines
-							.toSorted((a, b) => (winningLine ? (compareLines(b, winningLine) > compareLines(a, winningLine) ? 1 : -1) : 0))
+							.toSorted((a, b) =>
+								winningLine ? (compareLines(b, winningLine, lines.length >= 3) > compareLines(a, winningLine, lines.length >= 3) ? 1 : -1) : 0,
+							)
 							.slice(0, isExpanded ? lines.length : 1)
 							.map((line, index) => (
 								<motion.div
@@ -118,7 +120,11 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 									key={index}
 									className={'flex flex-row items-center gap-2'}
 								>
-									<SharedLine line={line} />
+									<SharedLine
+										line={line}
+										dynamicNumberClassName={(index) => cn({ 'stroke-success': winningLine && line.numbers[index] === winningLine.numbers[index] })}
+										symbolClassName={cn({ 'stroke-success': winningLine && line.symbol === winningLine.symbol })}
+									/>
 									{!isEditable && (
 										<motion.div initial={{ scale: 0 }} animate={{ scale: isEditable ? 0 : 1 }} exit={{ scale: 0 }}>
 											<PencilIcon className={'w-4 h-4 cursor-pointer'} onClick={() => setEditMode(index)} />
@@ -163,6 +169,7 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 			</motion.div>
 			{editMode !== -1 && (
 				<EditMode
+					round={ticket.round}
 					shouldValidateAvaliability={true}
 					ticket={lines[editMode]}
 					onSave={(line) => handleSave(line)}
