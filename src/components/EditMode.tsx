@@ -30,7 +30,7 @@ const EditMode: FC<{
 
 	const linesHasChanged = useMemo(() => {
 		return !equals(ticket, { numbers, symbol });
-	}, [ticket, numbers]);
+	}, [ticket, numbers, symbol]);
 
 	const { data: availability, isFetched } = useLinesAvailability(
 		round ?? selectedRound?.address,
@@ -105,7 +105,7 @@ const EditMode: FC<{
 		if (shouldValidateAvaliability && linesHasChanged && isFetched && availability && availability.length === 1 && availability[0] === false)
 			return t('notAvailable');
 		return '';
-	}, [symbol, numbers, ticket, availability]);
+	}, [symbol, numbers, ticket, availability, linesHasChanged]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
