@@ -35,7 +35,7 @@ export interface IRoundTicketWithWinningCoef extends IRoundTicket {
 	placedAmount: bigint;
 }
 
-export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded';
+export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded' | 'hidden';
 
 export enum RoundState {
 	FILLING = 0,
