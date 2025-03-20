@@ -32,9 +32,9 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 		return BigInt(MAX_SHARES) * BigInt(ticketPrice) + (additionalJackpot ?? 0n);
 	}, [ticketPrice, roundDetails]);
 	return (
-		<div className="h-[430px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center shadow-[0_0_10px_0] shadow-aura">
-			<div className="text-2xl font-semibold mb-11">{t('roundIsOver')}</div>
-			<div className="flex flex-col gap-4 items-center mb-11">
+		<div className="h-fit md:h-[430px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center ">
+			<div className="text-2xl font-semibold mb-4 md:mb-11">{t('roundIsOver')}</div>
+			<div className="flex flex-col gap-2 md:gap-4 items-center mb-4 md:mb-11">
 				<div className="text-base font-semibold">{t('youCouldWin')}</div>
 				<div
 					className={cn('text-2xl font-semibold text-secondary-foreground', {
@@ -61,7 +61,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 				/>
 				<StatBox className="w-full min-w-14" isLoading={isLoading} label={t('volume')} value={<BetValue value={roundDetails?.bank ?? 0n} withIcon />} />
 			</div>
-			<div className="mt-auto w-full">
+			<div className=" w-full">
 				<Button onClick={() => navigate({ to: '/games/lottery/lotto' })} className="w-full" variant="default">
 					{t('backToCurrentRound')}
 				</Button>

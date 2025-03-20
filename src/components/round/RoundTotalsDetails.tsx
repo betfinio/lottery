@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Ticket from '../icons/Ticket.tsx';
 import { LuckyNumbers } from './LuckyNumbers.tsx';
+
 export function RoundTotalsDetails() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const round = useGetRoundFromParams();
