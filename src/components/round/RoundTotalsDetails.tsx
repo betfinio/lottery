@@ -49,7 +49,7 @@ export function RoundTotalsDetails() {
 				<Bag className={'w-12 h-12 md:w-16 md:h-16 text-secondary-foreground'} />
 				<div className="flex flex-col items-center">
 					<BetValue className={cn('text-xl text-success', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={paidToStaking} withIcon />
-					<div className="text-tertiary-foreground">{t('paidToStaking')}</div>
+					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>
 				</div>
 			</div>
 		</div>
