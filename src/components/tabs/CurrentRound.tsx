@@ -3,7 +3,7 @@ import Countdown from '@/src/components/Countdown.tsx';
 import { ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
 import { useActiveRounds, useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
 import { type IRound, RoundStatus } from '@/src/lib/types.ts';
-import { truncateEthAddress } from '@betfinio/abi';
+import { LotteryRoundABI, truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
@@ -11,6 +11,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { HelpCircleIcon, HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useWatchContractEvent } from 'wagmi';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
 import PayoutContent from '../shared/PayoutContent';
 import { StatBox } from '../shared/StatBox';
@@ -26,7 +27,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { data: finish = 0 } = useRoundFinish(round.address);
 	const { data: status, refetch: refetchStatus } = useRoundStatus(round.address);
 	const { data: additionalJackpot = 0n } = useAdditionalJackpot();
-	const { data: potentialJackpot = 0n } = usePotentialJackpot(round.address);
+	const { data: potentialJackpot = 0n, refetch: refetchPotentialJackpot } = usePotentialJackpot(round.address);
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
 	const animationRef = useRef<NodeJS.Timer>();
 	const totalJackpot = useMemo(
@@ -62,6 +63,15 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 			}
 		};
 	}, [totalJackpot]);
+
+	useWatchContractEvent({
+		address: round.address,
+		abi: LotteryRoundABI,
+		eventName: 'TicketSold',
+		onLogs: () => {
+			refetchPotentialJackpot();
+		},
+	});
 
 	const renderStats = () => (
 		<div className="grid grid-cols-3 gap-3">
