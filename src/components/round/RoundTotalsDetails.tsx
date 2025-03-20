@@ -41,7 +41,7 @@ export function RoundTotalsDetails() {
 				</div>
 			</div>
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-6 md:col-span-2 md:col-start-3 md:row-start-1">
-				<div className="flex flex-col items-center">
+				<div className="flex flex-col items-center gap-2">
 					<div className="text-tertiary-foreground mb-2">{t('luckyNumbers')}</div>
 					<LuckyNumbers round={round} />
 				</div>
