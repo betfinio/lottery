@@ -14,13 +14,14 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 	const columnHelper = createColumnHelper<IRound>();
 
 	return [
-		columnHelper.accessor('address', {
-			header: t('headers.round'),
+		columnHelper.accessor('finish', {
+			header: t('headers.finish'),
 			meta: {
-				className: 'h-[50px] min-w-[100px]',
+				className: 'min-w-[100px] whitespace-nowrap',
 			},
-			cell: (props) => <Round address={props.getValue()} />,
+			cell: (props) => <Finish timestamp={props.getValue()} />,
 		}),
+
 		columnHelper.display({
 			header: t('headers.result'),
 			meta: {
@@ -28,12 +29,12 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 			},
 			cell: (props) => <Result round={props.row.original.address} />,
 		}),
-		columnHelper.accessor('finish', {
-			header: t('headers.finish'),
+		columnHelper.accessor('address', {
+			header: t('headers.round'),
 			meta: {
-				className: 'min-w-[150px]',
+				className: 'h-[50px] min-w-[100px]',
 			},
-			cell: (props) => <Finish timestamp={props.getValue()} />,
+			cell: (props) => <Round address={props.getValue()} />,
 		}),
 		columnHelper.accessor('linesCount', {
 			header: isMy ? t('headers.myLinesCount') : t('headers.linesCount'),
