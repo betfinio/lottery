@@ -1,4 +1,5 @@
 import type { ILine, IRoundTicket } from '@/src/lib/types';
+import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,7 +79,7 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 					</div>
 					<div className="flex flex-col items-center">
 						<div>{t('multiplicator')}</div>
-						<div>x {multiplier.toFixed(2)}</div>
+						<div className={cn('', { 'text-success': multiplier > 1, 'text-destructive': multiplier < 1 })}>x{multiplier.toFixed(2)}</div>
 					</div>
 					{/* <div className="text-base">
 						<div className="flex items-center gap-2">
