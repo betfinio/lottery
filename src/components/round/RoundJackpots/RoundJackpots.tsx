@@ -6,7 +6,7 @@ export const RoundJackpots = () => {
 	const { t } = useTranslation('lottery');
 	return (
 		<div>
-			<div className="flex gap-4 items-center px-6 py-2 text-sm">
+			<div className="flex gap-2 items-center p-3 text-sm">
 				<div className="grid grid-cols-4 w-full text-tertiary-foreground  font-semibold  ">
 					<div className="flex gap-4 items-center  whitespace-nowrap">{t('jackpot')}</div>
 					<div className="flex gap-4 items-center justify-center whitespace-nowrap">{t('combination')}</div>
