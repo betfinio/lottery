@@ -81,7 +81,6 @@ export const PlayerStatusForRound: FC = () => {
 	if (showPlayerDidNotWin) {
 		return (
 			<div className="flex flex-col items-center">
-				{playerHasBets && <div className="text-lg mb-4  font-semibold">{t('yourTicketsInDraw')}</div>}
 				<div className="flex gap-5 flex-wrap justify-end ">
 					<div className="mt-auto">
 						<PlayerDidNotWin playerHasBets={playerHasBets} />
@@ -95,7 +94,6 @@ export const PlayerStatusForRound: FC = () => {
 	if (showPlayerWon) {
 		return (
 			<div className="flex flex-col items-center justify-center">
-				<div className=" text-lg font-semibold">{t('yourTicketsInDraw')}</div>
 				<div className="flex gap-5 flex-wrap justify-center">
 					<PlayerWon
 						placedAmount={ticketStats.placedAmount}

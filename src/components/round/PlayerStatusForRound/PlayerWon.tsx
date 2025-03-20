@@ -62,14 +62,14 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 					<div className="relative">
 						<JackpotFrame animateStars className="text-gold " />
 
-						<div className="absolute text-2xl top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+						<div className="absolute text-lg top-0 left-0 w-full h-full flex flex-col items-center justify-center">
 							<div>{t('youWon')}</div>
-							<BetValue className="text-secondary-foreground text-2xl font-bold" value={winingAmount} withMillify={false} />
+							<BetValue className="text-secondary-foreground text-2xl font-bold" iconClassName="w-6 h-6" withIcon value={winingAmount} withMillify={false} />
 						</div>
 					</div>
 				</div>
 				{/* Info */}
-				<div className="flex gap-2 text-xs justify-between mb-4 text-muted-foreground items-center">
+				<div className="flex gap-2 text-sm justify-between mb-4 text-muted-foreground items-center">
 					<div className="flex flex-col items-center">
 						<div>{t('betSize')}</div>
 						<div className="text-secondary-foreground">
@@ -80,13 +80,13 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 						<div>{t('multiplicator')}</div>
 						<div>x {multiplier.toFixed(2)}</div>
 					</div>
-					<div className="text-base">
+					{/* <div className="text-base">
 						<div className="flex items-center gap-2">
 							<CopyLocation toastMessage={t('copiedCurrentRoundRef')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
 								<div className="cursor-pointer">{t('share')}</div>
 							</CopyLocation>
 						</div>
-					</div>
+					</div> */}
 				</div>
 				{/* Tickets */}
 				<div className="flex-grow relative flex flex-col">

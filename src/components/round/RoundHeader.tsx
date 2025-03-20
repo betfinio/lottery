@@ -6,6 +6,7 @@ import { Button } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
 import { Undo2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { CopyLocation } from '../shared/CopyLocation';
 
 export const RoundHeader = () => {
 	const round = useGetRoundFromParams();
@@ -36,6 +37,11 @@ export const RoundHeader = () => {
 						{getTimeFromSeconds(roundDetails?.finish || 1)}
 					</div>
 				</div>
+			</div>
+			<div className="flex items-center gap-2 absolute right-0 top-2 ">
+				<CopyLocation toastMessage={t('copiedCurrentRoundRef')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
+					<div className="cursor-pointer">{t('share')}</div>
+				</CopyLocation>
 			</div>
 		</div>
 	);
