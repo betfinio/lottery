@@ -52,7 +52,7 @@ function Alert({ storageKey, children, trigger, isValid, onSuccess }: AlertProps
 				{trigger}
 			</DialogTrigger>
 			<DialogContent className="lottery">
-				<div className="flex flex-col gap-4  w-[98vw] md:max-w-[500px] max-w-[384px] p-2">
+				<div className="flex flex-col gap-4  w-[98vw] md:max-w-[500px] max-w-[384px] p-2 md:p-4">
 					<DialogTitle className="hidden" />
 					<DialogDescription className="hidden" />
 					{children}

@@ -176,7 +176,7 @@ const PlaceBet = () => {
 	return (
 		<motion.div
 			className={cn('w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col', {
-				'border-2 border-primary/70 create-shadow': state === RoundState.PLACING,
+				'border-2 border-primary/70': state === RoundState.PLACING,
 			})}
 		>
 			<div className={'p-3 flex flex-col items-center gap-1'}>

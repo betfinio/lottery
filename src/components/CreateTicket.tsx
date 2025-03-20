@@ -30,7 +30,7 @@ const CreateTicket = () => {
 	return (
 		<section
 			className={cn('w-full md:h-full border border-border rounded-xl p-3  bg-background-lighter relative h-[593px] flex flex-col justify-between', {
-				'border-2 border-primary/70 create-shadow bg-background-light': state === RoundState.FILLING,
+				'border-2 border-primary/70 bg-background-light': state === RoundState.FILLING,
 				'border border-foreground/50': isDisabled,
 			})}
 		>
@@ -266,14 +266,14 @@ const TicketList = () => {
 						>
 							<div className="flex flex-col">
 								<div className="text-base font-semibold whitespace-nowrap">Do you really want to continue without symbol?</div>
-								<div className="text-sm text-secondary-foreground my-2">
+								<div className="text-sm text-secondary-foreground m-2">
 									Symbol allows you to win:
 									<ul className="list-disc list-inside">
 										<li>SuperJackpot (5x more payout)</li>
 										<li>Free ticket with just 2 numbers</li>
 									</ul>
 								</div>
-								<div className="text-sm text-muted-foreground">Fill at least 3 lines to activate symbol</div>
+								<div className="text-sm text-muted-foreground ml-2">Fill at least 3 lines to activate symbol</div>
 							</div>
 						</Alert>
 					)}

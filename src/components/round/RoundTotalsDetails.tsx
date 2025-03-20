@@ -28,25 +28,25 @@ export function RoundTotalsDetails() {
 	}, [bank, claimedJackpot]);
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-3  w-full gap-2 md:gap-4">
-			<div className="border border-border rounded-lg p-2 py-6 flex flex-row items-center justify-center gap-4">
-				<Ticket className="w-16 h-16" />
+		<div className="grid grid-cols-6 w-full gap-2 md:gap-4">
+			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3 md:col-span-2">
+				<Ticket className="w-12 h-12 md:w-16 md:h-16" />
 				<div className="flex flex-col items-center">
 					<BetValue className={cn('text-xl', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
-					<div className={cn({ 'blur animated-pulse': isLinesLoading })}>
+					<div className={cn('hidden md:block', { 'blur animated-pulse': isLinesLoading })}>
 						{Number(lines)} {t('lines')}
 					</div>
 					<div className="text-tertiary-foreground">{t('totalBets')}</div>
 				</div>
 			</div>
-			<div className="border border-border rounded-lg p-2 py-6 flex flex-row items-center justify-center gap-4">
+			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-6 md:col-span-2 md:col-start-3 md:row-start-1">
 				<div className="flex flex-col items-center">
 					<div className="text-tertiary-foreground mb-2">{t('luckyNumbers')}</div>
 					<LuckyNumbers round={round} />
 				</div>
 			</div>
-			<div className="border border-border rounded-lg p-2 py-6 flex flex-row items-center justify-center gap-4">
-				<Bag className={'w-16 text-secondary-foreground'} />
+			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3  md:col-span-2 row-start-1">
+				<Bag className={'w-12 h-12 md:w-16 md:h-16 text-secondary-foreground'} />
 				<div className="flex flex-col items-center">
 					<BetValue className={cn('text-xl text-success', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={paidToStaking} withIcon />
 					<div className="text-tertiary-foreground">{t('paidToStaking')}</div>

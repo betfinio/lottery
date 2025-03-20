@@ -124,7 +124,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
 				className={cn(
-					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8',
+					'absolute top-5 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
 					{
 						grayscale: !isFilled,
 					},

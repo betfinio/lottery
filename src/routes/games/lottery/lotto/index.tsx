@@ -30,7 +30,7 @@ export function LotteryPage() {
 			<Watchers />
 			<div className={'p-2 md:p-3 lg:p-4 flex flex-col items-center gap-2 md:gap-3 lg:gap-4 2xl:pr-0'}>
 				<Header />
-				<div className={'grid grid-cols-6 grid-rows-2 md:grid-rows-1 grid-auto-rows gap-4 w-full md:h-[593px]'}>
+				<div className={'grid grid-cols-6 grid-rows-2 md:grid-rows-1 grid-auto-rows gap-6 w-full md:h-[593px]'}>
 					<AnimatePresence mode={'popLayout'}>
 						<motion.div
 							className={cn('col-span-6 md:col-span-3 xl:col-span-2', {
@@ -78,7 +78,9 @@ export function LotteryPage() {
 						</motion.div>
 					</AnimatePresence>
 				</div>
-				<TablesWrapper />
+				<div className="my-4 w-full">
+					<TablesWrapper />
+				</div>
 			</div>
 			<Toaster />
 		</div>
