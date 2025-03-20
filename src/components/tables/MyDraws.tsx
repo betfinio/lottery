@@ -1,11 +1,10 @@
-import { usePlayerRounds, useTicketPrice } from '@/src/lib/query';
+import { usePlayerRounds } from '@/src/lib/query';
 import type { IRound, RoundStatus } from '@/src/lib/types';
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { ZeroAddress } from '@betfinio/abi';
 import { DataTable } from '@betfinio/components/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { defineColumns } from './columns';

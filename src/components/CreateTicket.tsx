@@ -16,7 +16,7 @@ import Alert from './shared/Alert.tsx';
 import Pagination from './shared/Pagination';
 
 const CreateTicket = () => {
-	const { t } = useTranslation('lottery', { keyPrefix: 'create' });
+	const { t } = useTranslation('lottery');
 	const { data: round } = useSelectedRound();
 	const { state } = useRoundState(round?.address);
 	const { data: price = 1000, isLoading, isFetching } = useTicketPrice(round?.address);
@@ -38,10 +38,10 @@ const CreateTicket = () => {
 				{isDisabled ? (
 					<>
 						<LockIcon className="w-4 h-4" />
-						Your ticket
+						{t('yourTicket')}
 					</>
 				) : (
-					'Fill new ticket'
+					t('fillNewTicket')
 				)}
 			</div>
 			<nav className={'flex justify-between'}>
@@ -50,7 +50,7 @@ const CreateTicket = () => {
 						'animate-pulse blur-sm': isLoading || isFetching,
 					})}
 				>
-					<BetValue value={price} withIcon withMillify={false} /> / {t('line')}
+					<BetValue value={price} withIcon withMillify={false} /> / {t('create.line')}
 				</div>
 				<motion.div
 					animate={
@@ -73,12 +73,12 @@ const CreateTicket = () => {
 				>
 					{symbolUnlocked ? (
 						<div className={'flex flex-row gap-1 items-center px-1'}>
-							{t('symbolUnlocked')}
+							{t('create.symbolUnlocked')}
 							<LockOpenIcon className={'w-3 h-3 text-primary'} />
 						</div>
 					) : (
 						<>
-							{t('addMore', { count: 3 - filledLines.length })} <MoreLinesTooltip />
+							{t('create.addMore', { count: 3 - filledLines.length })} <MoreLinesTooltip />
 						</>
 					)}
 				</motion.div>
@@ -91,6 +91,7 @@ const CreateTicket = () => {
 };
 
 const TicketList = () => {
+	const { t } = useTranslation('lottery');
 	const { data: draftTickets = [], setTickets } = useDraftLines();
 	const { data: round } = useSelectedRound();
 	const { state, updateState } = useRoundState(round?.address);
@@ -188,8 +189,8 @@ const TicketList = () => {
 									isValid={filledLines.length > 1}
 								>
 									<div className="flex flex-col">
-										<div className="text-lg font-semibold">Do you really want to delete all drafted lines?</div>
-										<div className="text-sm text-muted-foreground">This action can not be undone</div>
+										<div className="text-lg font-semibold">{t('doYouReallyWantToDeleteAllDraftedLines')}</div>
+										<div className="text-sm text-muted-foreground">{t('thisActionCannotBeUndone')}</div>
 									</div>
 								</Alert>
 
@@ -204,8 +205,8 @@ const TicketList = () => {
 									isValid={filledLines.length > 0}
 								>
 									<div className="flex flex-col">
-										<div className="text-lg font-semibold">Do you want to randomize all lines?</div>
-										<div className="text-sm text-muted-foreground">This will replace all your current numbers</div>
+										<div className="text-lg font-semibold">{t('doYouWantToRandomizeAllLines')}</div>
+										<div className="text-sm text-muted-foreground">{t('thisWillReplaceAllYourCurrentNumbers')}</div>
 									</div>
 								</Alert>
 							</div>
@@ -230,7 +231,7 @@ const TicketList = () => {
 					{isDisabled ? (
 						<Button className={'col-span-2 gap-2  border-primary text-secondary-foreground'} variant={'outline'} onClick={handleEdit}>
 							<PencilIcon className={'w-3.5 h-3.5'} />
-							Edit
+							{t('edit')}
 						</Button>
 					) : (
 						<Button
@@ -241,7 +242,7 @@ const TicketList = () => {
 							onClick={handleAddLine}
 						>
 							<PlusCircleIcon className={'w-4 h-4'} />
-							Add line
+							{t('addLine')}
 						</Button>
 					)}
 
@@ -252,11 +253,11 @@ const TicketList = () => {
 								<Button className="gap-1 hover:scale-105 transition-all" variant={!address ? 'default' : 'success'}>
 									{address ? (
 										<>
-											Proceed ({filledLines.length} lines)
+											{t('proceed')} ({filledLines.length} {t('lines')})
 											<ArrowRightIcon className={'w-4 h-4'} />
 										</>
 									) : (
-										<>Connect wallet</>
+										t('connectWallet')
 									)}
 								</Button>
 							}

@@ -6,6 +6,7 @@ import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
 import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
 import { type FC, type PropsWithChildren, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SharedLine from './shared/SharedLine';
 
 export interface LineProps {
@@ -76,20 +77,21 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 	showDelete = true,
 	isDisabled = false,
 }) => {
+	const { t } = useTranslation('lottery');
 	const renderNewFooter = () => {
 		return (
 			<div className={'grid grid-cols-3 px-2 '}>
 				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
-					Fill line
+					{t('fillLine')}
 				</Button>
 				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
+					{t('quickPick')}
 				</Button>
 				{showDelete ? (
 					<Button variant="ghost" className={'text-destructive gap-1 font-light py-0 h-auto hover:scale-105 transition-all'} onClick={onDelete}>
 						<TrashIcon className={'w-3.5 h-3.5'} />
-						Delete
+						{t('delete')}
 					</Button>
 				) : (
 					<div />
@@ -102,15 +104,15 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 			<div className={cn('grid grid-cols-3 px-2', { 'pointer-events-none grayscale opacity-50': isDisabled })}>
 				<Button variant="ghost" className={'gap-1 text-secondary-foreground font-light py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
 					<PencilIcon className={'w-3.5 h-3.5'} />
-					Edit
+					{t('edit')}
 				</Button>
 				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
-					Quick pick
+					{t('quickPick')}
 				</Button>
 				<Button variant="outline" className={cn('text-destructive gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all')} onClick={onDelete}>
 					<TrashIcon className={'w-3.5 h-3.5'} />
-					Delete
+					{t('delete')}
 				</Button>
 			</div>
 		);

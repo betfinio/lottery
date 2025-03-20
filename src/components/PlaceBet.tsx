@@ -39,7 +39,7 @@ import BuySteps from './shared/BuySteps';
 
 const EMPTY_ARRAY: IRound[] = [];
 const PlaceBet = () => {
-	const { t } = useTranslation('lottery', { keyPrefix: 'placeBet' });
+	const { t } = useTranslation('lottery');
 
 	const queryClient = useQueryClient();
 	const config = useConfig();
@@ -182,13 +182,15 @@ const PlaceBet = () => {
 			<div className={'p-3 flex flex-col items-center gap-1'}>
 				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('title')}</h2>
 				<div className={'text-foreground flex flex-row gap-1 items-center'}>
-					<BetValue value={BigInt(lines.length) * ticketPrice} withIcon /> {t('ticketPrice')}
+					<BetValue value={BigInt(lines.length) * ticketPrice} withIcon /> {t('placeBet.ticketPrice')}
 				</div>
 			</div>
 			<Separator />
 			<div className={'p-3 flex flex-col items-start gap-2'}>
 				<div className="flex flex-row justify-end w-full px-2">
-					<div>{selectedRounds.length} selected</div>
+					<div>
+						{selectedRounds.length} {t('selected')}
+					</div>
 				</div>
 				<ScrollArea className={cn('w-full', 'h-[300px]')} type="auto">
 					<div className={'flex flex-col gap-2'}>
@@ -206,7 +208,7 @@ const PlaceBet = () => {
 					<Popover>
 						<PopoverTrigger className={' flex gap-1 items-center text-sm w-full justify-center'}>
 							<CalendarIcon className={'w-4 h-4 '} />
-							{t('openCalendar')}
+							{t('placeBet.openCalendar')}
 						</PopoverTrigger>
 						<PopoverContent className={'border border-border'}>
 							<Calendar mode={'multiple'} disabled={compare(roundsAsDates)} selected={selectedDates} onSelect={handleCalendarChange} />
@@ -219,7 +221,7 @@ const PlaceBet = () => {
 						disabled={visibleRounds.length >= rounds.length}
 					>
 						<PlusCircleIcon className={'w-4 h-4'} />
-						Add more draws
+						{t('addMoreDraws')}
 					</Button>
 				</div>
 			</div>
@@ -233,7 +235,7 @@ const PlaceBet = () => {
 									onCheckedChange={handleNewRecipientDialogOpenChange}
 									checked={recipient?.toLowerCase() !== address?.toLowerCase() && recipient !== ZeroAddress}
 								/>
-								{t('buyForSomeone')}
+								{t('placeBet.buyForSomeone')}
 							</div>
 							{recipient && recipient.toLowerCase() !== address?.toLowerCase() && recipient !== ZeroAddress && (
 								<a
@@ -260,7 +262,7 @@ const PlaceBet = () => {
 						size={'icon'}
 					>
 						<ArrowLeftIcon className={'w-4 h-4'} />
-						Back
+						{t('back')}
 					</Button>
 					<Button
 						variant={'success'}
@@ -271,7 +273,7 @@ const PlaceBet = () => {
 						<motion.div initial={{ scale: 0 }} animate={{ scale: isOpen ? 1 : 0 }} exit={{ scale: 0 }}>
 							<LoaderIcon className={'w-4 h-4 animate-spin'} />
 						</motion.div>
-						{t('proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
+						{t('placeBet.proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
 					</Button>
 					<BuySteps buy={{ lines, recipient: realRecipient, rounds: selectedRounds.map((e) => e.address) }} isOpen={isOpen} setIsOpen={setIsOpen} />
 				</div>

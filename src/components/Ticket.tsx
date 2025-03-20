@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, PencilIcon, PencilLineIcon, SendIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
 import EditMode from './EditMode.tsx';
 import TicketStatus from './TicketStatus.tsx';
@@ -189,6 +190,7 @@ const Header: FC<{
 	hidden: boolean;
 	isExpanded: boolean;
 }> = ({ ticket, old, hidden, isExpanded }) => {
+	const { t } = useTranslation('lottery');
 	const { data: finish = 0 } = useRoundFinish(ticket.round);
 	return (
 		<motion.div
@@ -210,7 +212,9 @@ const Header: FC<{
 				<a href={`${ETHSCAN}/nft/${LOTTERY_ADDRESS}/${ticket.token}`} target="_blank" rel="noreferrer">
 					#{ticket.token}
 				</a>
-				<div className={'text text-muted-foreground'}>{ticket.lines.length} lines</div>
+				<div className={'text text-muted-foreground'}>
+					{ticket.lines.length} {t('lines')}
+				</div>
 				{old && <div className={'text-muted-foreground/50'}>{DateTime.fromSeconds(finish).toFormat('dd/MM T')}</div>}
 			</div>
 			{old ? <TicketStatus ticket={ticket} /> : <Countdown size={26} finish={finish} className={cn('text-muted-foreground text-xs')} />}
@@ -219,6 +223,8 @@ const Header: FC<{
 };
 
 const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
+	const { t } = useTranslation('lottery');
+
 	const handleClick = () => {
 		toast({
 			title: 'Coming soon',
@@ -235,11 +241,12 @@ const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 			className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
 		>
 			<SendIcon className={'w-3 h-3 cursor-pointer'} />
-			Send
+			{t('send')}
 		</Button>
 	);
 };
 const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
+	const { t } = useTranslation('lottery');
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
@@ -249,7 +256,7 @@ const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 					className={'flex flex-row items-center gap-1 cursor-pointer bg-primary text-primary-foreground py-0 px-2 hover:scale-105 transition-all'}
 				>
 					<PencilLineIcon className={'w-3 h-3 cursor-pointer'} />
-					Edit
+					{t('edit')}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className={'lottery'}>
