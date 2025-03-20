@@ -55,10 +55,10 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 	const multiplier = Number(winingAmount) / Number(placedAmount);
 	const applyPagination = tickets.length > 1;
 	return (
-		<div className="min-h-[430px] mt-[111px] min-w-[388px]">
-			<div className="border-2 border-aura rounded-lg relative pt-[104px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
+		<div className="min-h-[590px] min-w-[388px]">
+			<div className="border-2 border-aura rounded-lg relative pt-[224px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
 				{/* Tiara */}
-				<div className="absolute h-[208px] w-[320px] -top-[104px] left-1/2 -translate-x-1/2">
+				<div className="absolute h-[208px] w-[320px] left-1/2 -translate-x-1/2 top-2">
 					<div className="relative">
 						<JackpotFrame animateStars className="text-gold " />
 

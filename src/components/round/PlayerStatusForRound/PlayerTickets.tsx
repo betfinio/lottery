@@ -16,7 +16,7 @@ const PlayerTickets: FC<{ className?: string }> = ({ className }) => {
 	return (
 		<div
 			className={cn(
-				'flex flex-col mt-auto items-center justify-between min-w-[388px] border border-border rounded-lg h-[590px] md:h-[430px] px-2 md:px-3 lg:px-4',
+				'flex flex-col mt-auto items-center justify-between min-w-[388px] border border-border rounded-lg h-[590px] px-2 md:px-3 lg:px-4',
 				className,
 			)}
 		>
