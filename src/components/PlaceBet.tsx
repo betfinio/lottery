@@ -180,7 +180,7 @@ const PlaceBet = () => {
 			})}
 		>
 			<div className={'p-3 flex flex-col items-center gap-1'}>
-				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('title')}</h2>
+				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('placeBet.title')}</h2>
 				<div className={'text-foreground flex flex-row gap-1 items-center'}>
 					<BetValue value={BigInt(lines.length) * ticketPrice} withIcon /> {t('placeBet.ticketPrice')}
 				</div>

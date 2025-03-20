@@ -265,11 +265,11 @@ const TicketList = () => {
 							isValid={filledLines.length < 3}
 						>
 							<div className="flex flex-col">
-								<div className="text-lg font-semibold">Do you really want to continue without symbol?</div>
+								<div className="text-base font-semibold whitespace-nowrap">Do you really want to continue without symbol?</div>
 								<div className="text-sm text-secondary-foreground my-2">
 									Symbol allows you to win:
 									<ul className="list-disc list-inside">
-										<li>Super Jackpot(5x more payout)</li>
+										<li>SuperJackpot (5x more payout)</li>
 										<li>Free ticket with just 2 numbers</li>
 									</ul>
 								</div>
