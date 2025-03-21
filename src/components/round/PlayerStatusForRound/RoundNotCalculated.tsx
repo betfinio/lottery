@@ -25,10 +25,6 @@ export const RoundNotCalculated: FC = () => {
 				<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={() => {}} />
 			</div>
 			<PlayerTickets className="!h-[360px]" />
-			{/* <div className="w-96 flex flex-col gap-4 blur">
-				<AnimatedGridOfNumbners numbers={numbers} toggleNumber={() => {}} />
-				<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={() => {}} />
-			</div> */}
 		</div>
 	);
 };

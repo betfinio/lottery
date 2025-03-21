@@ -48,7 +48,6 @@ function RoundActions({ round }: { round: Address }) {
 			distributeJackpot({ round });
 		}
 	};
-
 	const actions: RoundActionsProps[] = useMemo(() => {
 		const options: RoundActionsProps[] = [];
 		if (data === RoundStatus.READY_FOR_REFUND) {
