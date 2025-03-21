@@ -7,6 +7,7 @@ import {
 	fetchMultiAllowance,
 	fetchPotentialJackpot,
 	fetchRoundFinish,
+	fetchRoundFinishedTimeStamp,
 	fetchRoundStatus,
 	fetchTicketClaimed,
 	fetchTicketPrice,
@@ -271,5 +272,13 @@ export const useMyLinesSold = (round: Address, player: Address) => {
 	return useQuery<number>({
 		queryKey: ['lottery', 'round', round, 'lines', player],
 		queryFn: () => fetchMyLinesSold(round, player),
+	});
+};
+
+export const useRoundFinishedTimeStamp = (round: Address) => {
+	const config = useConfig();
+	return useQuery<number>({
+		queryKey: ['lottery', 'round', round, 'finishedTimeStamp'],
+		queryFn: () => fetchRoundFinishedTimeStamp(config, round),
 	});
 };

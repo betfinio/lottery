@@ -1,6 +1,8 @@
+import { ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP } from '@/src/globals';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Address } from 'viem';
+import { useRoundFinishedTimeStamp, useWinningLine } from '.';
 import { type DrawTab, RoundState, type TicketsTab } from '../types';
 
 // use query that saves state of round
@@ -120,5 +122,74 @@ export const useHighlightedTickets = () => {
 	return {
 		highlightedTickets: query.data,
 		setHighlightedTickets,
+	};
+};
+
+export const useRoundFinishedNumbersSpitting = (round: Address) => {
+	const { data: finishedTimeStamp } = useRoundFinishedTimeStamp(round);
+	const { data: winningLine, isFetching } = useWinningLine(round);
+	const revealGap = ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP; // 30 seconds
+
+	// Extract the winning numbers from the winningLine if available
+	const winningNumbers = useMemo(() => {
+		if (!winningLine) return [];
+		return winningLine.numbers; // Assuming numbers is an array in the winningLine object
+	}, [winningLine]);
+
+	// State to track currently revealed numbers
+	const [revealedNumbers, setRevealedNumbers] = useState<number[]>([]);
+
+	useEffect(() => {
+		// Reset revealed numbers when winning line changes
+		setRevealedNumbers([]);
+
+		// If we don't have the finished timestamp or winning numbers yet, exit early
+		if (!finishedTimeStamp || winningNumbers.length === 0) return;
+
+		// Calculate the number of intervals and the interval duration
+		const totalNumbers = winningNumbers.length;
+		const intervalDuration = revealGap / totalNumbers;
+
+		// Get current time and calculate elapsed time since round finished
+		const now = Math.floor(Date.now() / 1000);
+		const elapsedTime = now - finishedTimeStamp;
+
+		// If the reveal period is over, show all numbers immediately
+		if (elapsedTime >= revealGap) {
+			setRevealedNumbers([...winningNumbers]);
+			return;
+		}
+
+		// Calculate how many numbers should be visible now based on elapsed time
+		const numbersToShow = Math.min(Math.floor(elapsedTime / intervalDuration) + 1, totalNumbers);
+
+		// Immediately show the numbers that should be visible by now
+		setRevealedNumbers(winningNumbers.slice(0, numbersToShow));
+
+		// Set up intervals for revealing the remaining numbers
+		const timers: NodeJS.Timeout[] = [];
+
+		for (let i = numbersToShow; i < totalNumbers; i++) {
+			const delay = i * intervalDuration * 1000 - elapsedTime * 1000;
+			const timer = setTimeout(() => {
+				setRevealedNumbers((prev) => [...prev, winningNumbers[i]]);
+			}, delay) as unknown as NodeJS.Timeout;
+			timers.push(timer);
+		}
+
+		// Cleanup timers on unmount or when dependencies change
+		return () => {
+			for (const timer of timers) {
+				clearTimeout(timer);
+			}
+		};
+	}, [finishedTimeStamp, winningNumbers, revealGap]);
+
+	return {
+		revealedNumbers,
+		allNumbers: winningNumbers,
+		isComplete: revealedNumbers.length === winningNumbers.length,
+		isLoading: isFetching || !finishedTimeStamp,
+		finishedTimeStamp,
 	};
 };

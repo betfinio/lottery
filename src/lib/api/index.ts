@@ -1,5 +1,5 @@
 import logger from '@/src/config/logger';
-import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, TOKEN } from '@/src/globals.ts';
+import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
 import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
 import { decodeLine, decodeLines, encodeLines, parseLine } from '@/src/lib/utils';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
@@ -7,7 +7,7 @@ import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import { type Address, Log, encodeAbiParameters, parseAbiParameters } from 'viem';
-import { getContractEvents } from 'viem/actions';
+import { getBlock, getContractEvents } from 'viem/actions';
 
 /**
  *  Example of function that reads data from blockchain
@@ -61,7 +61,44 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 		return RoundStatus.REFUNDING;
 	}
 
+	const isPassed = Number(finish) < Number(Math.floor(Date.now() / 1000));
+	const isPassedAndWithinGenerationGap = isPassed && Number(finish) + 65 * 60 > Number(Math.floor(Date.now() / 1000));
+	// if (isPassedAndWithinGenerationGap) {
+
+	// 	const randomGeneratedBlockTimestamp = await fetchRoundFinishedTimeStamp(config, round)
+
+	// 	if (randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
+
+	// 		return status as RoundStatus;
+	// 	}
+	// }
+
 	return status as RoundStatus;
+};
+
+export const fetchRoundFinishedTimeStamp = async (config: Config, round: Address) => {
+	const finish: bigint = await readContract(config, {
+		address: round,
+		abi: LotteryRoundABI,
+		functionName: 'finish',
+		args: [],
+	});
+
+	if (finish > BigInt(Math.floor(Date.now() / 1000))) return 0;
+	const fromBlock = await getBlockByTimestamp(Number(finish));
+	const randomGeneratedTime = await getContractEvents(config.getClient(), {
+		abi: LotteryRoundABI,
+		address: round,
+		eventName: 'RoundFinished',
+		fromBlock: fromBlock,
+		toBlock: fromBlock + 65n * 30n,
+	});
+
+	const block = await getBlock(config.getClient(), {
+		blockNumber: randomGeneratedTime[0].blockNumber,
+	});
+	const randomGeneratedBlockTimestamp = block.timestamp;
+	return Number(randomGeneratedBlockTimestamp);
 };
 
 export const fetchLinesCount = async (round: Address, config: Config) => {

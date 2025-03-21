@@ -37,7 +37,7 @@ export const PlayerStatusForRound: FC = () => {
 				placedAmount: BigInt(ticketPrice || 0) * BigInt(ticket.lines.length),
 			};
 		});
-	}, [tickets, winningLine]);
+	}, [tickets, winningLine, ticketPrice]);
 
 	const playerWinningTicketsWithWinningLines = useMemo(() => {
 		if (!ticketsWithCountedCoef) return [];
@@ -91,7 +91,6 @@ export const PlayerStatusForRound: FC = () => {
 			</div>
 		);
 	}
-
 	if (showPlayerWon) {
 		return (
 			<div className="flex flex-col items-center justify-center">

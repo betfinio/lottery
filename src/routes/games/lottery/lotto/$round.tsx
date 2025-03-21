@@ -5,6 +5,7 @@ import { RoundJackpots } from '@/src/components/round/RoundJackpots/RoundJackpot
 import { RoundTotalsDetails } from '@/src/components/round/RoundTotalsDetails';
 import ClaimingProgressBar from '@/src/components/shared/ClaimingProgress';
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer } from '@/src/lib/query';
+import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
 import { RoundStatus } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
