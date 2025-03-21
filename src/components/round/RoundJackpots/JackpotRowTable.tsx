@@ -39,7 +39,7 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 		columnHelper.accessor('betAddress', {
 			header: t('betId'),
 			meta: {
-				className: 'h-[50px]',
+				className: 'h-[50px] hidden md:table-cell',
 			},
 			cell: (props) => (
 				<a href={`${ETHSCAN}/address/${props.row.original.betAddress}`} target="_blank" rel="noreferrer">

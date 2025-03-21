@@ -1,4 +1,5 @@
 import type { ILine, IRoundTicket } from '@/src/lib/types';
+import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,21 +56,21 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 	const multiplier = Number(winingAmount) / Number(placedAmount);
 	const applyPagination = tickets.length > 1;
 	return (
-		<div className="min-h-[430px] mt-[111px] min-w-[388px]">
-			<div className="border-2 border-aura rounded-lg relative pt-[104px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
+		<div className="min-h-[590px] min-w-[388px]">
+			<div className="border-2 border-aura rounded-lg relative pt-[224px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
 				{/* Tiara */}
-				<div className="absolute h-[208px] w-[320px] -top-[104px] left-1/2 -translate-x-1/2">
+				<div className="absolute h-[208px] w-[320px] left-1/2 -translate-x-1/2 top-2">
 					<div className="relative">
 						<JackpotFrame animateStars className="text-gold " />
 
-						<div className="absolute text-2xl top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+						<div className="absolute text-lg top-0 left-0 w-full h-full flex flex-col items-center justify-center">
 							<div>{t('youWon')}</div>
-							<BetValue className="text-secondary-foreground text-2xl font-bold" value={winingAmount} withMillify={false} />
+							<BetValue className="text-secondary-foreground text-2xl font-bold" iconClassName="w-6 h-6" withIcon value={winingAmount} withMillify={false} />
 						</div>
 					</div>
 				</div>
 				{/* Info */}
-				<div className="flex gap-2 text-xs justify-between mb-4 text-muted-foreground items-center">
+				<div className="flex gap-2 text-sm justify-between mb-4 text-muted-foreground items-center">
 					<div className="flex flex-col items-center">
 						<div>{t('betSize')}</div>
 						<div className="text-secondary-foreground">
@@ -78,15 +79,15 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 					</div>
 					<div className="flex flex-col items-center">
 						<div>{t('multiplicator')}</div>
-						<div>x {multiplier.toFixed(2)}</div>
+						<div className={cn('', { 'text-success': multiplier > 1, 'text-destructive': multiplier < 1 })}>x{multiplier.toFixed(2)}</div>
 					</div>
-					<div className="text-base">
+					{/* <div className="text-base">
 						<div className="flex items-center gap-2">
 							<CopyLocation toastMessage={t('copiedCurrentRoundRef')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
 								<div className="cursor-pointer">{t('share')}</div>
 							</CopyLocation>
 						</div>
-					</div>
+					</div> */}
 				</div>
 				{/* Tickets */}
 				<div className="flex-grow relative flex flex-col">

@@ -31,11 +31,11 @@ function PayoutContent() {
 	];
 	return (
 		<DialogContent className={'lottery'}>
-			<div className={'w-[98vw] md:max-w-[650px] p-2 overflow-y-scroll max-h-[90vh]'}>
+			<div className={'w-[98vw] max-w-[384px] md:max-w-[650px] p-2 overflow-y-scroll max-h-[90vh]'}>
 				<DialogHeader>
-					<DialogTitle className="flex justify-between font-normal p-2 text-xl">
+					<DialogTitle className="flex justify-center font-normal p-2 text-xl">
 						{t('winningCombinations')}
-						<DialogClose>
+						<DialogClose className="absolute right-4 top-4">
 							<XIcon className={'w-4 h-4'} />
 						</DialogClose>
 					</DialogTitle>
@@ -94,11 +94,13 @@ function PayoutContent() {
 												<TooltipTrigger>
 													{index === 0 && (
 														<div className={'text-xs text-muted-foreground flex flex-row items-center gap-1'}>
-															+ additional jackpot <HelpCircleIcon className={'w-3 h-3'} />
+															+ <span className={'hidden md:block'}>bonus</span> jackpot <HelpCircleIcon className={'w-3 h-3'} />
 														</div>
 													)}
 												</TooltipTrigger>
-												<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
+												<TooltipContent className="lottery">
+													<div className="max-w-[300px]">Bonus jackpot is 4% of all bets cumulative from all rounds.</div>
+												</TooltipContent>
 											</Tooltip>
 										</TooltipProvider>
 									</div>

@@ -119,7 +119,7 @@ const EditMode: FC<{
 				ease: 'easeInOut',
 			}}
 			style={{ transformStyle: 'preserve-3d', pointerEvents: 'auto' }}
-			className={'left-0 absolute inset-0 p-4 bg-background-light rounded-xl z-[10] w-full h-full flex flex-col'}
+			className={'left-0 absolute inset-0 p-2 md:p-4 bg-background-light rounded-xl z-[10] w-full h-full flex flex-col'}
 		>
 			<nav className={'flex justify-between w-full items-center'}>
 				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>
@@ -145,11 +145,11 @@ const EditMode: FC<{
 				</div>
 				<div className={'text-destructive h-6 text-sm py-1'}>{validation}</div>
 				<footer className={'grid grid-cols-3 gap-2 w-full items-center'}>
-					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 px-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleClear}>
 						<XCircle className={'w-3.5 h-3.5'} />
 						{t('clear')}
 					</Button>
-					<Button variant={'outline'} className={' gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleRandomize}>
+					<Button variant={'outline'} className={' gap-1 font-light py-0 px-0 h-auto border-none hover:scale-105 transition-all'} onClick={handleRandomize}>
 						<ShuffleIcon className={'w-3.5 h-3.5'} />
 						{t('quickPick')}
 					</Button>

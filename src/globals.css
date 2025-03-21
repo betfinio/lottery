@@ -4,6 +4,7 @@
 
 * {
 	user-select: none;
+	touch-action: manipulation;
 }
 
 @layer base {

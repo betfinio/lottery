@@ -57,6 +57,7 @@ export enum RoundStatus {
 	READY_FOR_REFUND = 7,
 	REFUNDING = 8,
 	ENDED_WITHOUT_BETS = 9,
+	GENERATING = 10,
 }
 
 export interface JackpotCombination {

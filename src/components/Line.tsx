@@ -84,7 +84,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
 					{t('fillLine')}
 				</Button>
-				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
+				<Button variant={'outline'} className={'gap-1 font-light px-0 py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					{t('quickPick')}
 				</Button>
@@ -106,7 +106,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 					<PencilIcon className={'w-3.5 h-3.5'} />
 					{t('edit')}
 				</Button>
-				<Button variant={'outline'} className={'gap-1 font-light py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
+				<Button variant={'outline'} className={'gap-1 font-light py-0 px-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />
 					{t('quickPick')}
 				</Button>
@@ -124,7 +124,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
 				className={cn(
-					'absolute top-4 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-8 h-8',
+					'absolute top-5 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
 					{
 						grayscale: !isFilled,
 					},
@@ -162,7 +162,7 @@ export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; classNa
 				23 32, 10 32, 1 23, 1 10"
 				fill="currentColor"
 				stroke="currentStroke"
-				strokeWidth="1"
+				strokeWidth="currentStrokeWidth"
 			/>
 
 			<foreignObject width={33} height={33} x={0} y={0} className={'overflow-hidden'}>
@@ -179,9 +179,9 @@ export const SymbolElement: FC<{ symbol: number; className?: string }> = ({ symb
 			case 1:
 				return '🎰';
 			case 2:
-				return '🍦';
+				return '💰';
 			case 3:
-				return '🍀';
+				return '🎯';
 			case 4:
 				return '🛩️';
 			case 5:

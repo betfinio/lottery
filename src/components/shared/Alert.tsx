@@ -1,14 +1,5 @@
 import { useLocalStorage } from '@/src/lib/query/state';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-	Checkbox,
-} from '@betfinio/components/ui';
+import { Button, Checkbox, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
 import { type MouseEvent, type PropsWithChildren, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -56,26 +47,28 @@ function Alert({ storageKey, children, trigger, isValid, onSuccess }: AlertProps
 	};
 
 	return (
-		<AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
-			<AlertDialogTrigger asChild onClick={handleClick}>
+		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
+			<DialogTrigger asChild onClick={handleClick}>
 				{trigger}
-			</AlertDialogTrigger>
-			<AlertDialogContent className="lottery">
-				<AlertDialogTitle className="hidden" />
-				<AlertDialogDescription className="hidden" />
-				{children}
-				<div className="flex flex-row items-center gap-2 text-sm">
-					<Checkbox id={storageKey} onCheckedChange={handleCheckboxChange} />
-					<label htmlFor={storageKey}>{t('dontAskAgain')}</label>
+			</DialogTrigger>
+			<DialogContent className="lottery">
+				<div className="flex flex-col gap-4  w-[98vw] md:max-w-[500px] max-w-[384px] p-2 md:p-4">
+					<DialogTitle className="hidden" />
+					<DialogDescription className="hidden" />
+					{children}
+					<div className="flex flex-row items-center gap-2 text-sm">
+						<Checkbox id={storageKey} onCheckedChange={handleCheckboxChange} />
+						<label htmlFor={storageKey}>{t('dontAskAgain')}</label>
+					</div>
+					<div className="grid grid-cols-3 gap-2 items-center">
+						<DialogClose>{t('cancel')}</DialogClose>
+						<Button className="col-start-3" onClick={handleSuccess}>
+							{t('confirm')}
+						</Button>
+					</div>
 				</div>
-				<div className="grid grid-cols-3 gap-2 items-center">
-					<AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-					<AlertDialogAction className="col-start-3" onClick={handleSuccess}>
-						{t('confirm')}
-					</AlertDialogAction>
-				</div>
-			</AlertDialogContent>
-		</AlertDialog>
+			</DialogContent>
+		</Dialog>
 	);
 }
 

@@ -18,7 +18,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 	return (
 		<AccordionItem className={'p-0 w-full '} value={jackpot.id.toString()}>
 			<AccordionTrigger
-				className={cn(' bg-secondary rounded-md flex py-3 px-6 h-[72px] gap-4 ', {
+				className={cn(' bg-secondary rounded-md flex p-3 h-[72px] ', {
 					'[&>svg]:opacity-0': hasNoTickets,
 				})}
 				disabled={hasNoTickets}
