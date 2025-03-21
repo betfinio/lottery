@@ -32,7 +32,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 		return BigInt(MAX_SHARES) * BigInt(ticketPrice) + (additionalJackpot ?? 0n);
 	}, [ticketPrice, roundDetails]);
 	return (
-		<div className="h-fit md:h-[430px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center ">
+		<div className="h-fit md:h-[590px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center md:justify-between gap-4 ">
 			<div className="text-2xl font-semibold mb-4 md:mb-11">{t('roundIsOver')}</div>
 			<div className="flex flex-col gap-2 md:gap-4 items-center mb-4 md:mb-11">
 				<div className="text-base font-semibold">{t('youCouldWin')}</div>
@@ -44,7 +44,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 					<BetValue value={youCouldWinAmount} withIcon withMillify={false} />
 				</div>
 			</div>
-			<div className="flex gap-4 items-center mb-11">
+			<div className="flex gap-4 items-end w-full flex-grow">
 				<StatBox
 					className="w-full min-w-14"
 					isLoading={isLoading}

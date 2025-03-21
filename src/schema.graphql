@@ -1,11 +1,11 @@
 query GetActiveRounds($now: BigInt) {
-	rounds(first: 100, where: { timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
+	rounds(first: 100, where: { timestamp_gt: $now, ticketsCount_gt: 0 }, orderBy: timestamp, orderDirection: asc) {
 		...Round
 	}
 }
 
 query GetOldRounds($now: BigInt) {
-	rounds(first: 1000, where: { timestamp_lte: $now }, orderBy: timestamp, orderDirection: desc) {
+	rounds(first: 1000, where: { timestamp_lte: $now, ticketsCount_gt: 0 }, orderBy: timestamp, orderDirection: desc) {
 		...Round
 	}
 }
