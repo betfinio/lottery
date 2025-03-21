@@ -34,12 +34,6 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		() => round.ticketPrice * BigInt(MAX_SHARES) + additionalJackpot + potentialJackpot,
 		[round, additionalJackpot, potentialJackpot],
 	);
-	useEffect(() => {
-		console.log('render');
-		return () => {
-			console.log('unmount');
-		};
-	}, []);
 
 	useEffect(() => {
 		if (animationRef.current) {
