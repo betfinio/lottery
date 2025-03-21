@@ -34,6 +34,12 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		() => round.ticketPrice * BigInt(MAX_SHARES) + additionalJackpot + potentialJackpot,
 		[round, additionalJackpot, potentialJackpot],
 	);
+	useEffect(() => {
+		console.log('render');
+		return () => {
+			console.log('unmount');
+		};
+	}, []);
 
 	useEffect(() => {
 		if (animationRef.current) {
@@ -93,22 +99,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		<div className="p-3 flex flex-col gap-4 justify-between h-full">
 			<div className="flex flex-col gap-3 h-10">
 				<div className="w-full text-center text-purple-box">Next Draw {truncateEthAddress(round.address).toLowerCase()}</div>
-				{status === RoundStatus.BETTING && (
-					<Countdown
-						onFinish={async () => {
-							await refetchStatus();
-							await refetchActiveRounds();
-
-							navigate({
-								to: '/games/lottery/lotto/$round',
-								params: {
-									round: round.address,
-								},
-							});
-						}}
-						finish={finish}
-					/>
-				)}
+				{status === RoundStatus.BETTING && <Countdown finish={finish} />}
 			</div>
 			<Dialog>
 				<DialogTrigger className={'flex flex-col items-center'}>
@@ -122,8 +113,10 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 							<div className="text-muted-foreground text-sm">
 								<TooltipProvider>
 									<Tooltip>
-										<TooltipTrigger className="flex flex-row gap-1 items-center text-xs">
-											Incl. bonus jackpot of <BetValue value={additionalJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
+										<TooltipTrigger asChild>
+											<div className="flex flex-row gap-1 items-center text-xs">
+												Incl. bonus jackpot of <BetValue value={additionalJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
+											</div>
 										</TooltipTrigger>
 										<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
 									</Tooltip>
