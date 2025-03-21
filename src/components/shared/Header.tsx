@@ -27,7 +27,7 @@ const Header = () => {
 	const handleCountdownFinish = async () => {
 		await refetchStatus();
 		await refetchActiveRounds();
-		navigate({
+		await navigate({
 			to: '/games/lottery/lotto/$round',
 			params: { round: round?.address },
 		});
