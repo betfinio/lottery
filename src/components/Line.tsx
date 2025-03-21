@@ -162,7 +162,7 @@ export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; classNa
 				23 32, 10 32, 1 23, 1 10"
 				fill="currentColor"
 				stroke="currentStroke"
-				strokeWidth="1"
+				strokeWidth="currentStrokeWidth"
 			/>
 
 			<foreignObject width={33} height={33} x={0} y={0} className={'overflow-hidden'}>

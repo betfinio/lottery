@@ -25,7 +25,7 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	const line = data || currentLine;
 	return (
 		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
-			<Line line={line} />
+			<Line line={line} numberClassName="stroke-success stroke-2" symbolClassName="stroke-success stroke-2" />
 		</div>
 	);
 };
