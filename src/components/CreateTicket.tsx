@@ -250,7 +250,11 @@ const TicketList = () => {
 						<Alert
 							onSuccess={handleProceed}
 							trigger={
-								<Button className="gap-1 hover:scale-105 transition-all" variant={!address ? 'default' : 'success'}>
+								<Button
+									className="gap-1 hover:scale-105 transition-all"
+									disabled={filledLines.length !== draftTickets.length}
+									variant={!address ? 'default' : 'success'}
+								>
 									{address ? (
 										<>
 											{t('proceed')} ({filledLines.length} {t('lines')})
