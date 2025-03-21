@@ -63,15 +63,13 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 
 	const isPassed = Number(finish) < Number(Math.floor(Date.now() / 1000));
 	const isPassedAndWithinGenerationGap = isPassed && Number(finish) + 65 * 60 > Number(Math.floor(Date.now() / 1000));
-	// if (isPassedAndWithinGenerationGap) {
+	if (isPassedAndWithinGenerationGap) {
+		const randomGeneratedBlockTimestamp = await fetchRoundFinishedTimeStamp(config, round);
 
-	// 	const randomGeneratedBlockTimestamp = await fetchRoundFinishedTimeStamp(config, round)
-
-	// 	if (randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
-
-	// 		return status as RoundStatus;
-	// 	}
-	// }
+		if (randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
+			return RoundStatus.GENERATING;
+		}
+	}
 
 	return status as RoundStatus;
 };
