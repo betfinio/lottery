@@ -25,14 +25,14 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	}, [winningNumbers.revealedNumbers]);
 
 	useEffect(() => {
-		if (data) return; // Stop animation when real data arrives
+		if (winningNumbers.isComplete) return; // Stop animation when real data arrives
 
 		const interval = setInterval(() => {
 			setCurrentLine(randomize());
 		}, 600);
 
 		return () => clearInterval(interval); // Cleanup on unmount
-	}, [data, isFetching]);
+	}, [winningNumbers.isComplete, isFetching]);
 
 	// Create a hybrid line that combines revealed winning numbers with random numbers
 	const line = useMemo(() => {
@@ -59,13 +59,12 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
 			<Line
 				line={line}
-				numberClassName="stroke-success stroke-2"
 				dynamicNumberClassName={(_, index) =>
 					cn({
-						'stroke-success': index < winningNumbersToShow.length,
+						'stroke-success stroke-2': index < winningNumbersToShow.length,
 					})
 				}
-				symbolClassName={cn({ 'stroke-success': winningSymbolToShow !== undefined })}
+				symbolClassName={cn({ 'stroke-success stroke-2': winningSymbolToShow !== undefined })}
 			/>
 		</div>
 	);

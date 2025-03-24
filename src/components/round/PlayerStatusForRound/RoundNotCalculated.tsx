@@ -14,6 +14,7 @@ export const RoundNotCalculated: FC = () => {
 
 	useEffect(() => {
 		const animateRandomValues = () => {
+			if (winningNumbers.isComplete) return;
 			const { numbers, symbol } = randomize();
 			setNumbers(numbers);
 			setSymbol(symbol);
@@ -21,7 +22,7 @@ export const RoundNotCalculated: FC = () => {
 
 		const interval = setInterval(animateRandomValues, 200);
 		return () => clearInterval(interval);
-	}, []);
+	}, [winningNumbers.isComplete]);
 
 	useEffect(() => {
 		if (winningNumbers.isComplete) {
@@ -44,10 +45,11 @@ export const RoundNotCalculated: FC = () => {
 		return winningNumbers.revealedNumbers.length >= 6 ? winningNumbers.revealedNumbers[5] : undefined;
 	}, [winningNumbers.revealedNumbers]);
 
+	const numbersToShow = winningNumbersToShow.length === 5 ? winningNumbersToShow : numbers;
 	return (
 		<div className="flex flex-row gap-4 justify-center">
 			<div className="w-96 flex flex-col gap-4">
-				<AnimatedGridOfNumbners primaryNumbers={winningNumbersToShow} numbers={numbers} toggleNumber={() => {}} />
+				<AnimatedGridOfNumbners primaryNumbers={winningNumbersToShow} numbers={numbersToShow} toggleNumber={() => {}} />
 				<TicketGridOfSymbols symbol={winningSymbolToShow || symbol} numbers={numbers} changeSymbol={() => {}} />
 			</div>
 			<PlayerTickets className="!h-[360px]" />

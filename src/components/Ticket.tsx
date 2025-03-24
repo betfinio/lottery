@@ -1,11 +1,12 @@
 import Countdown from '@/src/components/Countdown.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
-import { useRoundFinish, useWinningLine } from '@/src/lib/query';
+import { useRoundFinish, useTicketPrice, useWinningLine } from '@/src/lib/query';
 import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { toast } from '@betfinio/components/hooks';
+import { BetValue } from '@betfinio/components/shared';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -28,12 +29,24 @@ export interface TicketProps {
 	isExpandable?: boolean;
 	className?: string;
 	isEditable?: boolean;
+	showEditPrice?: boolean;
 }
 
-function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = false, isExpandable = true, className, isEditable = true }: TicketProps) {
+function Ticket({
+	ticket,
+	mode = 'compact',
+	onToggleExpand,
+	onUpdate,
+	old = false,
+	isExpandable = true,
+	className,
+	isEditable = true,
+	showEditPrice = false,
+}: TicketProps) {
 	const { data: winningLine } = useWinningLine(ticket.round);
 	const [lines, setLines] = useState(ticket.lines);
 	const [editMode, setEditMode] = useState<number>(-1);
+	const { data: ticketPrice = 0n } = useTicketPrice(ticket.round);
 
 	// Update lines when ticket changes
 	useEffect(() => {
@@ -167,6 +180,11 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, onUpdate, old = fals
 						{!old && <EditPill ticket={ticket} />}
 						{old && <Claim ticket={ticket} />}
 					</motion.div>
+				)}
+				{showEditPrice && (
+					<div className="flex flex-row items-center justify-center px-2 gap-2">
+						Fee of <BetValue value={ticketPrice / 10n} withIcon /> is applied to edit a ticket
+					</div>
 				)}
 			</motion.div>
 			{editMode !== -1 && (
