@@ -16,6 +16,7 @@ import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
 import EditMode from './EditMode.tsx';
+import SendTicket from './SendTicket.tsx';
 import TicketStatus from './TicketStatus.tsx';
 import SharedLine from './shared/SharedLine.tsx';
 import Claim from './status/Claim.tsx';
@@ -176,9 +177,9 @@ function Ticket({
 						}}
 						exit={{ height: 0, opacity: 0 }}
 					>
-						{!old && <SendPill ticket={ticket} />}
 						{!old && <EditPill ticket={ticket} />}
 						{old && <Claim ticket={ticket} />}
+						<SendPill ticket={ticket} />
 					</motion.div>
 				)}
 				{showEditPrice && (
@@ -242,25 +243,24 @@ const Header: FC<{
 
 const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 	const { t } = useTranslation('lottery');
-
-	const handleClick = () => {
-		toast({
-			title: 'Coming soon',
-			description: 'This feature is coming soon',
-			variant: 'soon',
-		});
-	};
+	const [open, setOpen] = useState(false);
 
 	return (
-		<Button
-			onClick={handleClick}
-			size="freeSize"
-			shape="pill"
-			className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
-		>
-			<SendIcon className={'w-3 h-3 cursor-pointer'} />
-			{t('send')}
-		</Button>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
+				<Button
+					size="freeSize"
+					shape="pill"
+					className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
+				>
+					<SendIcon className={'w-3 h-3 cursor-pointer'} />
+					{t('send')}
+				</Button>
+			</DialogTrigger>
+			<DialogContent className={'lottery'}>
+				<SendTicket ticket={ticket} onClose={() => setOpen(false)} />
+			</DialogContent>
+		</Dialog>
 	);
 };
 const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {

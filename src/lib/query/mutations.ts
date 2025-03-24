@@ -6,6 +6,7 @@ import {
 	manualDistributeRefund,
 	manualRefund,
 	manualRequest,
+	sendTicket,
 	unlockEdit,
 	unlockMultibet,
 	updateTicket,
@@ -200,6 +201,48 @@ export const useBuyTicket = () => {
 			} else {
 				toast({
 					title: errors('unknown'),
+					variant: 'destructive',
+				});
+			}
+		},
+	});
+};
+
+export const useSendTicket = () => {
+	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.sendTicket' });
+	const queryClient = useQueryClient();
+	const config = useConfig();
+	const { address: sender = ZeroAddress } = useAccount();
+
+	return useMutation<WriteContractReturnType, WriteContractErrorType, { ticket: bigint; recipient: Address }>({
+		mutationKey: ['lottery', 'sendTicket'],
+		mutationFn: ({ ticket, recipient }) => sendTicket(ticket, sender, recipient, config),
+		onError: (error) => {
+			console.log(error);
+		},
+		onSuccess: async (data) => {
+			if (data !== undefined) {
+				const { id, update } = toast({
+					title: t('sent.title'),
+					description: t('sent.description'),
+					variant: 'loading',
+					duration: 60 * 1000,
+				});
+				await waitForTransactionReceipt(config.getClient(), {
+					hash: data,
+				});
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets'] });
+				update({
+					title: 'Requested',
+					variant: 'default',
+					duration: 5 * 1000,
+					id: id,
+					action: getTransactionLink(data),
+				});
+			} else {
+				toast({
+					title: 'Error',
 					variant: 'destructive',
 				});
 			}

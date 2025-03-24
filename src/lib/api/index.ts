@@ -205,6 +205,20 @@ export const unlockEdit = async (config: Config) => {
 		args: [LOTTERY_ADDRESS, 1_000_000_000_000n * 10n ** 18n],
 	});
 };
+export const sendTicket = async (ticket: bigint, sender: Address, recipient: Address, config: Config) => {
+	await simulateContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'transferFrom',
+		args: [sender, recipient, ticket],
+	});
+	return writeContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'transferFrom',
+		args: [sender, recipient, ticket],
+	});
+};
 
 export const manualRequest = async (round: Address, config: Config) => {
 	await simulateContract(config, {

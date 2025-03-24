@@ -37,6 +37,12 @@
 				"description": "Transaction was submitted"
 			}
 		},
+		"sendTicket": {
+			"sent": {
+				"title": "Transaction pending",
+				"description": "Transaction was submitted"
+			}
+		},
 		"buyTicket": {
 			"sent": {
 				"title": "Transaction pending",
