@@ -41,7 +41,7 @@ export const AnimatedGridOfNumbners: FC<AnimatedGridOfNumbnersProps> = ({ number
 								'bg-destructive text-destructive-foreground border-none': !isPrimaryNumber && numbers.length > 5 && numbers.includes(index + 1),
 								'hover:border-success': !isPrimaryNumber && numbers.length === 4,
 								'hover:border-primary': !isPrimaryNumber && numbers.length < 4,
-								'bg-orange-500': isPrimaryNumber && primaryNumbers?.includes(index + 1),
+								'bg-bonus': isPrimaryNumber && primaryNumbers?.includes(index + 1),
 							})}
 						>
 							{index + 1}
