@@ -14,7 +14,7 @@ import PayoutContent from './PayoutContent';
 
 const Header = () => {
 	const { t } = useTranslation('lottery');
-	const { data: round } = useSelectedRound();
+	const { data: round, refetch: refetchRound } = useSelectedRound();
 	const { refetch: refetchStatus } = useRoundStatus(round?.address);
 	const { refetch: refetchActiveRounds } = useActiveRounds();
 	const { data: finish } = useRoundFinish(round?.address);
@@ -27,6 +27,8 @@ const Header = () => {
 	const handleCountdownFinish = async () => {
 		await refetchStatus();
 		await refetchActiveRounds();
+		await refetchRound();
+
 		await navigate({
 			to: '/games/lottery/lotto/$round',
 			params: { round: round?.address },

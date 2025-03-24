@@ -251,7 +251,9 @@ const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 				<Button
 					size="freeSize"
 					shape="pill"
-					className={'flex flex-row items-center gap-1 text- cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 transition-all'}
+					className={
+						'flex flex-row items-center gap-1 cursor-pointer bg-success text-success-foreground py-0 px-2 hover:scale-105 hover:bg-success/80 transition-all'
+					}
 				>
 					<SendIcon className={'w-3 h-3 cursor-pointer'} />
 					{t('send')}
