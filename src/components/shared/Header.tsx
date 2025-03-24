@@ -7,6 +7,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useChatbot } from 'betfinio_context/lib/context';
 import { useBalance } from 'betfinio_context/lib/query';
 import { AlertCircle, AlertTriangleIcon, CircleHelp } from 'lucide-react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Countdown from '../Countdown';
 import Ticket from '../icons/Ticket';
@@ -24,16 +25,15 @@ const Header = () => {
 	const handleReport = () => {
 		toggle();
 	};
-	const handleCountdownFinish = async () => {
+	const handleCountdownFinish = useCallback(async () => {
 		await refetchStatus();
 		await refetchActiveRounds();
-		await refetchRound();
-
 		await navigate({
 			to: '/games/lottery/lotto/$round',
 			params: { round: round?.address },
 		});
-	};
+		await refetchRound();
+	}, [refetchRound, refetchStatus, refetchActiveRounds, navigate, round?.address]);
 	return (
 		<div className={'w-full border border-border rounded-lg bg-background-lighter p-2 md:p-3 lg:p-4 flex flex-row justify-between min-h-[70px] items-center'}>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
