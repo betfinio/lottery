@@ -128,12 +128,13 @@ export const useHighlightedTickets = () => {
 export const useRoundFinishedNumbersSpitting = (round: Address) => {
 	const { data: finishedTimeStamp } = useRoundFinishedTimeStamp(round);
 	const { data: winningLine, isFetching } = useWinningLine(round);
+
 	const revealGap = ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP; // 30 seconds
 
 	// Extract the winning numbers from the winningLine if available
 	const winningNumbers = useMemo(() => {
 		if (!winningLine) return [];
-		return winningLine.numbers; // Assuming numbers is an array in the winningLine object
+		return [...winningLine.numbers, winningLine.symbol]; // Assuming numbers is an array in the winningLine object
 	}, [winningLine]);
 
 	// State to track currently revealed numbers
@@ -146,9 +147,19 @@ export const useRoundFinishedNumbersSpitting = (round: Address) => {
 		// If we don't have the finished timestamp or winning numbers yet, exit early
 		if (!finishedTimeStamp || winningNumbers.length === 0) return;
 
-		// Calculate the number of intervals and the interval duration
+		// Calculate the intervals to distribute numbers evenly across the entire gap
+		// We have (totalNumbers) intervals to cover, from 0 to revealGap
 		const totalNumbers = winningNumbers.length;
-		const intervalDuration = revealGap / totalNumbers;
+
+		// If there's only 1 number, show it immediately
+		if (totalNumbers === 1) {
+			setRevealedNumbers(winningNumbers);
+			return;
+		}
+
+		// Calculate interval duration to spread numbers evenly with the last one at exactly revealGap
+		// For N numbers, we need N-1 intervals that span the entire reveal gap
+		const intervalDuration = revealGap / (totalNumbers - 1);
 
 		// Get current time and calculate elapsed time since round finished
 		const now = Math.floor(Date.now() / 1000);
@@ -161,6 +172,8 @@ export const useRoundFinishedNumbersSpitting = (round: Address) => {
 		}
 
 		// Calculate how many numbers should be visible now based on elapsed time
+		// We use Math.floor(elapsedTime / intervalDuration) to get fully completed intervals
+		// Add 1 to show the number at the beginning (0th second)
 		const numbersToShow = Math.min(Math.floor(elapsedTime / intervalDuration) + 1, totalNumbers);
 
 		// Immediately show the numbers that should be visible by now
@@ -170,7 +183,11 @@ export const useRoundFinishedNumbersSpitting = (round: Address) => {
 		const timers: NodeJS.Timeout[] = [];
 
 		for (let i = numbersToShow; i < totalNumbers; i++) {
-			const delay = i * intervalDuration * 1000 - elapsedTime * 1000;
+			// Calculate when this number should appear
+			// For index i, the reveal time is i * intervalDuration seconds after the round finish
+			const revealTime = finishedTimeStamp + i * intervalDuration;
+			const delay = (revealTime - now) * 1000; // Convert to milliseconds
+
 			const timer = setTimeout(() => {
 				setRevealedNumbers((prev) => [...prev, winningNumbers[i]]);
 			}, delay) as unknown as NodeJS.Timeout;
@@ -188,7 +205,7 @@ export const useRoundFinishedNumbersSpitting = (round: Address) => {
 	return {
 		revealedNumbers,
 		allNumbers: winningNumbers,
-		isComplete: revealedNumbers.length === winningNumbers.length,
+		isComplete: revealedNumbers.length === winningNumbers.length && winningNumbers.length > 0,
 		isLoading: isFetching || !finishedTimeStamp,
 		finishedTimeStamp,
 	};

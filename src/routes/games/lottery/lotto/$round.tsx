@@ -3,9 +3,9 @@ import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
 import { RoundJackpots } from '@/src/components/round/RoundJackpots/RoundJackpots';
 import { RoundTotalsDetails } from '@/src/components/round/RoundTotalsDetails';
+import { RoundWatchers } from '@/src/components/round/RoundWatchers';
 import ClaimingProgressBar from '@/src/components/shared/ClaimingProgress';
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer } from '@/src/lib/query';
-import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
 import { RoundStatus } from '@/src/lib/types';
 import { ZeroAddress } from '@betfinio/abi';
 import { Toaster } from '@betfinio/components/ui';
@@ -26,7 +26,6 @@ export function HistoryRoundPage() {
 	const { isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
 	const { data: roundStatus, isLoading } = useRoundStatus(round);
 	const showJackpotsTable = !isFetchingTickets && roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
-
 	const showChainDetails = roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 
 	const showProgressBar = roundStatus && [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
@@ -41,6 +40,7 @@ export function HistoryRoundPage() {
 
 	return (
 		<>
+			<RoundWatchers />
 			<div className="lottery   p-2 md:p-3 lg:p-4 f 2xl:pr-0">
 				<RoundHeader />
 				<RoundTotalsDetails />

@@ -2,6 +2,7 @@ import logger from '@/src/config/logger';
 import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
 import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
 import { decodeLine, decodeLines, encodeLines, parseLine } from '@/src/lib/utils';
+import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
@@ -49,6 +50,8 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 		args: [round],
 	});
 
+	console.log(balance, status, 'balance');
+
 	if (balance === 0n && status === 5) {
 		return RoundStatus.ENDED_WITHOUT_BETS;
 	}
@@ -63,10 +66,10 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 
 	const isPassed = Number(finish) < Number(Math.floor(Date.now() / 1000));
 	const isPassedAndWithinGenerationGap = isPassed && Number(finish) + 65 * 60 > Number(Math.floor(Date.now() / 1000));
-	if (isPassedAndWithinGenerationGap) {
+	if (isPassedAndWithinGenerationGap && statusesAllowedToSeeRound.includes(status)) {
 		const randomGeneratedBlockTimestamp = await fetchRoundFinishedTimeStamp(config, round);
 
-		if (randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
+		if (randomGeneratedBlockTimestamp && randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
 			return RoundStatus.GENERATING;
 		}
 	}
@@ -92,9 +95,12 @@ export const fetchRoundFinishedTimeStamp = async (config: Config, round: Address
 		toBlock: fromBlock + 65n * 30n,
 	});
 
+	if (randomGeneratedTime.length === 0) return 0;
+
 	const block = await getBlock(config.getClient(), {
 		blockNumber: randomGeneratedTime[0].blockNumber,
 	});
+
 	const randomGeneratedBlockTimestamp = block.timestamp;
 	return Number(randomGeneratedBlockTimestamp);
 };

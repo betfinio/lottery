@@ -22,7 +22,7 @@ export const PlayerStatusForRound: FC = () => {
 
 	const playerHasBets = tickets.length > 0 && !isFetchingTickets;
 
-	const showCalculating = roundStatus === RoundStatus.WAITING_FOR_REQUEST || roundStatus === RoundStatus.PENDING;
+	const showCalculating = roundStatus === RoundStatus.WAITING_FOR_REQUEST || roundStatus === RoundStatus.PENDING || roundStatus === RoundStatus.GENERATING;
 
 	const ticketsWithCountedCoef: IRoundTicketWithWinningCoef[] = useMemo(() => {
 		if (!winningLine) return [];
