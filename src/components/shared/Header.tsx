@@ -1,20 +1,36 @@
 import { DYNAMIC_STAKING_ADDRESS } from '@/src/globals';
+import { useActiveRounds, useRoundFinish, useRoundStatus, useSelectedRound } from '@/src/lib/query';
 import { Bag } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
+import { useNavigate } from '@tanstack/react-router';
 import { useChatbot } from 'betfinio_context/lib/context';
 import { useBalance } from 'betfinio_context/lib/query';
 import { AlertCircle, AlertTriangleIcon, CircleHelp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Countdown from '../Countdown';
 import Ticket from '../icons/Ticket';
 import PayoutContent from './PayoutContent';
 
 const Header = () => {
 	const { t } = useTranslation('lottery');
+	const { data: round } = useSelectedRound();
+	const { refetch: refetchStatus } = useRoundStatus(round?.address);
+	const { refetch: refetchActiveRounds } = useActiveRounds();
+	const { data: finish } = useRoundFinish(round?.address);
 	const { toggle } = useChatbot();
 	const { data: bank = 0n } = useBalance(DYNAMIC_STAKING_ADDRESS);
+	const navigate = useNavigate();
 	const handleReport = () => {
 		toggle();
+	};
+	const handleCountdownFinish = async () => {
+		await refetchStatus();
+		await refetchActiveRounds();
+		await navigate({
+			to: '/games/lottery/lotto/$round',
+			params: { round: round?.address },
+		});
 	};
 	return (
 		<div className={'w-full border border-border rounded-lg bg-background-lighter p-2 md:p-3 lg:p-4 flex flex-row justify-between min-h-[70px] items-center'}>
@@ -55,6 +71,9 @@ const Header = () => {
 					<AlertTriangleIcon className={'w-6 h-6'} onClick={handleReport} />
 					<span className={'hidden md:block'}>{t('report')}</span>
 				</div>
+			</div>
+			<div className="hidden">
+				<Countdown onFinish={handleCountdownFinish} finish={finish || Number.MAX_SAFE_INTEGER} />
 			</div>
 		</div>
 	);
