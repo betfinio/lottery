@@ -109,7 +109,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<div className="flex flex-row gap-1 items-center text-xs">
-												Incl. bonus jackpot of <BetValue value={additionalJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
+												Incl. bonus jackpot of <BetValue value={additionalJackpot + potentialJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
 											</div>
 										</TooltipTrigger>
 										<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
