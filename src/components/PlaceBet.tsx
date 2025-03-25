@@ -26,6 +26,7 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAllowance, useBalance } from 'betfinio_context/lib/query';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -50,6 +51,8 @@ const PlaceBet = () => {
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
+	const { data: balance = 0n } = useBalance(address);
+	const { data: allowance = 0n } = useAllowance(address);
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -158,6 +161,21 @@ const PlaceBet = () => {
 		if (await getHasCollisions()) {
 			toast({
 				title: 'Lines are already taken',
+				variant: 'destructive',
+			});
+			return;
+		}
+
+		if (balance <= totalAmount) {
+			toast({
+				title: 'Insufficient balance, bro',
+				variant: 'destructive',
+			});
+			return;
+		}
+		if (allowance <= totalAmount) {
+			toast({
+				title: 'Insufficient allowance, bro',
 				variant: 'destructive',
 			});
 			return;

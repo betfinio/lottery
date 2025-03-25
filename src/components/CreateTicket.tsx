@@ -118,7 +118,7 @@ const TicketList = () => {
 		if (draftTickets.length >= 9)
 			return toast({
 				title: 'Error',
-				description: 'You can not add more lines',
+				description: 'Maximum is 9 lines per ticket',
 				variant: 'destructive',
 			});
 		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
