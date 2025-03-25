@@ -1,12 +1,12 @@
 import { DYNAMIC_STAKING_ADDRESS } from '@/src/globals';
 import { useActiveRounds, useRoundFinish, useRoundStatus, useSelectedRound } from '@/src/lib/query';
-import { Bag } from '@betfinio/components/icons';
+import { Bag, PayTable } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useChatbot } from 'betfinio_context/lib/context';
 import { useBalance } from 'betfinio_context/lib/query';
-import { AlertCircle, AlertTriangleIcon, CircleHelp } from 'lucide-react';
+import { BookIcon, HeadsetIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import Countdown from '../Countdown';
@@ -53,7 +53,7 @@ const Header = () => {
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
 				<Dialog>
 					<DialogTrigger className={'flex flex-col items-center text-secondary-foreground hover:text-secondary-foreground lg:text-foreground duration-300'}>
-						<AlertCircle className={'w-6 h-6'} />
+						<PayTable className={'w-6 h-6'} />
 						<span className={'hidden sm:inline text-xs'}>{t('paytable')}</span>
 					</DialogTrigger>
 					<PayoutContent />
@@ -66,11 +66,11 @@ const Header = () => {
 					}
 					rel="noreferrer"
 				>
-					<CircleHelp className={'w-6 h-6'} />
+					<BookIcon className={'w-6 h-6'} />
 					<span className={'hidden sm:inline text-xs'}>{t('howToPlay')}</span>
 				</a>
 				<div className={'flex flex-col items-center text-secondary-foreground group lg:text-foreground hover:text-secondary-foreground text-xs cursor-pointer'}>
-					<AlertTriangleIcon className={'w-6 h-6'} onClick={handleReport} />
+					<HeadsetIcon className={'w-6 h-6'} onClick={handleReport} />
 					<span className={'hidden md:block'}>{t('report')}</span>
 				</div>
 			</div>
