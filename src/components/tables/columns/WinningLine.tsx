@@ -20,7 +20,7 @@ function WinningLine({ round }: { round: Address }) {
 				{t('waiting')}
 			</div>
 		);
-	return <Line line={data} symbolUnlocked={true} />;
+	return <Line line={data} disableSymbol={false} />;
 }
 
 export default WinningLine;

@@ -138,9 +138,10 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				onClick={onEditMode}
 				symbolUnlocked={symbolUnlocked}
 				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center cursor-pointer'}
+				disableSymbol={!symbolUnlocked}
 				symbolClassName={cn('stroke-primary text-primary/30', {
 					'stroke-primary text-primary/30': symbolUnlocked,
-					'stroke-destructive stroke-2': !symbolUnlocked,
+					'stroke-destructive stroke-2': !symbolUnlocked && ticket.symbol !== 0,
 				})}
 			/>
 
