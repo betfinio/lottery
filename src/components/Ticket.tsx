@@ -140,7 +140,10 @@ function Ticket({
 										line={line}
 										symbolUnlocked={ticket.lines.length >= 3}
 										dynamicNumberClassName={(number) => cn({ 'stroke-success stroke-2': winningLine?.numbers.includes(number) })}
-										symbolClassName={cn({ 'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol })}
+										symbolClassName={cn({
+											'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol,
+											'stroke-destructive stroke-2': ticket.lines.length < 3,
+										})}
 									/>
 									{!isEditable && (
 										<motion.div initial={{ scale: 0 }} animate={{ scale: isEditable ? 0 : 1 }} exit={{ scale: 0 }}>
