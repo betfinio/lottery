@@ -138,6 +138,7 @@ function Ticket({
 								>
 									<SharedLine
 										line={line}
+										symbolUnlocked={ticket.lines.length >= 3}
 										dynamicNumberClassName={(number) => cn({ 'stroke-success stroke-2': winningLine?.numbers.includes(number) })}
 										symbolClassName={cn({ 'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol })}
 									/>
