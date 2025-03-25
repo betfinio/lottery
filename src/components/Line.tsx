@@ -140,7 +140,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center cursor-pointer'}
 				symbolClassName={cn('stroke-primary text-primary/30', {
 					'stroke-primary text-primary/30': symbolUnlocked,
-					'stroke-foreground text-foreground/30 grayscale': !symbolUnlocked,
+					'stroke-destructive stroke-2': !symbolUnlocked,
 				})}
 			/>
 
