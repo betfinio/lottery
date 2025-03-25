@@ -59,7 +59,7 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
 			<Line
 				line={line}
-				symbolUnlocked={true}
+				disableSymbol={false}
 				dynamicNumberClassName={(_, index) =>
 					cn({
 						'stroke-success stroke-2': index < winningNumbersToShow.length,
