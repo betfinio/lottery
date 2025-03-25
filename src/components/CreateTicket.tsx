@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { useRoundState } from '../lib/query/state.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
+import { AddMoreLinesText } from './AddMoreLinesText.tsx';
 import Line from './Line.tsx';
 import Alert from './shared/Alert.tsx';
 import Pagination from './shared/Pagination';
@@ -270,14 +271,8 @@ const TicketList = () => {
 						>
 							<div className="flex flex-col">
 								<div className="text-base font-semibold whitespace-nowrap">Do you really want to continue without symbol?</div>
-								<div className="text-sm text-secondary-foreground m-2">
-									Symbol allows you to win:
-									<ul className="list-disc list-inside">
-										<li>SuperJackpot (5x more payout)</li>
-										<li>Free ticket with just 2 numbers</li>
-									</ul>
-								</div>
-								<div className="text-sm text-muted-foreground ml-2">Fill at least 3 lines to activate symbol</div>
+
+								<AddMoreLinesText />
 							</div>
 						</Alert>
 					)}
@@ -296,7 +291,9 @@ const MoreLinesTooltip = () => {
 					<CircleHelp className={'w-4 h-4 fill-foreground text-background'} />
 				</TooltipTrigger>
 				<TooltipContent className="lottery">
-					<div className="max-w-[300px]">{t('addMoreTooltip')}</div>
+					<div className="max-w-[300px]">
+						<AddMoreLinesText />
+					</div>
 				</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
