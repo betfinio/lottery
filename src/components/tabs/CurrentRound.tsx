@@ -22,10 +22,8 @@ interface CurrentRoundProps {
 
 const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { t } = useTranslation('lottery');
-	const navigate = useNavigate();
-	const { refetch: refetchActiveRounds } = useActiveRounds();
 	const { data: finish = 0 } = useRoundFinish(round.address);
-	const { data: status, refetch: refetchStatus } = useRoundStatus(round.address);
+	const { data: status } = useRoundStatus(round.address);
 	const { data: additionalJackpot = 0n } = useAdditionalJackpot();
 	const { data: potentialJackpot = 0n, refetch: refetchPotentialJackpot } = usePotentialJackpot(round.address);
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
@@ -73,14 +71,6 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		},
 	});
 
-	const renderStats = () => (
-		<div className="grid grid-cols-3 gap-3">
-			<StatBox label="Tickets" value={round.linesCount} icon={<TicketIcon className="w-4 h-4" />} />
-			<StatBox label="Players" value={round.ticketCount} icon={<UserIcon className="w-4 h-4" />} />
-			<StatBox label="Volume" value={<BetValue value={BigInt(round.bank)} withIcon />} />
-		</div>
-	);
-
 	const renderPartners = () => (
 		<div className="w-full grid grid-cols-3 text-muted-foreground">
 			<PartnerLink text="Open Source" icon={<Polygon className="w-6 h-6 text-purple-700" />} link={`${ETHSCAN}/address/${LOTTERY_ADDRESS}`} />
@@ -109,7 +99,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<div className="flex flex-row gap-1 items-center text-xs">
-												Incl. bonus jackpot of <BetValue value={additionalJackpot + potentialJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
+												Incl. 4% bonus of <BetValue value={additionalJackpot + potentialJackpot} withIcon={false} /> <HelpCircleIcon className="w-3 h-3" />
 											</div>
 										</TooltipTrigger>
 										<TooltipContent>Additional jackpot is 4% of all bets cumulative from all rounds.</TooltipContent>
@@ -123,7 +113,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 			</Dialog>
 
 			{renderPartners()}
-			{renderStats()}
+			<Stats round={round} />
 		</div>
 	);
 };
@@ -139,5 +129,51 @@ const PartnerLink: FC<PartnerLinkProps> = ({ text, icon, link }) => (
 		{text} {icon}
 	</a>
 );
+
+function Stats({ round }: { round: IRound }) {
+	const [displayedLines, setDisplayedLines] = useState(0);
+	const [displayedPlayers, setDisplayedPlayers] = useState(0);
+	const [displayedBank, setDisplayedBank] = useState(0n);
+	const animationRef = useRef<NodeJS.Timer>();
+
+	useEffect(() => {
+		if (animationRef.current) {
+			clearTimeout(animationRef.current);
+		}
+
+		const steps = 100;
+		let currentStep = 0;
+
+		const linesStepValue = (round.linesCount - displayedLines) / steps;
+		const playersStepValue = (round.ticketCount - displayedPlayers) / steps;
+		const bankStepValue = (BigInt(round.bank) - displayedBank) / BigInt(steps);
+
+		const animate = () => {
+			currentStep++;
+			if (currentStep <= steps) {
+				setDisplayedLines(Math.floor(displayedLines + linesStepValue * currentStep));
+				setDisplayedPlayers(Math.floor(displayedPlayers + playersStepValue * currentStep));
+				setDisplayedBank(displayedBank + bankStepValue * BigInt(currentStep));
+				animationRef.current = setTimeout(animate, 1000 / steps);
+			}
+		};
+
+		animate();
+
+		return () => {
+			if (animationRef.current) {
+				clearTimeout(animationRef.current);
+			}
+		};
+	}, [round.linesCount, round.ticketCount, round.bank]);
+
+	return (
+		<div className="grid grid-cols-3 gap-3">
+			<StatBox label="Tickets" value={displayedLines} icon={<TicketIcon className="w-4 h-4" />} />
+			<StatBox label="Players" value={displayedPlayers} icon={<UserIcon className="w-4 h-4" />} />
+			<StatBox label="Volume" value={<BetValue value={displayedBank} withIcon />} />
+		</div>
+	);
+}
 
 export default CurrentRound;

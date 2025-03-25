@@ -1,8 +1,9 @@
-import { useDraftLines, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useDraftLines, useFreeLinesCount, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { type BuyTicketProps, useBuyTicket, useLoadMintedTokens, useUnlockMultibet } from '@/src/lib/query/mutations';
 import { useDrawInfoTab, useRoundState } from '@/src/lib/query/state';
 import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
 import { shootConfetti } from '@/src/lib/utils';
+import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator } from '@betfinio/components/ui';
@@ -40,6 +41,8 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 	const { data: ticketPrice = 0n } = useTicketPrice(selectedRound?.address);
 	const { updateState } = useRoundState(selectedRound?.address);
 
+	const { data: freeLines = 0n } = useFreeLinesCount(address ?? ZeroAddress);
+
 	// Mutations
 	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
 	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy, data } = useBuyTicket();
@@ -53,7 +56,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		}
 	}, [isOpen]);
 
-	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice;
+	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice - freeLines * ticketPrice;
 
 	// Auto-advance to buy step if already unlocked
 	useEffect(() => {
@@ -167,7 +170,11 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 									Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
 								</div>
 							</div>
-
+							{freeLines > 0n && (
+								<div className="text-sm text-muted-foreground text-center">
+									Your <span className=" text-primary">{Number(freeLines)} free lines</span> will be used
+								</div>
+							)}
 							{/* Action buttons */}
 							<div className="grid grid-cols-2 gap-2 mt-2">
 								<DialogClose asChild>
