@@ -205,5 +205,6 @@
 	"selected": "selected",
 	"addMoreDraws": "Add more draws",
 	"back": "Back",
-	"send": "Send"
+	"send": "Send",
+	"noTickets": "You have no tickets"
 }
