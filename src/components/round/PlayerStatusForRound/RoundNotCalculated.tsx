@@ -47,7 +47,7 @@ export const RoundNotCalculated: FC = () => {
 
 	const numbersToShow = winningNumbersToShow.length === 5 ? winningNumbersToShow : numbers;
 	return (
-		<div className="flex flex-row gap-4 justify-center">
+		<div className="flex flex-col md:flex-row gap-4 justify-center">
 			<div className="w-96 flex flex-col gap-4">
 				<AnimatedGridOfNumbners primaryNumbers={winningNumbersToShow} numbers={numbersToShow} toggleNumber={() => {}} />
 				<TicketGridOfSymbols symbol={winningSymbolToShow || symbol} numbers={numbers} changeSymbol={() => {}} />

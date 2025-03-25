@@ -21,7 +21,13 @@ const PlayerTickets: FC<{ className?: string }> = ({ className }) => {
 			)}
 		>
 			<div className="font-medium text-muted-foreground py-4 w-full">{t('yourTickets')}</div>
-			<TicketsList tickets={tickets} old={true} itemsPerPage={isMobile ? 3 : 2} />
+			{tickets.length > 0 ? (
+				<TicketsList tickets={tickets} old={true} itemsPerPage={isMobile ? 3 : 2} />
+			) : (
+				<div className="flex flex-col items-center justify-center h-full">
+					<div className="text-muted-foreground">{t('noTickets')}</div>
+				</div>
+			)}
 		</div>
 	);
 };

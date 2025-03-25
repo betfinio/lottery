@@ -52,7 +52,6 @@ const PlaceBet = () => {
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
 	const { data: balance = 0n } = useBalance(address);
-	const { data: allowance = 0n } = useAllowance(address);
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -169,13 +168,6 @@ const PlaceBet = () => {
 		if (balance <= totalAmount) {
 			toast({
 				title: 'Insufficient balance, bro',
-				variant: 'destructive',
-			});
-			return;
-		}
-		if (allowance <= totalAmount) {
-			toast({
-				title: 'Insufficient allowance, bro',
 				variant: 'destructive',
 			});
 			return;
