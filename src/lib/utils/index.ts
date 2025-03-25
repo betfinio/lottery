@@ -47,9 +47,9 @@ export const parseLine = (line: Address): ILine => {
 	});
 };
 
-export const randomize = (): ILine => {
+export const randomize = (from = 1): ILine => {
 	// Fisher-Yates shuffle algorithm for better randomization
-	const numbers = Array.from({ length: 25 }, (_, i) => i + 1); // [1, 2, ..., 25]
+	const numbers = Array.from({ length: 25 - from + 1 }, (_, i) => i + from); // [from, from+1, ..., 25]
 	for (let i = numbers.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
 		[numbers[i], numbers[j]] = [numbers[j], numbers[i]];

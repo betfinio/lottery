@@ -10,8 +10,8 @@ export const RoundJackpots = () => {
 				<div className="grid grid-cols-4 w-full text-tertiary-foreground  font-semibold  ">
 					<div className="flex gap-4 items-center  whitespace-nowrap">{t('jackpot')}</div>
 					<div className="flex gap-4 items-center justify-center whitespace-nowrap">{t('combination')}</div>
-					<div className="flex gap-4 items-center justify-center   whitespace-nowrap">{t('payout')}</div>{' '}
-					<div className="flex gap-4 items-center justify-center   whitespace-nowrap">{t('winners')}</div>
+					<div className="flex gap-4 items-center justify-center whitespace-nowrap">{t('payout')}</div>{' '}
+					<div className="flex gap-4 items-center justify-center whitespace-nowrap">{t('winners')}</div>
 				</div>
 				<div className="w-6 h-1 " />
 			</div>

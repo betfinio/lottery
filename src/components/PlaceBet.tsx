@@ -1,5 +1,4 @@
 import { linesAvailabilityQuery, useActiveRounds, useDraftLines, useLinesAvailability, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { useBuyTicket } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
@@ -26,6 +25,7 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
+import { useAllowance, useBalance } from 'betfinio_context/lib/query';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -50,6 +50,7 @@ const PlaceBet = () => {
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
+	const { data: balance = 0n } = useBalance(address);
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -158,6 +159,14 @@ const PlaceBet = () => {
 		if (await getHasCollisions()) {
 			toast({
 				title: 'Lines are already taken',
+				variant: 'destructive',
+			});
+			return;
+		}
+
+		if (balance <= totalAmount) {
+			toast({
+				title: 'Insufficient balance, bro',
 				variant: 'destructive',
 			});
 			return;

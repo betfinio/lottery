@@ -15,6 +15,8 @@ import {
 	type GetRoundJackpotsQuery,
 	GetTicketsDocument,
 	type GetTicketsQuery,
+	GetUnclaimedTicketsDocument,
+	type GetUnclaimedTicketsQuery,
 	type Line,
 	type Round,
 	type RoundFragment,
@@ -150,4 +152,14 @@ export const fetchRoundDetails = async (round: Address) => {
 export const fetchRoundJackpots = async (round: Address) => {
 	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, { round: round });
 	return result.data;
+};
+
+export const fetchUnclaimedTickets = async (): Promise<bigint[]> => {
+	logger.start('fetching unclaimed tickets');
+	const result: ExecutionResult<GetUnclaimedTicketsQuery> = await execute(GetUnclaimedTicketsDocument, {});
+	logger.success('fetched unclaimed tickets', result.data?.tickets);
+	if (result.data) {
+		return result.data.tickets.map((e) => BigInt(e.tokenId));
+	}
+	return [];
 };

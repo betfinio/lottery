@@ -12,6 +12,7 @@ function SharedLine({
 	dynamicNumberClassName,
 	className,
 	symbolUnlocked,
+	disableSymbol = false,
 	onClick,
 }: {
 	line: ILine;
@@ -20,6 +21,7 @@ function SharedLine({
 	symbolClassName?: string;
 	className?: string;
 	symbolUnlocked?: boolean;
+	disableSymbol?: boolean;
 	onClick?: () => void;
 }) {
 	const symbolControls = useAnimation();
@@ -92,6 +94,7 @@ function SharedLine({
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}
 							custom={line.symbol}
+							className={cn('relative', { grayscale: disableSymbol && line.symbol !== 0 })}
 							initial={{
 								y: -20,
 								opacity: 0,
@@ -107,6 +110,7 @@ function SharedLine({
 						>
 							<SymbolElement symbol={line.symbol} />
 						</motion.div>
+						<div className={cn({ 'w-8 h-1 bg-destructive absolute rotate-45 top-3.5 left-0': disableSymbol && line.symbol !== 0 })} />
 					</AnimatePresence>
 				</NumberComponent>
 			</motion.div>

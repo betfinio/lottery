@@ -1,6 +1,16 @@
-import { useBoughtLinesCount, useExchangeRate, useFreeLinesCount, useLostTicketsToClaim, useUsedFreeLinesCount } from '@/src/lib/query';
+import {
+	useBoughtLinesCount,
+	useExchangeRate,
+	useFreeLinesCount,
+	useLostTicketsClaimed,
+	useLostTicketsToClaim,
+	useUnclaimedTickets,
+	useUsedFreeLinesCount,
+} from '@/src/lib/query';
+import { useClaimUnclaimedTickets } from '@/src/lib/query/mutations';
 import { ZeroAddress } from '@betfinio/abi';
-import { Progress, Separator } from '@betfinio/components/ui';
+import { cn } from '@betfinio/components';
+import { Button, Progress, Separator } from '@betfinio/components/ui';
 import { TicketsIcon } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import Ticket from '../icons/Ticket';
@@ -39,23 +49,33 @@ function BonusTab() {
 
 function FreeLinesChallenge() {
 	const { address = ZeroAddress } = useAccount();
-	const lostTicketsToClaim = 10;
-	const freeLinesCount = 1;
-	const usedFreeLinesCount = 0;
+	const { data: lostTicketsToClaim = 0n } = useLostTicketsToClaim();
+	const { data: lostTicketsClaimed = 0n } = useLostTicketsClaimed(address);
+	const { data: unclaimedTickets = [] } = useUnclaimedTickets();
+	const { mutate: claimUnclaimedTickets } = useClaimUnclaimedTickets();
+	const toClaim = Math.min(100, unclaimedTickets.length);
+	const handleClaim = () => {
+		claimUnclaimedTickets({ tickets: unclaimedTickets.slice(0, toClaim) });
+	};
 	return (
 		<div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center w-full gap-2">
 			<div className="flex flex-row items-center justify-start gap-2 w-full">
 				<TicketsIcon className="w-10 h-10 text-primary shrink-0 " />
-				<div className="">
+				<div>
 					Claim <span className="text-primary">{Number(lostTicketsToClaim)} tickets</span> of other players and get{' '}
 					<span className="text-primary">1 free line</span>
 				</div>
 			</div>
-			<div className="flex flex-row justify-end items-end w-full text-muted-foreground gap-1">
-				<span className="text-primary">{Number(freeLinesCount - usedFreeLinesCount)}</span> / {Number(lostTicketsToClaim)}
+			<div className="flex flex-row justify-between items-end w-full text-muted-foreground gap-1">
+				<Button size="freeSize" className={cn('px-2', toClaim === 0 && 'opacity-0 pointer-events-none')} onClick={handleClaim}>
+					Claim {toClaim} tickets
+				</Button>
+				<div>
+					<span className="text-primary">{Number(lostTicketsClaimed)}</span> / {Number(lostTicketsToClaim)}
+				</div>
 			</div>
 			<div className="w-full">
-				<Progress value={(Number(freeLinesCount + usedFreeLinesCount) / Number(lostTicketsToClaim)) * 100} className="bg-border" />
+				<Progress value={(Number(lostTicketsClaimed) / Number(lostTicketsToClaim)) * 100} className="bg-border" />
 			</div>
 		</div>
 	);
