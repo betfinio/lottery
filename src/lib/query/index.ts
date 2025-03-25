@@ -33,6 +33,7 @@ import {
 	fetchRoundDetails,
 	fetchRoundJackpots,
 	fetchRoundTicketsByPlayer,
+	fetchUnclaimedTickets,
 } from '@/src/lib/gql';
 import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -334,5 +335,12 @@ export const useLostTicketsClaimed = (address: Address) => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'lostTicketsClaimed', address],
 		queryFn: () => fetchLostTicketsClaimed(address, config),
+	});
+};
+
+export const useUnclaimedTickets = () => {
+	return useQuery<bigint[]>({
+		queryKey: ['lottery', 'unclaimedTickets'],
+		queryFn: () => fetchUnclaimedTickets(),
 	});
 };

@@ -521,3 +521,18 @@ export const fetchLostTicketsToClaim = async (config: Config): Promise<bigint> =
 		args: [],
 	});
 };
+
+export const claimUnclaimedTickets = async (tickets: bigint[], config: Config) => {
+	await simulateContract(config, {
+		abi: LostTicketsClaimerABI,
+		address: CLAIMER_ADDRESS,
+		functionName: 'claimLostTickets',
+		args: [tickets],
+	});
+	return writeContract(config, {
+		abi: LostTicketsClaimerABI,
+		address: CLAIMER_ADDRESS,
+		functionName: 'claimLostTickets',
+		args: [tickets],
+	});
+};
