@@ -31,13 +31,12 @@ export function RoundTotalsDetails() {
 	return (
 		<div className="grid grid-cols-6 w-full gap-2 md:gap-4">
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3 md:col-span-2">
-				<Ticket className="w-12 h-12 md:w-16 md:h-16" />
+				<Ticket className="w-12 h-12 md:w-16 md:h-16 text-primary" />
 				<div className="flex flex-col items-center">
 					<BetValue className={cn('text-xl', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
 					<div className={cn('hidden md:block', { 'blur animated-pulse': isLinesLoading })}>
 						{Number(lines)} {t('lines')}
 					</div>
-					<div className="text-tertiary-foreground">{t('totalBets')}</div>
 				</div>
 			</div>
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-6 md:col-span-2 md:col-start-3 md:row-start-1">

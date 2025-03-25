@@ -44,7 +44,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 					</div>
 					<div className="flex gap-1 items-center justify-center whitespace-nowrap">
 						{currentJackpot?.tickets.length}
-						<Ticket className={'w-4 h-4'} />
+						<Ticket className={'w-4 h-4 text-primary'} />
 					</div>
 				</div>
 			</AccordionTrigger>
