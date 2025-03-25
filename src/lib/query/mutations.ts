@@ -1,6 +1,7 @@
 import {
 	buyTicket,
 	claimTicket,
+	claimUnclaimedTickets,
 	getMintedTokensByHash,
 	manualDistributeJackpot,
 	manualDistributeRefund,
@@ -452,5 +453,44 @@ export const useLoadMintedTokens = () => {
 	return useMutation<IRoundTicket[], never, { hash: Address }>({
 		mutationKey: ['lottery', 'ticketsByHash'],
 		mutationFn: ({ hash }) => getMintedTokensByHash(hash, config),
+	});
+};
+
+export const useClaimUnclaimedTickets = () => {
+	const config = useConfig();
+	const queryClient = useQueryClient();
+	const { t } = useTranslation('lottery', { keyPrefix: 'toasts.claimUnclaimedTickets' });
+	return useMutation<WriteContractReturnType, WriteContractErrorType, { tickets: bigint[] }>({
+		mutationKey: ['lottery', 'claimUnclaimedTickets'],
+		mutationFn: ({ tickets }) => claimUnclaimedTickets(tickets, config),
+		onError: (error) => {
+			console.log(error);
+		},
+		onSuccess: async (data) => {
+			if (data !== undefined) {
+				const { id, update } = toast({
+					title: t('sent.title'),
+					description: t('sent.description'),
+					variant: 'loading',
+					duration: 60 * 1000,
+				});
+				await waitForTransactionReceipt(config.getClient(), {
+					hash: data,
+				});
+				await queryClient.invalidateQueries({ queryKey: ['lottery', 'unclaimedTickets'] });
+				update({
+					title: 'Claimed',
+					variant: 'default',
+					duration: 5 * 1000,
+					id: id,
+					action: getTransactionLink(data),
+				});
+			} else {
+				toast({
+					title: 'Error',
+					variant: 'destructive',
+				});
+			}
+		},
 	});
 };

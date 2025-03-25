@@ -9,6 +9,7 @@ import { DialogContent, DialogHeader } from '@betfinio/components/ui';
 import { HelpCircleIcon, InfoIcon, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NumberComponent, SymbolElement } from '../Line';
+import Ticket from '../icons/Ticket';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
 
 function PayoutContent() {
@@ -88,7 +89,13 @@ function PayoutContent() {
 										</NumberComponent>
 									</div>
 									<div className={'flex flex-col items-center justify-center'}>
-										<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
+										{jackpot.coef > 1n ? (
+											<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
+										) : (
+											<div className={'flex flex-row items-center gap-1'}>
+												1 <Ticket className={'text-success w-4 h-4'} />
+											</div>
+										)}
 										<TooltipProvider>
 											<Tooltip>
 												<TooltipTrigger>
