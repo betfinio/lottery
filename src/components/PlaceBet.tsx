@@ -166,7 +166,7 @@ const PlaceBet = () => {
 	};
 
 	// Early returns
-	if (rounds.length < 2) {
+	if (rounds.length < 1) {
 		return <div className={'w-full h-full bg-background-light border border-border rounded-xl col-span-3 md:col-span-1 flex flex-col'} />;
 	}
 
