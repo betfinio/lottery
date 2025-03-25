@@ -92,6 +92,7 @@ function SharedLine({
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}
 							custom={line.symbol}
+							className={cn('relative', { grayscale: !symbolUnlocked })}
 							initial={{
 								y: -20,
 								opacity: 0,
@@ -107,6 +108,7 @@ function SharedLine({
 						>
 							<SymbolElement symbol={line.symbol} />
 						</motion.div>
+						<div className={cn({ 'w-8 h-1 bg-destructive absolute rotate-45 top-3.5 left-0': !symbolUnlocked })} />
 					</AnimatePresence>
 				</NumberComponent>
 			</motion.div>
