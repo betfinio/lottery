@@ -20,6 +20,10 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 	const predictedWin = result[0] * ticketPrice;
 	const winAmount = claimedAmount || predictedWin;
 
+	const handleValidate = () => {
+		claim({ ticket: ticket.betAddress });
+	};
+
 	if (!isPending && winAmount > 0n && roundStatus === RoundStatus.CLAIMING) {
 		return (
 			<div className={'flex flex-row items-center gap-2'}>
@@ -34,10 +38,10 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 		);
 	}
 
-	if (!isPending && result[0] === 0n && roundStatus === RoundStatus.CLAIMING) {
+	if (!isPending && result[0] === 0n && roundStatus === RoundStatus.CLAIMING && !isClaimed) {
 		return (
-			<div className={'flex flex-row items-center gap-2'}>
-				<Badge className="bg-muted/10 text-muted-foreground">Validate</Badge>
+			<div className={'flex flex-row items-center gap-2'} onClick={handleValidate}>
+				<Badge className="bg-primary text-primary-foreground">{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : 'Validate'}</Badge>
 			</div>
 		);
 	}

@@ -1,9 +1,14 @@
 import {
 	fetchAdditionalJackpot,
+	fetchBoughtLinesCount,
 	fetchEditAllowance,
+	fetchExchangeRate,
 	fetchFinishedRoundTransactionByRoundAddress,
+	fetchFreeLinesCount,
 	fetchLinesAvailability,
 	fetchLinesCount,
+	fetchLostTicketsClaimed,
+	fetchLostTicketsToClaim,
 	fetchMultiAllowance,
 	fetchPotentialJackpot,
 	fetchRoundFinish,
@@ -15,6 +20,7 @@ import {
 	fetchTicketRound,
 	fetchTicketStatus,
 	fetchTicketWinAmount,
+	fetchUsedFreeLinesCount,
 	fetchWinningLine,
 } from '@/src/lib/api';
 import {
@@ -280,5 +286,53 @@ export const useRoundFinishedTimeStamp = (round: Address) => {
 	return useQuery<number>({
 		queryKey: ['lottery', 'round', round, 'finishedTimeStamp'],
 		queryFn: () => fetchRoundFinishedTimeStamp(config, round),
+	});
+};
+
+export const useFreeLinesCount = (address: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'freeLines', address],
+		queryFn: () => fetchFreeLinesCount(address, config),
+	});
+};
+
+export const useUsedFreeLinesCount = (address: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'usedFreeLines', address],
+		queryFn: () => fetchUsedFreeLinesCount(address, config),
+	});
+};
+
+export const useBoughtLinesCount = (address: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'boughtLines', address],
+		queryFn: () => fetchBoughtLinesCount(address, config),
+	});
+};
+
+export const useLostTicketsToClaim = () => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'lostTicketsToClaim'],
+		queryFn: () => fetchLostTicketsToClaim(config),
+	});
+};
+
+export const useExchangeRate = () => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'exchangeRate'],
+		queryFn: () => fetchExchangeRate(config),
+	});
+};
+
+export const useLostTicketsClaimed = (address: Address) => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'lostTicketsClaimed', address],
+		queryFn: () => fetchLostTicketsClaimed(address, config),
 	});
 };

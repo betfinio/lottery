@@ -37,7 +37,7 @@ export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine, totalLine
 							<NumberComponent
 								key={index}
 								className={cn({
-									'stroke-success': winningLine && partlyEquals(line, winningLine, index),
+									'stroke-success stroke-2': winningLine && partlyEquals(line, winningLine, index),
 								})}
 							>
 								{number}
@@ -47,7 +47,7 @@ export const TicketCard: FC<TicketCardProps> = ({ ticket, winningLine, totalLine
 						<NumberComponent
 							isSymbol
 							className={cn({
-								'stroke-success': winningLine && line.symbol === winningLine.symbol,
+								'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol,
 							})}
 						>
 							<SymbolElement symbol={line.symbol} />

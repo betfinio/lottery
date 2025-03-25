@@ -138,8 +138,8 @@ function Ticket({
 								>
 									<SharedLine
 										line={line}
-										dynamicNumberClassName={(number) => cn({ 'stroke-success': winningLine?.numbers.includes(number) })}
-										symbolClassName={cn({ 'stroke-success': winningLine && line.symbol === winningLine.symbol })}
+										dynamicNumberClassName={(number) => cn({ 'stroke-success stroke-2': winningLine?.numbers.includes(number) })}
+										symbolClassName={cn({ 'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol })}
 									/>
 									{!isEditable && (
 										<motion.div initial={{ scale: 0 }} animate={{ scale: isEditable ? 0 : 1 }} exit={{ scale: 0 }}>
@@ -179,7 +179,7 @@ function Ticket({
 					>
 						{!old && <EditPill ticket={ticket} />}
 						{old && <Claim ticket={ticket} />}
-						<SendPill ticket={ticket} />
+						{!old && <SendPill ticket={ticket} />}
 					</motion.div>
 				)}
 				{showEditPrice && (

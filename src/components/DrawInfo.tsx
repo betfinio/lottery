@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useDrawInfoTab } from '../lib/query/state';
 import type { DrawTab } from '../lib/types';
 import ActiveTicketsList from './tabs/ActiveTicketsList';
+import BonusTab from './tabs/BonusTab';
 import OldTicketsList from './tabs/OldTicketsList';
 
 const DrawInfo = () => {
@@ -21,7 +22,7 @@ const DrawInfo = () => {
 						<TabsTrigger value={'active'}>{t('activeTickets')}</TabsTrigger>
 						<TabsTrigger value={'old'}>{t('oldTickets')}</TabsTrigger>
 					</div>
-					<TabsTrigger value={'bonus'} className={'p-0 w-[34px] aspect-square hidden'}>
+					<TabsTrigger value={'bonus'} className={'p-0 w-[34px] aspect-square'}>
 						<StarIcon className={'w-4 h-4'} />
 					</TabsTrigger>
 				</TabsList>
@@ -35,7 +36,7 @@ const DrawInfo = () => {
 					<OldTicketsList />
 				</TabsContent>
 				<TabsContent value={'bonus'} className={'w-full flex-grow border border-border bg-background-light rounded-xl  overflow-hidden p-2 pb-0'}>
-					bonus
+					<BonusTab />
 				</TabsContent>
 			</Tabs>
 		</div>

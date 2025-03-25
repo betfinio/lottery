@@ -1,9 +1,9 @@
 import logger from '@/src/config/logger';
-import { LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
+import { CLAIMER_ADDRESS, LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
 import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
 import { decodeLine, decodeLines, encodeLines, parseLine } from '@/src/lib/utils';
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
-import { LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
+import { LostTicketsClaimerABI, LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
@@ -348,13 +348,13 @@ export const claimTicket = async (ticket: Address, config: Config) => {
 	});
 	await simulateContract(config, {
 		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
+		address: MULTIBET_ADDRESS,
 		functionName: 'claim',
 		args: [token],
 	});
 	return writeContract(config, {
 		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
+		address: MULTIBET_ADDRESS,
 		functionName: 'claim',
 		args: [token],
 	});
@@ -468,4 +468,56 @@ export const getTicketByTokenId = async (tokenId: bigint, config: Config): Promi
 		lines: parsedLines,
 		isLocal: true,
 	};
+};
+
+export const fetchFreeLinesCount = async (address: Address, config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: MultiBetABI,
+		address: MULTIBET_ADDRESS,
+		functionName: 'getFreeLines',
+		args: [address],
+	});
+};
+
+export const fetchUsedFreeLinesCount = async (address: Address, config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: MultiBetABI,
+		address: MULTIBET_ADDRESS,
+		functionName: 'freeLinesUsed',
+		args: [address],
+	});
+};
+
+export const fetchBoughtLinesCount = async (address: Address, config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: MultiBetABI,
+		address: MULTIBET_ADDRESS,
+		functionName: 'linesBought',
+		args: [address],
+	});
+};
+
+export const fetchExchangeRate = async (config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: MultiBetABI,
+		address: MULTIBET_ADDRESS,
+		functionName: 'EXCHANGE_RATE',
+		args: [],
+	});
+};
+export const fetchLostTicketsClaimed = async (address: Address, config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: LostTicketsClaimerABI,
+		address: CLAIMER_ADDRESS,
+		functionName: 'claimed',
+		args: [address],
+	});
+};
+export const fetchLostTicketsToClaim = async (config: Config): Promise<bigint> => {
+	return readContract(config, {
+		abi: LostTicketsClaimerABI,
+		address: CLAIMER_ADDRESS,
+		functionName: 'CLAIMS_PER_LINE',
+		args: [],
+	});
 };

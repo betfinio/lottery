@@ -69,7 +69,7 @@ function PayoutContent() {
 												<NumberComponent
 													key={i}
 													className={cn({
-														'stroke-success': correctLine && partlyEquals(jackpot.line, correctLine, i),
+														'stroke-success stroke-2': correctLine && partlyEquals(jackpot.line, correctLine, i),
 														'opacity-40': !correctLine || !partlyEquals(jackpot.line, correctLine, i),
 													})}
 												>
@@ -80,7 +80,7 @@ function PayoutContent() {
 										<NumberComponent
 											isSymbol
 											className={cn({
-												'stroke-success': correctLine && jackpot.line.symbol === correctLine.symbol,
+												'stroke-success stroke-2': correctLine && jackpot.line.symbol === correctLine.symbol,
 												'opacity-40': !correctLine || jackpot.line.symbol !== correctLine.symbol,
 											})}
 										>

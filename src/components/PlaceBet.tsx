@@ -334,7 +334,7 @@ const NewRecipientDialog = ({ onSave, onCancel }: { onSave: (address: Address) =
 			{!validAddress && changed && <div className="text-destructive text-sm">Invalid address</div>}
 			{isMe && <div className="text-destructive text-sm">Enter another address</div>}
 			<div className="grid grid-cols-3">
-				<Button variant={'outline'} size={'sm'} className={'gap-1 border-primary text-secondary-foreground'} onClick={() => onCancel()}>
+				<Button variant="outline" size="sm" onClick={onCancel}>
 					Cancel
 				</Button>
 				<Button

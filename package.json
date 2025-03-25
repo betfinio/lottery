@@ -15,7 +15,7 @@
 		"build:schema:prod": "dotenv -e .env.production.local -- graphclient build"
 	},
 	"dependencies": {
-		"@betfinio/abi": "^2.4.1",
+		"@betfinio/abi": "^2.4.2",
 		"@betfinio/components": "^1.7.0-dev.6",
 		"@module-federation/enhanced": "^0.8.12",
 		"@privy-io/react-auth": "^2.6.2",

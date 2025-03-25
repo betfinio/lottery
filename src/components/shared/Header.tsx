@@ -37,7 +37,7 @@ const Header = () => {
 	return (
 		<div className={'w-full border border-border rounded-lg bg-background-lighter p-2 md:p-3 lg:p-4 flex flex-row justify-between min-h-[70px] items-center'}>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
-				<Ticket className="w-10 h-10" />
+				<Ticket className="w-10 h-10 text-primary" />
 				<div className="flex flex-col gap-0">
 					<div>{t('lotto5of25')}</div>
 					<div className="text-sm text-muted-foreground">{t('tuesdayAndFriday')}</div>

@@ -3,6 +3,7 @@ export const PARTNER_ADDRESS = import.meta.env.PUBLIC_PARTNER_ADDRESS;
 export const LOTTERY_ADDRESS = import.meta.env.PUBLIC_LOTTERY_ADDRESS;
 export const MAX_SHARES = 213_770;
 export const MULTIBET_ADDRESS = import.meta.env.PUBLIC_MULTIBET_ADDRESS;
+export const CLAIMER_ADDRESS = import.meta.env.PUBLIC_CLAIMER_ADDRESS;
 export const ETHSCAN = import.meta.env.PUBLIC_ETHSCAN;
 export const DYNAMIC_STAKING_ADDRESS = import.meta.env.PUBLIC_DYNAMIC_STAKING_ADDRESS;
 export const ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP = 30; //seconds;

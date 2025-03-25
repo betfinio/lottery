@@ -167,6 +167,7 @@ export const useBuyTicket = () => {
 		mutationKey: ['lottery', 'buyTicket'],
 		mutationFn: (params) => buyTicket(params, config),
 		onError: (error) => {
+			console.log(error);
 			// @ts-ignore
 			if (error.cause?.reason) {
 				toast({
@@ -413,6 +414,9 @@ export const useClaimTicket = () => {
 	return useMutation<WriteContractReturnType, WriteContractErrorType, { ticket: Address }>({
 		mutationKey: ['lottery', 'claimTicket'],
 		mutationFn: ({ ticket }) => claimTicket(ticket, config),
+		onError: (error) => {
+			console.log(error);
+		},
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const { id, update } = toast({
