@@ -1,5 +1,4 @@
 import { linesAvailabilityQuery, useActiveRounds, useDraftLines, useLinesAvailability, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { useBuyTicket } from '@/src/lib/query/mutations.ts';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';

@@ -46,7 +46,7 @@ const Header = () => {
 					<Bag className="w-10 h-10 text-primary" />
 					<div className="flex flex-col gap-0">
 						<div className="">{t('bank')}</div>
-						<BetValue className="text-muted-foreground text-sm" value={(bank * 5n) / 100n} withIcon />
+						<BetValue className="text-muted-foreground text-sm" value={bank} withIcon />
 					</div>
 				</div>
 			</div>
