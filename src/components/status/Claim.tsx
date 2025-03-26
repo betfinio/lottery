@@ -3,10 +3,10 @@ import { useClaimTicket } from '@/src/lib/query/mutations';
 import { EMPTY_LINE, type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { calculateTicketPrize } from '@/src/lib/utils';
 import { BetValue } from '@betfinio/components/shared';
-import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { LoaderIcon, TicketIcon } from 'lucide-react';
+import { Badge, Button } from '@betfinio/components/ui';
+import { LoaderIcon } from 'lucide-react';
 import { useMemo } from 'react';
-import { Ticket } from '../icons';
+import { FreeTicketTooltip } from '../shared/FreeTicketTooltip';
 
 function Claim({ ticket }: { ticket: IRoundTicket }) {
 	const { data: result = [0n, false], isPending } = useTicketResult(ticket.betAddress, ticket.round);
@@ -86,18 +86,5 @@ const PrizeToClaim = ({
 			)}
 			{isClaimed && <Badge className="bg-muted/10 text-muted-foreground">Claimed</Badge>}
 		</div>
-	);
-};
-
-const FreeTicketTooltip = () => {
-	return (
-		<TooltipProvider>
-			<Tooltip>
-				<TooltipTrigger>
-					<Ticket className="w-4 h-4 text-success" />
-				</TooltipTrigger>
-				<TooltipContent className="lottery">Free Line(s)</TooltipContent>
-			</Tooltip>
-		</TooltipProvider>
 	);
 };
