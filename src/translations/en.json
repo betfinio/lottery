@@ -212,5 +212,6 @@
 	"addMoreDraws": "Add more draws",
 	"back": "Back",
 	"send": "Send",
-	"noTickets": "You have no tickets"
+	"noTickets": "You have no tickets",
+	"freeLines": "Free lines"
 }

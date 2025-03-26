@@ -107,6 +107,30 @@ export const compareLines = (a: ILine, b: ILine, symbolUnlocked: boolean): numbe
 	return 0;
 };
 
+export const calculateTicketPrize = (winningLine: ILine, ticketLines: ILine[], ticketPrice: bigint, symbolUnlocked = true) => {
+	let freeTicketsCount = 0;
+	let prizeAmount = 0n;
+
+	// Check each line against the winning line
+	for (const line of ticketLines) {
+		const result = compareLines(line, winningLine, symbolUnlocked);
+
+		// Count combinations
+		if (result === 1) {
+			// Either "3" or "2+1" combination (free ticket)
+			freeTicketsCount++;
+		} else if (result > 1) {
+			// Higher value combination (money prize)
+			prizeAmount += BigInt(result) * ticketPrice;
+		}
+	}
+
+	return {
+		freeTicketsCount,
+		prizeAmount,
+	};
+};
+
 export const isDuplicate = (lines: ILine[]): boolean => {
 	return lines.some((line: ILine) =>
 		lines.some((l: ILine) => l !== line && l.symbol === line.symbol && [...l.numbers].sort().join(',') === [...line.numbers].sort().join(',')),
