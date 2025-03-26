@@ -42,7 +42,7 @@ export const RoundChainDetails: FC = () => {
 			<div className={'text-xs mt-1 text-center '}>
 				<a
 					className={'text-tertiary-foreground hover:text-green-roulette duration-300 underline'}
-					href="https://betfin.gitbook.io/betfin-public/proof-of-fairness/random-number-generation"
+					href="https://betfin.gitbook.io/betfin-public/games-manual/proof-of-fairness/random-number-generation"
 					target={'_blank'}
 					rel="noreferrer"
 				>
