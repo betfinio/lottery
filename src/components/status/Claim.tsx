@@ -1,9 +1,12 @@
-import { useRoundStatus, useTicketClaimed, useTicketPrice, useTicketResult, useTicketWinAmount } from '@/src/lib/query';
+import { useRoundStatus, useTicketClaimed, useTicketPrice, useTicketResult, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
-import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
+import { EMPTY_LINE, type IRoundTicket, RoundStatus } from '@/src/lib/types';
+import { calculateTicketPrize } from '@/src/lib/utils';
 import { BetValue } from '@betfinio/components/shared';
-import { Badge, Button } from '@betfinio/components/ui';
-import { LoaderIcon } from 'lucide-react';
+import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { LoaderIcon, TicketIcon } from 'lucide-react';
+import { useMemo } from 'react';
+import { Ticket } from '../icons';
 
 function Claim({ ticket }: { ticket: IRoundTicket }) {
 	const { data: result = [0n, false], isPending } = useTicketResult(ticket.betAddress, ticket.round);
@@ -12,6 +15,8 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 	const { mutate: claim, isPending: isClaiming } = useClaimTicket();
 	const { data: roundStatus } = useRoundStatus(ticket.round);
 	const { data: ticketPrice = 0n } = useTicketPrice(ticket.round);
+	const { data: winningLine } = useWinningLine(ticket.round);
+	console.log(winningLine, 'winningLine');
 
 	const handleClaim = () => {
 		claim({ ticket: ticket.betAddress });
@@ -19,6 +24,9 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 
 	const predictedWin = result[0] * ticketPrice;
 	const winAmount = claimedAmount || predictedWin;
+	const calculatedPrize = useMemo(() => {
+		return calculateTicketPrize(winningLine ?? EMPTY_LINE, ticket.lines, ticketPrice);
+	}, [winningLine, ticket.lines, ticketPrice]);
 
 	const handleValidate = () => {
 		claim({ ticket: ticket.betAddress });
@@ -26,18 +34,16 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 
 	if (!isPending && winAmount > 0n && roundStatus === RoundStatus.CLAIMING) {
 		return (
-			<div className={'flex flex-row items-center gap-2'}>
-				{winAmount > 0n && <BetValue className="text-sm" value={winAmount} withIcon iconClassName="w-3 h-3" />}
-				{!isClaimed && !isClaimedPending && (
-					<Button size="freeSize" shape="pill" onClick={handleClaim} className="w-16 h-5 justify-center">
-						{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : 'Claim'}
-					</Button>
-				)}
-				{isClaimed && <Badge className="bg-muted/10 text-muted-foreground">Claimed</Badge>}
-			</div>
+			<PrizeToClaim
+				freeTicketsCount={calculatedPrize.freeTicketsCount}
+				prizeAmount={calculatedPrize.prizeAmount}
+				handleClaim={handleClaim}
+				isClaimed={!!isClaimed}
+				isClaimedPending={isClaimedPending}
+				isClaiming={isClaiming}
+			/>
 		);
 	}
-
 	if (!isPending && result[0] === 0n && roundStatus === RoundStatus.CLAIMING && !isClaimed) {
 		return (
 			<div className={'flex flex-row items-center gap-2'} onClick={handleValidate}>
@@ -48,3 +54,50 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 }
 
 export default Claim;
+
+const PrizeToClaim = ({
+	freeTicketsCount,
+	prizeAmount,
+	handleClaim,
+	isClaimed,
+	isClaimedPending,
+	isClaiming,
+}: {
+	freeTicketsCount: number;
+	prizeAmount: bigint;
+	handleClaim: () => void;
+	isClaimed: boolean;
+	isClaimedPending: boolean;
+	isClaiming: boolean;
+}) => {
+	return (
+		<div className={'flex flex-row items-center gap-2'}>
+			{freeTicketsCount > 0 && (
+				<div className="flex flex-row items-center gap-1">
+					{freeTicketsCount}
+					<FreeTicketTooltip />
+				</div>
+			)}
+			{prizeAmount > 0n && <BetValue className="text-sm" value={prizeAmount} withIcon iconClassName="w-3 h-3" />}
+			{!isClaimed && !isClaimedPending && (
+				<Button size="freeSize" shape="pill" onClick={handleClaim} className="w-16 h-5 justify-center">
+					{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : 'Claim'}
+				</Button>
+			)}
+			{isClaimed && <Badge className="bg-muted/10 text-muted-foreground">Claimed</Badge>}
+		</div>
+	);
+};
+
+const FreeTicketTooltip = () => {
+	return (
+		<TooltipProvider>
+			<Tooltip>
+				<TooltipTrigger>
+					<Ticket className="w-4 h-4 text-success" />
+				</TooltipTrigger>
+				<TooltipContent className="lottery">Free Line(s)</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
+	);
+};
