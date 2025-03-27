@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 
 import { routeTree } from './routeTree.gen';
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({ routeTree, scrollRestoration: true });
 
 // Render the app
 const rootElement = document.getElementById('root');

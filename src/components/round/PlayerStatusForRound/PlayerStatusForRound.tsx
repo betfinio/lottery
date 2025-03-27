@@ -1,6 +1,6 @@
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer, useTicketPrice, useWinningLine } from '@/src/lib/query';
 import { type IRoundTicket, type IRoundTicketWithWinningCoef, RoundStatus } from '@/src/lib/types';
-import { compareLines } from '@/src/lib/utils';
+import { calculateTicketPrize, compareLines } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,15 +30,19 @@ export const PlayerStatusForRound: FC = () => {
 			const linesWithCoef = ticket.lines.reduce((acc, line) => {
 				return acc + BigInt(compareLines(line, winningLine, ticket.lines.length >= 3));
 			}, 0n);
+
+			const ticketPrize = calculateTicketPrize(winningLine, ticket.lines, ticketPrice || 0n, ticket.lines.length > 2);
+
 			return {
 				...ticket,
 				winningCoef: linesWithCoef,
 				winingAmount: linesWithCoef * BigInt(ticketPrice || 0),
+				prizeAmount: ticketPrize.prizeAmount,
+				freeTicketsCount: ticketPrize.freeTicketsCount,
 				placedAmount: BigInt(ticketPrice || 0) * BigInt(ticket.lines.length),
 			};
 		});
 	}, [tickets, winningLine, ticketPrice]);
-
 	const playerWinningTicketsWithWinningLines = useMemo(() => {
 		if (!ticketsWithCountedCoef) return [];
 		return ticketsWithCountedCoef.reduce(
@@ -60,9 +64,12 @@ export const PlayerStatusForRound: FC = () => {
 				(acc, ticket) => {
 					acc.winingAmount += ticket.winingAmount;
 					acc.placedAmount += ticket.placedAmount;
+
+					acc.freeTicketsCount += ticket.freeTicketsCount;
+					acc.prizeAmount += ticket.prizeAmount;
 					return acc;
 				},
-				{ placedAmount: 0n, winingAmount: 0n },
+				{ placedAmount: 0n, winingAmount: 0n, freeTicketsCount: 0, prizeAmount: 0n },
 			),
 		[ticketsWithCountedCoef],
 	);
@@ -95,6 +102,8 @@ export const PlayerStatusForRound: FC = () => {
 			<div className="flex flex-col items-center justify-center">
 				<div className="flex gap-5 flex-wrap justify-center">
 					<PlayerWon
+						freeTicketsCount={ticketStats.freeTicketsCount}
+						prizeAmount={ticketStats.prizeAmount}
 						placedAmount={ticketStats.placedAmount}
 						winingAmount={ticketStats.winingAmount}
 						winningLine={winningLine}
