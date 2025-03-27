@@ -160,7 +160,7 @@
 	"dontAskAgain": "Don't ask me again",
 	"confirm": "Confirm",
 	"lotto5of25": "Lotto 5 of 25",
-	"tuesdayAndFriday": "Tuesday and Friday",
+	"tuesdayAndFriday": "Daily 4pm UTC",
 	"bank": "Bank",
 	"paytable": "Paytable",
 	"howToPlay": "How to play",
@@ -212,5 +212,7 @@
 	"addMoreDraws": "Add more draws",
 	"back": "Back",
 	"send": "Send",
-	"noTickets": "You have no tickets"
+	"noTickets": "You have no tickets",
+	"freeLines": "Free lines",
+	"connectedWalletIsNotMember": "Connected wallet is not member of Betfin. Ask someone for an invitation"
 }

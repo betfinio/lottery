@@ -33,6 +33,8 @@ export interface IRoundTicketWithWinningCoef extends IRoundTicket {
 	winningCoef: bigint;
 	winingAmount: bigint;
 	placedAmount: bigint;
+	prizeAmount: bigint;
+	freeTicketsCount: number;
 }
 
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded' | 'hidden';

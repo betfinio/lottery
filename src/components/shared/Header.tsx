@@ -60,7 +60,7 @@ const Header = () => {
 				</Dialog>
 				<a
 					target={'_blank'}
-					href={'https://betfin.gitbook.io/betfin-public/v/games-manual/games-guide/predict-game'}
+					href={'https://betfin.gitbook.io/betfin-public/games-manual/games-guide/lotto'}
 					className={
 						'flex flex-col items-center justify-center cursor-pointer text-secondary-foreground hover:text-secondary-foreground lg:text-foreground duration-300'
 					}
