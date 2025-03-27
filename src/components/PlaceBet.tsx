@@ -25,7 +25,7 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAllowance, useBalance } from 'betfinio_context/lib/query';
+import { useAllowance, useBalance, useIsMember } from 'betfinio_context/lib/query';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -44,6 +44,7 @@ const PlaceBet = () => {
 	const queryClient = useQueryClient();
 	const config = useConfig();
 	// Queries
+
 	const { data: rounds = EMPTY_ARRAY } = useActiveRounds();
 	const { data: lines = [] } = useDraftLines();
 	const { data: round } = useSelectedRound();
@@ -51,6 +52,7 @@ const PlaceBet = () => {
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
 	const { data: balance = 0n } = useBalance(address);
+	const { data: isMember = false } = useIsMember(address);
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
@@ -156,6 +158,14 @@ const PlaceBet = () => {
 	};
 
 	const handleOpen = async () => {
+		if (!isMember) {
+			toast({
+				title: t('connectedWalletIsNotMember'),
+				variant: 'destructive',
+			});
+			return;
+		}
+
 		if (await getHasCollisions()) {
 			toast({
 				title: 'Lines are already taken',
