@@ -48,7 +48,15 @@ export function RoundTotalsDetails() {
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3  md:col-span-2 row-start-1">
 				<Bag className={'w-12 h-12 md:w-16 md:h-16 text-secondary-foreground'} />
 				<div className="flex flex-col items-center">
-					<BetValue className={cn('text-xl text-success', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={paidToStaking} withIcon />
+					<BetValue
+						className={cn('text-xl', {
+							'blur animated-pulse': isLinesLoading || isPriceLoading,
+							'text-success': paidToStaking > 0n,
+							'text-destructive': paidToStaking < 0n,
+						})}
+						value={paidToStaking}
+						withIcon
+					/>
 					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>
 				</div>
 			</div>
