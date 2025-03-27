@@ -87,6 +87,7 @@ function SharedLine({
 				initial={{
 					borderRadius: '50%',
 				}}
+				className="relative"
 				animate={symbolControls}
 			>
 				<NumberComponent isSymbol className={cn(symbolClassName)}>
