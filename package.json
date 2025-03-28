@@ -16,7 +16,7 @@
 	},
 	"dependencies": {
 		"@betfinio/abi": "^2.4.2",
-		"@betfinio/components": "^1.7.0-dev.11",
+		"@betfinio/components": "^1.7.0-dev.12",
 		"@module-federation/enhanced": "^0.8.12",
 		"@privy-io/react-auth": "^2.7.0",
 		"@privy-io/wagmi": "^1.0.3",
