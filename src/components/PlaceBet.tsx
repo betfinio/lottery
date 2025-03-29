@@ -174,13 +174,6 @@ const PlaceBet = () => {
 			return;
 		}
 
-		if (balance <= totalAmount) {
-			toast({
-				title: 'Insufficient balance, bro',
-				variant: 'destructive',
-			});
-			return;
-		}
 		setIsOpen(true);
 	};
 
