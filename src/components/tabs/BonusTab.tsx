@@ -10,7 +10,7 @@ import {
 import { useClaimUnclaimedTickets } from '@/src/lib/query/mutations';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Button, Progress, Separator } from '@betfinio/components/ui';
+import { Badge, Button, Progress, Separator } from '@betfinio/components/ui';
 import { TicketsIcon } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import Ticket from '../icons/Ticket';
@@ -67,9 +67,13 @@ function FreeLinesChallenge() {
 				</div>
 			</div>
 			<div className="flex flex-row justify-between items-end w-full text-muted-foreground gap-1">
-				<Button size="freeSize" className={cn('px-2', toClaim === 0 && 'opacity-0 pointer-events-none')} onClick={handleClaim}>
-					Claim {toClaim} tickets
-				</Button>
+				{toClaim > 0 ? (
+					<Button size="freeSize" className={cn('px-2')} onClick={handleClaim}>
+						Claim {toClaim} tickets
+					</Button>
+				) : (
+					<Badge className="bg-muted text-muted-foreground">All claimed</Badge>
+				)}
 				<div>
 					<span className="text-primary">{Number(lostTicketsClaimed)}</span> / {Number(lostTicketsToClaim)}
 				</div>
