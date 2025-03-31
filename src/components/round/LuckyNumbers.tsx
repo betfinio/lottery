@@ -1,5 +1,5 @@
 import Line from '@/src/components/shared/SharedLine';
-import { useGetRoundFromParams, useWinningLine } from '@/src/lib/query';
+import { useWinningLine } from '@/src/lib/query';
 import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
 import type { ILine } from '@/src/lib/types';
 import { randomize } from '@/src/lib/utils';
@@ -11,7 +11,7 @@ interface LuckyNumbersProps {
 	round: Address;
 }
 export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
-	const { data = null, isFetching } = useWinningLine(round);
+	const { isFetching } = useWinningLine(round);
 	const [currentLine, setCurrentLine] = useState<ILine>(randomize());
 	const winningNumbers = useRoundFinishedNumbersSpitting(round);
 
