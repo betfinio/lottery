@@ -16,7 +16,6 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 	const { data: roundStatus } = useRoundStatus(ticket.round);
 	const { data: ticketPrice = 0n } = useTicketPrice(ticket.round);
 	const { data: winningLine } = useWinningLine(ticket.round);
-	console.log(winningLine, 'winningLine');
 
 	const handleClaim = () => {
 		claim({ ticket: ticket.betAddress });

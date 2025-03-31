@@ -28,7 +28,7 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 		if (winningNumbers.isComplete) return; // Stop animation when real data arrives
 
 		const interval = setInterval(() => {
-			setCurrentLine(randomize(Math.max(...winningNumbersToShow) + 1));
+			setCurrentLine(randomize((Math.max(...winningNumbersToShow) || 0) + 1));
 		}, 600);
 
 		return () => clearInterval(interval); // Cleanup on unmount
