@@ -169,7 +169,7 @@ function Stats({ round }: { round: IRound }) {
 
 	return (
 		<div className="grid grid-cols-3 gap-3">
-			<StatBox label="Tickets" value={displayedLines} icon={<TicketIcon className="w-4 h-4" />} />
+			<StatBox label="Lines" value={displayedLines} icon={<TicketIcon className="w-4 h-4" />} />
 			<StatBox label="Players" value={displayedPlayers} icon={<UserIcon className="w-4 h-4" />} />
 			<StatBox label="Volume" value={<BetValue value={displayedBank} withIcon />} />
 		</div>

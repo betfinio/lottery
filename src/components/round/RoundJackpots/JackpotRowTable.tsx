@@ -1,12 +1,11 @@
 import type { GetRoundJackpotsQuery, JackpotFragment } from '@/.graphclient';
 import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
 import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
-import type { JackpotCombination } from '@/src/lib/types';
 import { truncateEthAddress } from '@betfinio/abi';
+import { Ticket as TicketIcon } from '@betfinio/components/icons';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import type { Table } from '@tanstack/react-table';
-import { type FC, useEffect, useRef } from 'react';
+import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 
@@ -66,7 +65,17 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			},
 			cell: (props) => {
 				const lines = props.row.original.lines.filter((line) => line.combination === currentJackpot.combination);
+				console.log(currentJackpot.combination);
+				// display free lines won if the combination is 0x322b31
+				if (['0x322b31', '0x33'].includes(currentJackpot.combination)) {
+					return (
+						<div className="flex items-center gap-2">
+							{lines.filter((line) => line.claimed > 0n).length} <TicketIcon className="w-4 h-4 text-success" />
+						</div>
+					);
+				}
 				const lineTotal = lines.reduce((acc, line) => acc + BigInt(line.claimed), BigInt(0));
+
 				return <BetValue value={lineTotal} withIcon />;
 			},
 		}),
