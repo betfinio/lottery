@@ -536,3 +536,12 @@ export const claimUnclaimedTickets = async (tickets: bigint[], config: Config) =
 		args: [tickets],
 	});
 };
+
+export const fetchSubscriptionId = async (config: Config) => {
+	return readContract(config, {
+		abi: LotteryABI,
+		address: LOTTERY_ADDRESS,
+		functionName: 'subscriptionId',
+		args: [],
+	});
+};

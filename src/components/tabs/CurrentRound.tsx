@@ -1,7 +1,7 @@
 // @ts-ignore
 import Countdown from '@/src/components/Countdown.tsx';
-import { ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
-import { useActiveRounds, useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus } from '@/src/lib/query';
+import { ENVIRONMENT, ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
+import { useActiveRounds, useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus, useSubscriptionId } from '@/src/lib/query';
 import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { LotteryRoundABI, truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
@@ -26,6 +26,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { data: status } = useRoundStatus(round.address);
 	const { data: additionalJackpot = 0n } = useAdditionalJackpot();
 	const { data: potentialJackpot = 0n, refetch: refetchPotentialJackpot } = usePotentialJackpot(round.address);
+	const { data: subscriptionId } = useSubscriptionId();
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
 	const animationRef = useRef<NodeJS.Timer>();
 	const totalJackpot = useMemo(
@@ -70,11 +71,13 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 			refetchPotentialJackpot();
 		},
 	});
+	const network = ENVIRONMENT === 'production' ? 'polygon' : 'polygon-amoy';
+	const vrfLink = `https://vrf.chain.link/${network}#/side-drawer/subscription/${network}/${subscriptionId}`;
 
 	const renderPartners = () => (
 		<div className="w-full grid grid-cols-3 text-muted-foreground">
 			<PartnerLink text="Open Source" icon={<Polygon className="w-6 h-6 text-purple-700" />} link={`${ETHSCAN}/address/${LOTTERY_ADDRESS}`} />
-			<PartnerLink text="Powered by" icon={<HexagonIcon className="w-6 h-6 text-blue-400 stroke-[4px]" />} link={'https://vrf.chain.link'} />
+			<PartnerLink text="Powered by" icon={<HexagonIcon className="w-6 h-6 text-blue-400 stroke-[4px]" />} link={vrfLink} />
 			<PartnerLink text="Audited by" icon={<Certik className="w-6 h-6 text-foreground" />} link={'https://skynet.certik.com/projects/betfin'} />
 		</div>
 	);
