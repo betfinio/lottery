@@ -14,6 +14,7 @@ import {
 	fetchRoundFinish,
 	fetchRoundFinishedTimeStamp,
 	fetchRoundStatus,
+	fetchSubscriptionId,
 	fetchTicketClaimed,
 	fetchTicketPrice,
 	fetchTicketResult,
@@ -342,5 +343,13 @@ export const useUnclaimedTickets = () => {
 	return useQuery<bigint[]>({
 		queryKey: ['lottery', 'unclaimedTickets'],
 		queryFn: () => fetchUnclaimedTickets(),
+	});
+};
+
+export const useSubscriptionId = () => {
+	const config = useConfig();
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'subscriptionId'],
+		queryFn: () => fetchSubscriptionId(config),
 	});
 };

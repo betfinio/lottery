@@ -1,18 +1,23 @@
 import CurrentRound from '@/src/components/tabs/CurrentRound.tsx';
-import { useSelectedRound } from '@/src/lib/query';
+import { useFreeLinesCount, useSelectedRound } from '@/src/lib/query';
+import { ZeroAddress } from '@betfinio/abi';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { SearchIcon, StarIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 import { useDrawInfoTab } from '../lib/query/state';
 import type { DrawTab } from '../lib/types';
 import ActiveTicketsList from './tabs/ActiveTicketsList';
-import BonusTab from './tabs/BonusTab';
+import BonusTab, { BonusTabIcon } from './tabs/BonusTab';
 import OldTicketsList from './tabs/OldTicketsList';
 
 const DrawInfo = () => {
+	const { address = ZeroAddress } = useAccount();
+
 	const { t } = useTranslation('lottery');
 	const { data: round } = useSelectedRound();
 	const { tab, setTab } = useDrawInfoTab();
+
 	return (
 		<div className={'w-full rounded-lg col-span-3 md:col-span-1 flex  flex-col relative h-[593px]'}>
 			<Tabs value={tab} onValueChange={(value) => setTab(value as DrawTab)} className={'w-full flex-grow flex flex-col h-full'}>
@@ -23,7 +28,7 @@ const DrawInfo = () => {
 						<TabsTrigger value={'old'}>{t('oldTickets')}</TabsTrigger>
 					</div>
 					<TabsTrigger value={'bonus'} className={'p-0 w-[34px] aspect-square'}>
-						<StarIcon className={'w-4 h-4'} />
+						<BonusTabIcon />
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value={'draw'} className={'w-full flex-grow border border-border bg-background-light rounded-xl  overflow-hidden'}>

@@ -71,9 +71,7 @@ const EditMode: FC<{
 		setSymbol(0);
 	};
 	const handleBack = () => {
-		setNumbers(ticket.numbers);
-		setSymbol(ticket.symbol);
-		onBack();
+		onSave?.({ numbers: numbers.sort(), symbol });
 	};
 	const handleSave = () => {
 		onSave?.({ numbers: numbers.sort(), symbol });
