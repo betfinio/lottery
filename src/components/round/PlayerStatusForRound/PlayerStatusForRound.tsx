@@ -3,7 +3,6 @@ import { type IRoundTicket, type IRoundTicketWithWinningCoef, RoundStatus } from
 import { calculateTicketPrize, compareLines } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { type FC, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { PlayerDidNotWin } from './PlayerDidNotWin';
 import PlayerTickets from './PlayerTickets';
@@ -18,11 +17,9 @@ export const PlayerStatusForRound: FC = () => {
 	const { data: winningLine } = useWinningLine(round);
 	const { data: ticketPrice } = useTicketPrice(round);
 
-	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
-
 	const playerHasBets = tickets.length > 0 && !isFetchingTickets;
 
-	const showCalculating = roundStatus === RoundStatus.WAITING_FOR_REQUEST || roundStatus === RoundStatus.PENDING || roundStatus === RoundStatus.GENERATING;
+	const showCalculating = [RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING, RoundStatus.GENERATING, undefined].includes(roundStatus);
 
 	const ticketsWithCountedCoef: IRoundTicketWithWinningCoef[] = useMemo(() => {
 		if (!winningLine) return [];
@@ -76,6 +73,10 @@ export const PlayerStatusForRound: FC = () => {
 
 	const showPlayerDidNotWin = !showCalculating && !hasWinningTicket && ticketPrice && roundStatus && !isFetchingTickets;
 	const showPlayerWon = !showCalculating && playerHasBets && hasWinningTicket;
+
+	if (roundStatus === undefined) {
+		return null;
+	}
 
 	if (roundStatus && showCalculating) {
 		return (

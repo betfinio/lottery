@@ -1,7 +1,7 @@
 import Countdown from '@/src/components/Countdown.tsx';
 import EditTicket from '@/src/components/EditTicket.tsx';
-import { useRoundFinish, useTicketPrice, useWinningLine } from '@/src/lib/query';
-import type { ActiveTicketMode, ILine, IRoundTicket } from '@/src/lib/types.ts';
+import { useRoundFinish, useRoundStatus, useTicketPrice, useWinningLine } from '@/src/lib/query';
+import { type ActiveTicketMode, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
 import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
@@ -45,9 +45,12 @@ function Ticket({
 	showEditPrice = false,
 }: TicketProps) {
 	const { data: winningLine } = useWinningLine(ticket.round);
+	const { data: roundStatus = RoundStatus.WAITING_FOR_REQUEST } = useRoundStatus(ticket.round);
 	const [lines, setLines] = useState(ticket.lines);
 	const [editMode, setEditMode] = useState<number>(-1);
 	const { data: ticketPrice = 0n } = useTicketPrice(ticket.round);
+
+	const showWinningNumbers = [RoundStatus.CLAIMING, RoundStatus.DONE].includes(roundStatus);
 
 	// Update lines when ticket changes
 	useEffect(() => {
@@ -139,9 +142,9 @@ function Ticket({
 									<SharedLine
 										line={line}
 										disableSymbol={ticket.lines.length < 3}
-										dynamicNumberClassName={(number) => cn({ 'stroke-success stroke-2': winningLine?.numbers.includes(number) })}
+										dynamicNumberClassName={(number) => cn({ 'stroke-success stroke-2': winningLine?.numbers.includes(number) && showWinningNumbers })}
 										symbolClassName={cn({
-											'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol,
+											'stroke-success stroke-2': winningLine && line.symbol === winningLine.symbol && showWinningNumbers,
 											'stroke-destructive stroke-2': ticket.lines.length < 3,
 										})}
 									/>

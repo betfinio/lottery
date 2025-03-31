@@ -14,6 +14,7 @@ interface AllDrawsProps {
 
 function AllDraws({ includeFutureDraws }: AllDrawsProps) {
 	const { t } = useTranslation('lottery', { keyPrefix: 'tables' });
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
@@ -38,7 +39,7 @@ function AllDraws({ includeFutureDraws }: AllDrawsProps) {
 		}
 	};
 
-	return <DataTable enableSorting={true} data={rounds} columns={columns} onRowClick={handleRowClick} />;
+	return <DataTable enableSorting={true} data={rounds} columns={columns} onRowClick={handleRowClick} t={sharedT} />;
 }
 
 export default AllDraws;

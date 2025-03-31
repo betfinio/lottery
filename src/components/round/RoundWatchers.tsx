@@ -12,11 +12,10 @@ export const RoundWatchers = () => {
 		address: roundAddress,
 		abi: LotteryRoundABI,
 		eventName: 'RoundFinished',
-
 		onLogs: async () => {
+			await refetchWinningLine();
 			await refetchRoundStatus();
 			await refetchRoundFinishedTimeStamp();
-			await refetchWinningLine();
 		},
 	});
 
