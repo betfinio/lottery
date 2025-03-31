@@ -125,7 +125,7 @@ query GetPlayerTickets($player: Bytes, $round: Bytes) {
 }
 
 query GetUnclaimedTickets {
-	tickets(where: { status: 0, round_: { winLine_not: null } }, first: 500) {
+	tickets(where: { status: 0, round_: { winLine_not: null } }, first: 500, orderBy: tokenId, orderDirection: desc) {
 		tokenId
 	}
 }

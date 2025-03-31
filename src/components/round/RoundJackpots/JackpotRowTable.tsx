@@ -23,6 +23,7 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const currentJackpot = jackpotData[id][0];
 	const tickets = currentJackpot?.tickets ?? [];
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
+	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 
 	const columns = [
 		columnHelper.accessor('owner', {
@@ -71,5 +72,5 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 		}),
 	] as ColumnDef<Ticket>[];
 
-	return <DataTable className="w-full" columns={columns} data={tickets} />;
+	return <DataTable className="w-full" columns={columns} data={tickets} t={sharedT} />;
 };
