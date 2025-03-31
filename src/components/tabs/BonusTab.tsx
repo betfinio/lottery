@@ -10,8 +10,8 @@ import {
 import { useClaimUnclaimedTickets } from '@/src/lib/query/mutations';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Button, Progress, Separator } from '@betfinio/components/ui';
-import { TicketsIcon } from 'lucide-react';
+import { Badge, Button, Progress, Separator } from '@betfinio/components/ui';
+import { StarIcon, TicketsIcon } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import Ticket from '../icons/Ticket';
 
@@ -101,6 +101,22 @@ function BuyTicketsChallenge() {
 			</div>
 		</div>
 	);
+}
+
+export function BonusTabIcon() {
+	const { address = ZeroAddress } = useAccount();
+	const { data: freeLinesCount = 0n } = useFreeLinesCount(address);
+	if (freeLinesCount > 0) {
+		return (
+			<div className={'flex flex-row items-center gap-1 relative'}>
+				<Ticket className={'w-4 h-4 text-success'} />
+				<Badge variant="destructive" className={'text-xs  absolute -top-4 -right-4  rounded-full px-1'}>
+					{Number(freeLinesCount) > 9 ? '9+' : Number(freeLinesCount)}
+				</Badge>
+			</div>
+		);
+	}
+	return <StarIcon className={'w-4 h-4'} />;
 }
 
 export default BonusTab;
