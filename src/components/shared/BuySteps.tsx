@@ -100,7 +100,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 	};
 
 	const handleBuy = async () => {
-		if (balance <= totalAmount) {
+		if (balance < totalAmount) {
 			toast({
 				title: 'Insufficient balance, bro',
 				variant: 'destructive',
