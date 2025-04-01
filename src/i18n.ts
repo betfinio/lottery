@@ -33,7 +33,7 @@ instance
 	.init({
 		resources: resources,
 		supportedLngs: ['en', 'cs', 'ru'],
-		lng: 'cs', // default language
+		lng: 'en', // default language
 		fallbackLng: 'en',
 		defaultNS,
 		interpolation: { escapeValue: false },
