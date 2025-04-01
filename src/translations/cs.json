@@ -1,7 +1,7 @@
 {
 	"title": "Šablona",
 	"create": {
-		"addMore": "Vyplňte {count, plural, =1 {1 more line} =2 {2 more lines} jiné {# more lines} }",
+		"addMore": "Vyplňte {count, plural, =1 {1 řádek} =2 {2 řádky} other {# řádků}}",
 		"symbolUnlocked": "Symbol odemčen"
 	},
 	"tables": {
