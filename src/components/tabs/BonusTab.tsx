@@ -22,7 +22,7 @@ function BonusTab() {
 	return (
 		<div className="flex flex-col items-center h-full">
 			<div className="text-lg font-semibold">Free lines challenges</div>
-			<div className="flex-grow w-full py-2 gap-2 flex flex-col">
+			<div className="grow w-full py-2 gap-2 flex flex-col">
 				<FreeLinesChallenge />
 				<BuyTicketsChallenge />
 			</div>

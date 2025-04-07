@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "ES2022",
-		"lib": ["DOM", "ES2020"],
+		"lib": ["DOM", "ES2020", "ES2023"],
 		"module": "ESNext",
 		"jsx": "react-jsx",
 		"rootDir": "./",

@@ -117,7 +117,7 @@ const EditMode: FC<{
 				ease: 'easeInOut',
 			}}
 			style={{ transformStyle: 'preserve-3d', pointerEvents: 'auto' }}
-			className={'left-0 absolute inset-0 p-2 md:p-4 bg-background-light rounded-xl z-[10] w-full h-full flex flex-col'}
+			className={'left-0 absolute inset-0 p-2 md:p-4 bg-background-light rounded-xl z-10 w-full h-full flex flex-col'}
 		>
 			<nav className={'flex justify-between w-full items-center'}>
 				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>

@@ -2,7 +2,6 @@ import { linesAvailabilityQuery, useActiveRounds, useDraftLines, useLinesAvailab
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
@@ -23,6 +22,7 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
+	toast,
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAllowance, useBalance, useIsMember } from 'betfinio_context/lib/query';
@@ -92,10 +92,7 @@ const PlaceBet = () => {
 		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
 			if (toastShown.current) return;
 			if (selectedRounds.length === 1) {
-				toast({
-					title: 'At least one draw must be selected',
-					variant: 'destructive',
-				});
+				toast.error('At least one draw must be selected');
 				toastShown.current = true;
 				return;
 			}
@@ -159,18 +156,12 @@ const PlaceBet = () => {
 
 	const handleOpen = async () => {
 		if (!isMember) {
-			toast({
-				title: t('connectedWalletIsNotMember'),
-				variant: 'destructive',
-			});
+			toast.error(t('connectedWalletIsNotMember'));
 			return;
 		}
 
 		if (await getHasCollisions()) {
-			toast({
-				title: 'Lines are already taken',
-				variant: 'destructive',
-			});
+			toast.error('Lines are already taken');
 			return;
 		}
 
@@ -238,7 +229,7 @@ const PlaceBet = () => {
 				</div>
 			</div>
 			<Separator />
-			<div className={'p-3 flex flex-col items-start gap-2 justify-end flex-grow'}>
+			<div className={'p-3 flex flex-col items-start gap-2 justify-end grow'}>
 				<Dialog open={newRecipientDialogOpen} onOpenChange={handleNewRecipientDialogOpenChange}>
 					<DialogTrigger asChild>
 						<div className={'flex items-center justify-between w-full gap-2 text-sm '}>

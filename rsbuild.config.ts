@@ -77,6 +77,10 @@ export default defineConfig({
 					singleton: true,
 					requiredVersion: dependencies['@privy-io/wagmi'],
 				},
+				'@betfinio/components': {
+					singleton: true,
+					requiredVersion: dependencies['@betfinio/components'],
+				},
 			},
 		}),
 	],

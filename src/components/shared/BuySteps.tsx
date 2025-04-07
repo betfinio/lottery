@@ -5,9 +5,8 @@ import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
 import { shootConfetti } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
-import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator } from '@betfinio/components/ui';
+import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator, toast } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBalance } from 'betfinio_context/lib/query';
 import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide-react';
@@ -101,10 +100,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	const handleBuy = async () => {
 		if (balance < totalAmount) {
-			toast({
-				title: 'Insufficient balance, bro',
-				variant: 'destructive',
-			});
+			toast.error('Insufficient balance, bro');
 			return;
 		}
 		try {

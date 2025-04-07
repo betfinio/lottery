@@ -30,7 +30,7 @@ export const JackpotStarsSpread: FC<Props> = ({ animate = true }) => {
 	}
 
 	return (
-		<AnimatePresence>
+		<AnimatePresence mode="popLayout">
 			{stars.map((star, index) => (
 				<motion.g
 					key={index}

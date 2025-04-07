@@ -1,5 +1,5 @@
 import { cn } from '@betfinio/components';
-import { useToast } from '@betfinio/components/hooks';
+import { toast } from '@betfinio/components/ui';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 
@@ -10,15 +10,10 @@ interface CopyLocationProps {
 	children?: React.ReactNode;
 }
 export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toastMessage, className, iconClassName, children }, ref) => {
-	const { toast } = useToast();
-
 	const [addressCopied, setAddressCopied] = useState(false);
 
 	const handleCopyRoundAddress = async () => {
-		toast({
-			title: toastMessage,
-			variant: 'default',
-		});
+		toast.success(toastMessage);
 		await navigator.clipboard.writeText(location.href);
 		setAddressCopied(true);
 		setTimeout(() => {

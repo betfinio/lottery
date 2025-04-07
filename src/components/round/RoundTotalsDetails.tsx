@@ -1,7 +1,7 @@
 import { useGetRoundFromParams, useLinesCount, useRoundDetails, useRoundJackpots, useTicketPrice } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
+import { Bag } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
-import { Bag } from '@betfinio/ui/dist/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Ticket from '../icons/Ticket.tsx';
@@ -33,8 +33,8 @@ export function RoundTotalsDetails() {
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3 md:col-span-2">
 				<Ticket className="w-12 h-12 md:w-16 md:h-16 text-primary" />
 				<div className="flex flex-col items-center">
-					<BetValue className={cn('text-xl', { 'blur animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
-					<div className={cn('hidden md:block', { 'blur animated-pulse': isLinesLoading })}>
+					<BetValue className={cn('text-xl', { 'blur-sm animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
+					<div className={cn('hidden md:block', { 'blur-sm animated-pulse': isLinesLoading })}>
 						{Number(lines)} {t('lines')}
 					</div>
 				</div>
@@ -50,7 +50,7 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur animated-pulse': isLinesLoading || isPriceLoading,
+							'blur-sm animated-pulse': isLinesLoading || isPriceLoading,
 							'text-success': paidToStaking > 0n,
 							'text-destructive': paidToStaking < 0n,
 						})}

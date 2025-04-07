@@ -23,8 +23,8 @@ export const ClaimingProgressBar = () => {
 
 	return (
 		<div className="w-full flex flex-wrap items-center gap-2 md:gap-3 lg:gap-4 mt-4">
-			<div className="flex flex-grow items-center gap-x-6 flex-wrap">
-				<div className="flex-grow min-w-64">
+			<div className="flex grow items-center gap-x-6 flex-wrap">
+				<div className="grow min-w-64">
 					<Progress value={progressPercentage} />
 				</div>
 			</div>

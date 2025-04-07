@@ -56,7 +56,7 @@ function SharedLine({
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
 					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number, index))}>
-						<AnimatePresence mode="wait" custom={array[index]}>
+						<AnimatePresence mode="popLayout" custom={array[index]}>
 							<motion.div
 								key={number}
 								custom={array[index]}
@@ -91,7 +91,7 @@ function SharedLine({
 				animate={symbolControls}
 			>
 				<NumberComponent isSymbol className={cn(symbolClassName)}>
-					<AnimatePresence mode="wait">
+					<AnimatePresence mode="popLayout">
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}
 							custom={line.symbol}

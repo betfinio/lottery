@@ -68,7 +68,7 @@ const Pagination = <T,>({ items, itemsPerPage = 3, renderItem, className, additi
 		<AnimatePresence mode="sync">
 			<motion.div className={cn('h-full', className)}>
 				{items.slice(offset, offset + itemsPerPage).map((item, index) => renderItem(item, index + offset, items.slice(offset, offset + itemsPerPage)))}
-				<div className={'flex flex-row justify-between py-2 items-end row-span-1 row-start-13 flex-grow'}>
+				<div className={'flex flex-row justify-between py-2 items-end row-span-1 row-start-13 grow'}>
 					{additionalFooter}
 					<ChevronLeft className={cn('w-5 h-5 cursor-pointer', offset === 0 && 'text-muted-foreground')} onClick={handlePrev} />
 					<div className={'flex flex-row gap-1 justify-end'}>

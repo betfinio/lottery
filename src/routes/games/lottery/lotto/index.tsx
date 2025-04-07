@@ -9,7 +9,7 @@ import { useRoundState } from '@/src/lib/query/state';
 import { RoundState } from '@/src/lib/types';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
-import { Toaster } from '@betfinio/components/ui';
+import { SonnerToaster as Toaster } from '@betfinio/components/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 

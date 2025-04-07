@@ -43,7 +43,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 		<>
 			<motion.div
 				initial={{ opacity: 0, scale: 0.7 }}
-				animate={{ opacity: 1, scale: 1, rotateX: editMode ? 90 : 0 }}
+				animate={{ opacity: 1, scale: 1 }}
 				exit={{ opacity: 0, scale: 0.7 }}
 				transition={{ duration: 0.2, ease: 'easeInOut', delay: editMode ? 0 : 0.2 }}
 				style={{ transformStyle: 'preserve-3d' }}
@@ -124,7 +124,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
 				className={cn(
-					'absolute top-5 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
+					'absolute top-1 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
 					{
 						grayscale: !isFilled,
 					},
@@ -145,9 +145,9 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				})}
 			/>
 
-			<div className={'relative h-5 z-[1]'}>
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-[2]'} />
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-[2]'} />
+			<div className={'relative h-5 z-1'}>
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-2'} />
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-2'} />
 				<div className={'border border-dashed border-t-0 w-full top-2 border-purple-box absolute'} />
 			</div>
 			{isNew ? renderNewFooter() : renderRegularFooter()}

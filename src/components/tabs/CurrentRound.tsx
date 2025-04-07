@@ -28,7 +28,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { data: potentialJackpot = 0n, refetch: refetchPotentialJackpot } = usePotentialJackpot(round.address);
 	const { data: subscriptionId } = useSubscriptionId();
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
-	const animationRef = useRef<NodeJS.Timer>();
+	const animationRef = useRef<NodeJS.Timeout>(undefined);
 	const totalJackpot = useMemo(
 		() => round.ticketPrice * BigInt(MAX_SHARES) + additionalJackpot + potentialJackpot,
 		[round, additionalJackpot, potentialJackpot],
@@ -137,7 +137,7 @@ function Stats({ round }: { round: IRound }) {
 	const [displayedLines, setDisplayedLines] = useState(0);
 	const [displayedPlayers, setDisplayedPlayers] = useState(0);
 	const [displayedBank, setDisplayedBank] = useState(0n);
-	const animationRef = useRef<NodeJS.Timer>();
+	const animationRef = useRef<NodeJS.Timeout>(undefined);
 
 	useEffect(() => {
 		if (animationRef.current) {

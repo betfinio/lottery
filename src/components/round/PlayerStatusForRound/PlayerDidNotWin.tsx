@@ -38,13 +38,13 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 				<div className="text-base font-semibold">{t('youCouldWin')}</div>
 				<div
 					className={cn('text-2xl font-semibold text-secondary-foreground', {
-						'animate-pulse blur': isFetchingTickets || isTicketPriceLoading,
+						'animate-pulse blur-sm': isFetchingTickets || isTicketPriceLoading,
 					})}
 				>
 					<BetValue value={youCouldWinAmount} withIcon withMillify={false} />
 				</div>
 			</div>
-			<div className="flex gap-4 items-end w-full flex-grow">
+			<div className="flex gap-4 items-end w-full grow">
 				<StatBox
 					className="w-full min-w-14"
 					isLoading={isLoading}

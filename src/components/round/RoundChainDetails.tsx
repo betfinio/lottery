@@ -32,7 +32,7 @@ export const RoundChainDetails: FC = () => {
 					href={`${ETHSCAN}/tx/${transactionHash}`}
 					target={'_blank'}
 					className={cn('block text-center underline cursor-pointer hover:text-secondary-foreground duration-300', {
-						' blur': isLoading,
+						' blur-sm': isLoading,
 					})}
 					rel="noreferrer"
 				>
