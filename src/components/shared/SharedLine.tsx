@@ -35,7 +35,7 @@ function SharedLine({
 		if (symbolUnlocked && filled3 && line.symbol !== 0) {
 			symbolControls.start({
 				scale: [1, 1.2, 1],
-				boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
+				boxShadow: ['0 0 0 0 var(--primary)', '0 0 20px 10px var(--primary)', '0 0 20px 1px var(--primary)'],
 				transition: {
 					duration: 1.6,
 					times: [0, 0.5, 0.6],
@@ -45,7 +45,7 @@ function SharedLine({
 		} else {
 			symbolControls.start({
 				scale: 1,
-				boxShadow: '0 0 0 0 hsl(var(--primary))',
+				boxShadow: '0 0 0 0 var(--primary)',
 			});
 		}
 	}, [symbolUnlocked, filled3, line.symbol]);
@@ -56,7 +56,7 @@ function SharedLine({
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
 					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number, index))}>
-						<AnimatePresence mode="popLayout" custom={array[index]}>
+						<AnimatePresence mode="wait" custom={array[index]}>
 							<motion.div
 								key={number}
 								custom={array[index]}
@@ -91,7 +91,7 @@ function SharedLine({
 				animate={symbolControls}
 			>
 				<NumberComponent isSymbol className={cn(symbolClassName)}>
-					<AnimatePresence mode="popLayout">
+					<AnimatePresence mode="wait">
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}
 							custom={line.symbol}
@@ -111,8 +111,8 @@ function SharedLine({
 						>
 							<SymbolElement symbol={line.symbol} />
 						</motion.div>
-						<div className={cn({ 'w-8 h-1 bg-destructive absolute rotate-45 top-3.5 left-0': disableSymbol && line.symbol !== 0 })} />
 					</AnimatePresence>
+					<div className={cn({ 'w-8 h-1 bg-destructive absolute rotate-45 top-3.5 left-0': disableSymbol && line.symbol !== 0 })} />
 				</NumberComponent>
 			</motion.div>
 		</div>

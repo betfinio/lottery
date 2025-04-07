@@ -124,7 +124,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		<div className={cn('bg-secondary border border-purple-box rounded-lg mt-4 py-2 ')}>
 			<div
 				className={cn(
-					'absolute top-1 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
+					'absolute top-5 left-1/2 -translate-y-4 flex items-center justify-center text-primary-foreground font-semibold -translate-x-1/2 rounded-full shiny-gold w-7 h-7',
 					{
 						grayscale: !isFilled,
 					},
@@ -157,7 +157,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 
 export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; className?: string }>> = ({ children, isSymbol = false, className = '' }) => {
 	return (
-		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol }, className)} role="presentation">
+		<svg height="33" width="33" className={cn(className, { 'regular-number': !isSymbol, 'symbol-number': isSymbol })} role="presentation">
 			<polygon
 				points="10 1, 23 1, 32 10, 32 22,
 				23 32, 10 32, 1 23, 1 10"

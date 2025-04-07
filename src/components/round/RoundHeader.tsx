@@ -34,7 +34,7 @@ export const RoundHeader = () => {
 				<div>
 					<div
 						className={cn('text-sm text-tertiary-foreground', {
-							'animate-pulse blur-sm': isRoundDetailsLoading,
+							'animate-pulse blur-xs': isRoundDetailsLoading,
 						})}
 					>
 						{getTimeFromSeconds(roundDetails?.finish || 1)}

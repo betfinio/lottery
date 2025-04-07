@@ -1,5 +1,4 @@
 import './globals.css';
-import '@betfinio/components/style.css';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import ReactDOM from 'react-dom/client';
 

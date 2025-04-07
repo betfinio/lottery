@@ -38,7 +38,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 				<div className="text-base font-semibold">{t('youCouldWin')}</div>
 				<div
 					className={cn('text-2xl font-semibold text-secondary-foreground', {
-						'animate-pulse blur-sm': isFetchingTickets || isTicketPriceLoading,
+						'animate-pulse blur-xs': isFetchingTickets || isTicketPriceLoading,
 					})}
 				>
 					<BetValue value={youCouldWinAmount} withIcon withMillify={false} />

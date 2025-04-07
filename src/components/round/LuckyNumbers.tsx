@@ -60,7 +60,7 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	}, [currentLine, winningNumbersToShow, winningSymbolToShow]);
 
 	return (
-		<div className={cn({ 'blur-sm animated-pulse': isFetching || !line })}>
+		<div className={cn({ 'blur-xs animated-pulse': isFetching || !line })}>
 			<Line
 				line={line}
 				disableSymbol={false}

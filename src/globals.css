@@ -1,17 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap") layer(base);
-
+@import "@betfinio/components/globals.css";
 @import "tailwindcss";
+@import "tw-animate-css";
 
-@config '../tailwind.config.js';
+@config "../tailwind.config.ts";
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
 	*,
 	::after,
@@ -26,22 +18,16 @@
 	* {
 		user-select: none;
 		touch-action: manipulation;
+		font-family: "Quicksand", sans-serif;
 	}
 }
 
 @layer base {
 	:root {
-		--gold: 45 89% 52%;
-		--silver: 0, 0%, 86%;
-		--bronze: 33, 57%, 56%;
-		--aura: 48, 100%, 89%;
-	}
-
-	.dark {
-		--gold: 45 89% 52%;
-		--silver: 0, 0%, 86%;
-		--bronze: 33, 57%, 56%;
-		--aura: 48, 100%, 89%;
+		--gold: hsl(45 89% 52%);
+		--silver: hsl(0, 0%, 86%);
+		--bronze: hsl(33, 57%, 56%);
+		--aura: hsl(48, 100%, 89%);
 	}
 }
 
@@ -52,6 +38,9 @@
 .regular-number {
 	color: hsla(228, 11%, 47%, 0.3);
 	stroke: hsla(228, 11%, 47%, 1);
+}
+.stroke-success {
+	stroke: var(--success);
 }
 
 .symbol-number {

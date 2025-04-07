@@ -33,8 +33,8 @@ export function RoundTotalsDetails() {
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3 md:col-span-2">
 				<Ticket className="w-12 h-12 md:w-16 md:h-16 text-primary" />
 				<div className="flex flex-col items-center">
-					<BetValue className={cn('text-xl', { 'blur-sm animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
-					<div className={cn('hidden md:block', { 'blur-sm animated-pulse': isLinesLoading })}>
+					<BetValue className={cn('text-xl', { 'blur-xs animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
+					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isLinesLoading })}>
 						{Number(lines)} {t('lines')}
 					</div>
 				</div>
@@ -50,7 +50,7 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur-sm animated-pulse': isLinesLoading || isPriceLoading,
+							'blur-xs animated-pulse': isLinesLoading || isPriceLoading,
 							'text-success': paidToStaking > 0n,
 							'text-destructive': paidToStaking < 0n,
 						})}

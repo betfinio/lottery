@@ -18,7 +18,7 @@ export const TicketGridOfSymbols: FC<TicketGridOfSymbolsProps> = ({ symbol, numb
 					animate={
 						symbol === index + 1 && numbers.length === 5
 							? {
-									boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 2px hsl(var(--primary))'],
+									boxShadow: ['0 0 0 0 var(--primary)', '0 0 20px 10px var(--primary)', '0 0 20px 2px var(--primary)'],
 									scale: [1, 1.2, 1],
 								}
 							: {

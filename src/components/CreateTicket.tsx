@@ -58,7 +58,7 @@ const CreateTicket = () => {
 						symbolUnlocked
 							? {
 									scale: [1, 1.2, 1],
-									textShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
+									textShadow: ['0 0 0 0 var(--primary)', '0 0 20px 10px var(--primary)', '0 0 20px 1px var(--primary)'],
 								}
 							: {
 									scale: 1,
