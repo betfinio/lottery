@@ -22,12 +22,12 @@ const DrawInfo = () => {
 		<div className={'w-full rounded-lg col-span-3 md:col-span-1 flex  flex-col relative h-[593px]'}>
 			<Tabs value={tab} onValueChange={(value) => setTab(value as DrawTab)} className={'w-full grow flex flex-col h-full'}>
 				<TabsList className={'w-full flex flex-row items-center justify-between'}>
-					<div className={'grid grid-cols-3 gap-2'}>
+					<div className={'grid grid-cols-3 gap-2 w-full'}>
 						<TabsTrigger value={'draw'}>{t('currentDraw')}</TabsTrigger>
 						<TabsTrigger value={'active'}>{t('activeTickets')}</TabsTrigger>
 						<TabsTrigger value={'old'}>{t('oldTickets')}</TabsTrigger>
 					</div>
-					<TabsTrigger value={'bonus'} className={'p-0 w-[34px] aspect-square'}>
+					<TabsTrigger value={'bonus'} className={'p-0 size-[34px] aspect-square'}>
 						<BonusTabIcon />
 					</TabsTrigger>
 				</TabsList>

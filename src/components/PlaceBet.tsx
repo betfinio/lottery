@@ -1,7 +1,16 @@
-import { linesAvailabilityQuery, useActiveRounds, useDraftLines, useLinesAvailability, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import {
+	linesAvailabilityQuery,
+	useActiveRounds,
+	useDraftLines,
+	useFreeLinesCount,
+	useLinesAvailability,
+	useSelectedRound,
+	useTicketPrice,
+} from '@/src/lib/query';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
+import { Ticket } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
@@ -51,7 +60,7 @@ const PlaceBet = () => {
 	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
 	const { address = ZeroAddress } = useAccount();
 	const { data: draftLines = [] } = useDraftLines();
-	const { data: balance = 0n } = useBalance(address);
+	const { data: freeLinesCount = 0n } = useFreeLinesCount(address);
 	const { data: isMember = false } = useIsMember(address);
 
 	// State
@@ -74,6 +83,8 @@ const PlaceBet = () => {
 	const isValidRecipient = recipient && isAddress(recipient as string, { strict: false });
 	const roundsAsDates = rounds.map((e: IRound) => new Date(e.finish * 1000));
 	const selectedDates = selectedRounds.map((e) => new Date(e.finish * 1000));
+	const maxFreeLinesToUse = BigInt(Math.min(Number(freeLinesCount), draftLines.length * selectedRounds.length));
+	const displayTotalAmount = totalAmount - maxFreeLinesToUse * ticketPrice;
 
 	const getHasCollisions = async () => {
 		const queries = selectedRounds.map((round) => {
@@ -276,7 +287,18 @@ const PlaceBet = () => {
 						<motion.div initial={{ scale: 0 }} animate={{ scale: isOpen ? 1 : 0 }} exit={{ scale: 0 }}>
 							<LoaderIcon className={'w-4 h-4 animate-spin'} />
 						</motion.div>
-						{t('placeBet.proceedFor')} <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
+						{t('placeBet.proceedFor')}
+						{displayTotalAmount > 0n && (
+							<BetValue value={displayTotalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
+						)}
+						{maxFreeLinesToUse > 0n && (
+							<>
+								{displayTotalAmount > 0n && '+'}
+								<div className={'flex flex-row gap-1 items-center'}>
+									{maxFreeLinesToUse} <Ticket className={'w-4 h-4 text-success-foreground'} />
+								</div>
+							</>
+						)}
 					</Button>
 					<BuySteps buy={{ lines, recipient: realRecipient, rounds: selectedRounds.map((e) => e.address) }} isOpen={isOpen} setIsOpen={setIsOpen} />
 				</div>

@@ -28,7 +28,7 @@ export function LotteryPage() {
 	return (
 		<div className={'lottery overflow-hidden'}>
 			<Watchers />
-			<div className={'flex flex-col items-center gap-2 md:gap-3 lg:gap-4 py-2 md:py-3 lg:py-4'}>
+			<div className={'flex flex-col items-center gap-2 md:gap-3 lg:gap-4 p-2 2xl:px-0 md:py-3 lg:py-4'}>
 				<Header />
 				<div className={'grid grid-cols-6 grid-rows-2 md:grid-rows-1 grid-auto-rows gap-6 w-full md:h-[593px]'}>
 					<AnimatePresence mode={'popLayout'}>

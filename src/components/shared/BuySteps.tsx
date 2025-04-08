@@ -45,6 +45,8 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	const { data: freeLines = 0n } = useFreeLinesCount(address ?? ZeroAddress);
 
+	const maxFreeLinesToUse = BigInt(Math.min(Number(freeLines), buy.lines.length * buy.rounds.length));
+
 	// Mutations
 	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
 	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy, data } = useBuyTicket();
@@ -58,7 +60,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		}
 	}, [isOpen]);
 
-	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice - freeLines * ticketPrice;
+	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice - maxFreeLinesToUse * ticketPrice;
 
 	// Auto-advance to buy step if already unlocked
 	useEffect(() => {
@@ -76,6 +78,11 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			setTickets([EMPTY_LINE]);
 			shootConfetti();
 			updateState(RoundState.FILLING);
+
+			if (buy.recipient.toLowerCase() !== address?.toLowerCase()) {
+				return;
+			}
+
 			setTab('active');
 
 			console.log('data', data);
@@ -86,6 +93,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 					...old.filter((ot) => !newTickets.some((nt) => nt.token === ot.token)), // Remove duplicates
 				]);
 			});
+			setStep('buy');
 		}
 	}, [step, address, queryClient]);
 
@@ -177,9 +185,9 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 									Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
 								</div>
 							</div>
-							{freeLines > 0n && (
+							{maxFreeLinesToUse > 0n && (
 								<div className="text-sm text-muted-foreground text-center">
-									Your <span className=" text-primary">{Number(freeLines)} free lines</span> will be used
+									Your <span className=" text-primary">{Number(maxFreeLinesToUse)} free lines</span> will be used
 								</div>
 							)}
 							{/* Action buttons */}

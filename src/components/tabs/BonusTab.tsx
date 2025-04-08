@@ -113,8 +113,8 @@ export function BonusTabIcon() {
 	if (freeLinesCount > 0) {
 		return (
 			<div className={'flex flex-row items-center gap-1 relative'}>
-				<Ticket className={'w-4 h-4 text-success'} />
-				<Badge variant="destructive" className={'text-xs  absolute -top-4 -right-4  rounded-full px-1'}>
+				{/* <Ticket className={'w-4 h-4 text-success'} /> */}
+				<Badge variant="destructive" className={'text-xs min-w-4.5 justify-center rounded-full px-1'}>
 					{Number(freeLinesCount) > 9 ? '9+' : Number(freeLinesCount)}
 				</Badge>
 			</div>
