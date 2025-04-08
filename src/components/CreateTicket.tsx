@@ -31,7 +31,7 @@ const CreateTicket = () => {
 	return (
 		<section
 			className={cn('w-full md:h-full border border-border rounded-xl p-3  bg-background-lighter relative h-[593px] flex flex-col justify-between', {
-				'border-2 border-primary/70 bg-background-light': state === RoundState.FILLING,
+				'border-2 border-primary bg-background-light': state === RoundState.FILLING,
 				'border border-foreground/50': isDisabled,
 			})}
 		>
