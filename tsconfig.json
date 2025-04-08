@@ -1,23 +1,24 @@
 {
 	"compilerOptions": {
 		"target": "ES2022",
-		"lib": ["DOM", "ES2020", "ES2023"],
+		"lib": ["DOM", "ES2020", "es2023"],
 		"module": "ESNext",
 		"jsx": "react-jsx",
-		"rootDir": "./",
 		"noEmit": true,
 		"strict": true,
 		"skipLibCheck": true,
 		"isolatedModules": true,
-		"resolveJsonModule": true,
-		"moduleResolution": "bundler",
 		"declaration": false,
+		"rootDir": "./",
+		"moduleResolution": "bundler",
 		"useDefineForClassFields": true,
 		"allowImportingTsExtensions": true,
+		"baseUrl": ".",
+		"resolveJsonModule": true,
 		"paths": {
 			"*": ["./@mf-types/*"],
 			"@/*": ["./*"]
 		}
 	},
-	"include": ["src", "src/components/icons/index.ts"]
+	"include": ["src"]
 }
