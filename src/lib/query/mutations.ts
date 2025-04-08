@@ -163,7 +163,7 @@ export const useBuyTicket = () => {
 						await waitForTransactionReceipt(config, {
 							hash: data,
 						});
-						await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+						await queryClient.invalidateQueries({ queryKey: ['lottery'] });
 					},
 					{
 						loading: t('buyTicket.sent.title'),

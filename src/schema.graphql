@@ -81,7 +81,7 @@ fragment Jackpot on Jackpot {
 	combination
 	claimed
 
-	tickets {
+	tickets(first: 1000) {
 		tokenId
 		owner
 		betAddress
