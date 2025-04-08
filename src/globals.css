@@ -1,5 +1,5 @@
-@import "@betfinio/components/globals.css";
 @import "tailwindcss";
+@import "@betfinio/components/globals.css";
 @import "tw-animate-css";
 
 @config "../tailwind.config.ts";
@@ -41,29 +41,22 @@
 	}
 }
 
-.shiny-gold {
-	background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
-}
+@layer utilities {
+	.regular-number {
+		color: hsla(228, 11%, 47%, 0.3);
+		stroke: hsla(228, 11%, 47%, 1);
+	}
 
-.regular-number {
-	color: hsla(228, 11%, 47%, 0.3);
-	stroke: hsla(228, 11%, 47%, 1);
-}
-.stroke-success {
-	stroke: var(--success) !important;
-}
-.stroke-destructive {
-	stroke: var(--destructive) !important;
-}
-.stroke-primary {
-	stroke: var(--primary) !important;
-}
+	.symbol-number {
+		stroke: hsla(33, 67%, 48%, 1);
+		color: hsla(33, 67%, 48%, 0.3);
+	}
 
-.symbol-number {
-	stroke: hsla(33, 67%, 48%, 1);
-	color: hsla(33, 67%, 48%, 0.3);
-}
+	.shiny-gold {
+		background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
+	}
 
-.create-shadow {
-	box-shadow: 0 0 40px -10px #c6a152;
+	.create-shadow {
+		box-shadow: 0 0 40px -10px #c6a152;
+	}
 }
