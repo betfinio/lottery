@@ -1,13 +1,12 @@
 // @ts-ignore
 import Countdown from '@/src/components/Countdown.tsx';
 import { ENVIRONMENT, ETHSCAN, LOTTERY_ADDRESS, MAX_SHARES } from '@/src/globals.ts';
-import { useActiveRounds, useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus, useSubscriptionId } from '@/src/lib/query';
+import { useAdditionalJackpot, usePotentialJackpot, useRoundFinish, useRoundStatus, useSubscriptionId } from '@/src/lib/query';
 import { type IRound, RoundStatus } from '@/src/lib/types.ts';
 import { LotteryRoundABI, truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { useNavigate } from '@tanstack/react-router';
 import { HelpCircleIcon, HexagonIcon, TicketIcon, UserIcon } from 'lucide-react';
 import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

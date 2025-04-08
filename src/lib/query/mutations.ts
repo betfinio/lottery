@@ -16,10 +16,10 @@ import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
 import { ZeroAddress } from '@betfinio/abi';
 import { toast } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
+import { waitForTransactionReceipt } from '@wagmi/core';
 import { getTransactionLink } from 'betfinio_context/lib/helpers';
 import { useTranslation } from 'react-i18next';
 import type { Address, WriteContractErrorType, WriteContractReturnType } from 'viem';
-import { waitForTransactionReceipt } from 'viem/actions';
 import { useAccount, useConfig } from 'wagmi';
 import { useMutation } from 'wagmi/query';
 
@@ -41,7 +41,7 @@ export const useUnlockMultibet = () => {
 			if (data !== undefined) {
 				toast.promise(
 					async () => {
-						await waitForTransactionReceipt(config.getClient(), {
+						await waitForTransactionReceipt(config, {
 							hash: data,
 						});
 						await queryClient.invalidateQueries({ queryKey: ['lottery', 'allowance'] });
@@ -73,7 +73,7 @@ export const useUnlockEdit = () => {
 			if (data !== undefined) {
 				toast.promise(
 					async () => {
-						await waitForTransactionReceipt(config.getClient(), {
+						await waitForTransactionReceipt(config, {
 							hash: data,
 						});
 						await queryClient.invalidateQueries({ queryKey: ['lottery', 'allowance'] });
@@ -115,18 +115,21 @@ export const useUpdateTicket = () => {
 			}
 		},
 		onSuccess: async (data) => {
+			console.log('data', data);
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					console.log('showing toast');
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'all'] });
 				};
-				await toast.promise(promise, {
+				toast.promise(promise, {
 					loading: t('editTicket.sent.title'),
 					success: t('editTicket.sent.description'),
 					error: errors('unknown'),
+					action: getTransactionLink(data),
 				});
 			} else {
 				toast.error(errors('unknown'));
@@ -155,19 +158,20 @@ export const useBuyTicket = () => {
 		},
 		onSuccess: async (data) => {
 			if (data !== undefined) {
-				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
-						hash: data,
-					});
-					// update table key
-					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
-					return data;
-				};
-				await toast.promise(promise, {
-					loading: t('buyTicket.sent.title'),
-					success: t('buyTicket.sent.description'),
-					error: errors('unknown'),
-				});
+				toast.promise(
+					async () => {
+						await waitForTransactionReceipt(config, {
+							hash: data,
+						});
+						await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+					},
+					{
+						loading: t('buyTicket.sent.title'),
+						success: t('buyTicket.sent.description'),
+						error: errors('unknown'),
+						action: getTransactionLink(data),
+					},
+				);
 			} else {
 				toast.error(errors('unknown'));
 			}
@@ -191,7 +195,7 @@ export const useSendTicket = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
@@ -223,7 +227,7 @@ export const useManualRequest = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
@@ -254,7 +258,7 @@ export const useManualRefund = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
@@ -285,7 +289,7 @@ export const useManualDistributeRefund = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
@@ -316,7 +320,7 @@ export const useManualDistributeJackpot = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
@@ -347,7 +351,7 @@ export const useClaimTicket = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery'] });
@@ -366,7 +370,6 @@ export const useClaimTicket = () => {
 
 export const useLoadMintedTokens = () => {
 	const config = useConfig();
-	const queryClient = useQueryClient();
 	return useMutation<IRoundTicket[], never, { hash: Address }>({
 		mutationKey: ['lottery', 'ticketsByHash'],
 		mutationFn: ({ hash }) => getMintedTokensByHash(hash, config),
@@ -387,7 +390,7 @@ export const useClaimUnclaimedTickets = () => {
 		onSuccess: async (data) => {
 			if (data !== undefined) {
 				const promise = async () => {
-					await waitForTransactionReceipt(config.getClient(), {
+					await waitForTransactionReceipt(config, {
 						hash: data,
 					});
 					await queryClient.invalidateQueries({ queryKey: ['lottery', 'unclaimedTickets'] });
@@ -396,6 +399,7 @@ export const useClaimUnclaimedTickets = () => {
 					loading: t('sent.title'),
 					success: t('sent.description'),
 					error: errors('unknown'),
+					action: getTransactionLink(data),
 				});
 			} else {
 				toast.error(errors('unknown'));

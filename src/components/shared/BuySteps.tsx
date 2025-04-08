@@ -78,6 +78,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			updateState(RoundState.FILLING);
 			setTab('active');
 
+			console.log('data', data);
 			// Merge fresh on-chain data with subgraph data
 			logsByHash({ hash: data as Address }).then((newTickets) => {
 				queryClient.setQueryData<IRoundTicket[]>(['lottery', 'tickets', 'active', address?.toLowerCase()], (old = []) => [

@@ -139,15 +139,15 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				symbolUnlocked={symbolUnlocked}
 				className={'flex flex-row gap-2 m-2 my-4 items-center justify-center cursor-pointer'}
 				disableSymbol={!symbolUnlocked}
-				symbolClassName={cn('stroke-primary text-primary/30', {
+				symbolClassName={cn('stroke-destructive text-primary/30', {
 					'stroke-primary text-primary/30': symbolUnlocked,
 					'stroke-destructive stroke-2': !symbolUnlocked && ticket.symbol !== 0,
 				})}
 			/>
 
 			<div className={'relative h-5 z-1'}>
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-2'} />
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-2'} />
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-2.5 bg-background z-2'} />
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-2.5 bg-background z-2'} />
 				<div className={'border border-dashed border-t-0 w-full top-2 border-purple-box absolute'} />
 			</div>
 			{isNew ? renderNewFooter() : renderRegularFooter()}
