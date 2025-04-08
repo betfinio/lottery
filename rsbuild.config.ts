@@ -13,6 +13,9 @@ export default defineConfig({
 		cors: {
 			origin: '*',
 		},
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+		},
 	},
 	dev: {
 		assetPrefix: `http://localhost:${PORT}`,
