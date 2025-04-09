@@ -1,7 +1,7 @@
 import '@/src/globals.css';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import ReactDOM from 'react-dom/client';
-
+import 'betfinio_context/style';
 import { routeTree } from './routeTree.gen';
 
 export const router = createRouter({ routeTree, scrollRestoration: true });

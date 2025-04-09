@@ -1,6 +1,5 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router';
-import 'betfinio_context/style';
 import i18n from '@/src/i18n.ts';
+import { Outlet, createRootRoute } from '@tanstack/react-router';
 import MockRoot from 'betfinio_context/components/MockRoot';
 import { GlobalContextProvider } from 'betfinio_context/lib/context';
 import { I18nextProvider } from 'react-i18next';

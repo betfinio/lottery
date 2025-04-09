@@ -1,10 +1,10 @@
-@import "tailwindcss";
+@import "tailwindcss" important;
 @import "@betfinio/components/globals.css";
 @import "tw-animate-css";
 
-@config "../tailwind.config.ts";
+@config '../tailwind.config.ts';
 
-@theme inline {
+@theme inline layer(base) {
 	--color-gold: var(--gold);
 	--color-silver: var(--silver);
 	--color-bronze: var(--bronze);
@@ -20,19 +20,8 @@
 	::before,
 	::backdrop,
 	::file-selector-button {
-		border-color: var(--color-gray-200, currentcolor);
+		border-color: var(--color-border, currentcolor);
 	}
-}
-
-@layer utilities {
-	* {
-		user-select: none;
-		touch-action: manipulation;
-		font-family: "Quicksand", sans-serif;
-	}
-}
-
-@layer base {
 	:root {
 		--gold: hsl(45 89% 52%);
 		--silver: hsl(0, 0%, 86%);
@@ -41,17 +30,17 @@
 	}
 }
 
+@utility symbol-number {
+	stroke: hsla(33, 67%, 48%, 1);
+	color: hsla(33, 67%, 48%, 0.3);
+}
+
+@utility regular-number {
+	color: hsla(228, 11%, 47%, 0.3);
+	stroke: hsla(228, 11%, 47%, 1);
+}
+
 @layer utilities {
-	.regular-number {
-		color: hsla(228, 11%, 47%, 0.3);
-		stroke: hsla(228, 11%, 47%, 1);
-	}
-
-	.symbol-number {
-		stroke: hsla(33, 67%, 48%, 1);
-		color: hsla(33, 67%, 48%, 0.3);
-	}
-
 	.shiny-gold {
 		background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
 	}
