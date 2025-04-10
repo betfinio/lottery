@@ -37,7 +37,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 						<BetValue
 							withIcon
 							className={cn({
-								'animate-pulse blur': isLoading,
+								'animate-pulse blur-xs': isLoading,
 							})}
 							value={BigInt(currentJackpot?.claimed ?? 0)}
 						/>

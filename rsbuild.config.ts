@@ -10,6 +10,12 @@ const PORT = 4007;
 export default defineConfig({
 	server: {
 		port: PORT,
+		cors: {
+			origin: '*',
+		},
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+		},
 	},
 	dev: {
 		assetPrefix: `http://localhost:${PORT}`,
@@ -76,6 +82,10 @@ export default defineConfig({
 				'@privy-io/wagmi': {
 					singleton: true,
 					requiredVersion: dependencies['@privy-io/wagmi'],
+				},
+				'@betfinio/components': {
+					singleton: true,
+					requiredVersion: dependencies['@betfinio/components'],
 				},
 			},
 		}),

@@ -40,7 +40,7 @@ function PayoutContent() {
 							<XIcon className={'w-4 h-4'} />
 						</DialogClose>
 					</DialogTitle>
-					<DialogDescription>
+					<DialogDescription asChild>
 						<div className={'gap-2 text-center items-center'}>
 							<div className={'grid grid-cols-4 gap-2 text-center items-center py-2'}>
 								<div className={'text-muted-foreground hidden md:block'}>{t('name')}</div>

@@ -5,7 +5,6 @@ import { type ActiveTicketMode, type ILine, type IRoundTicket, RoundStatus } fro
 import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, Dialog, DialogContent, DialogTrigger } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
@@ -94,7 +93,7 @@ function Ticket({
 					opacity: 0,
 				}}
 				className={cn('border border-purple-box rounded-xl flex flex-col overflow-hidden', className, {
-					'bg-gradient-to-b from-background to-background via-primary/20 via-60% grid': isExpanded,
+					'bg-linear-to-b from-background to-background via-primary/20 via-60% grid': isExpanded,
 					'grid-rows-4': isExpanded && linesCount === 1,
 					'grid-rows-5': isExpanded && linesCount === 2,
 					'grid-rows-6': isExpanded && linesCount === 3,

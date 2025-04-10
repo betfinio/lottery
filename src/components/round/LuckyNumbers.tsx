@@ -1,7 +1,7 @@
 import Line from '@/src/components/shared/SharedLine';
 import { useWinningLine } from '@/src/lib/query';
 import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
-import type { ILine } from '@/src/lib/types';
+import { EMPTY_LINE, type ILine } from '@/src/lib/types';
 import { randomize } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { type FC, useEffect, useMemo, useState } from 'react';
@@ -12,7 +12,7 @@ interface LuckyNumbersProps {
 }
 export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	const { isFetching } = useWinningLine(round);
-	const [currentLine, setCurrentLine] = useState<ILine>(randomize());
+	const [currentLine, setCurrentLine] = useState<ILine>(EMPTY_LINE);
 	const winningNumbers = useRoundFinishedNumbersSpitting(round);
 
 	const winningNumbersToShow = useMemo(() => {
@@ -25,7 +25,9 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	}, [winningNumbers.revealedNumbers]);
 
 	useEffect(() => {
-		if (winningNumbers.isComplete) return; // Stop animation when real data arrives
+		if (winningNumbers.isComplete) {
+			setCurrentLine({ numbers: winningNumbers.allNumbers.slice(0, 5), symbol: winningNumbers.allNumbers[5] });
+		} // Stop animation when real data arrives
 
 		const interval = setInterval(() => {
 			if (winningNumbersToShow.length > 0) {
@@ -60,7 +62,7 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	}, [currentLine, winningNumbersToShow, winningSymbolToShow]);
 
 	return (
-		<div className={cn({ 'blur animated-pulse': isFetching || !line })}>
+		<div className={cn({ 'blur-xs animated-pulse': isFetching || !line })}>
 			<Line
 				line={line}
 				disableSymbol={false}

@@ -1,9 +1,9 @@
 import { useDraftLines, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { EMPTY_LINE, type ILine, RoundState } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
-import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
-import { Badge, Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { toast } from '@betfinio/components/ui';
+import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { usePrivy } from '@privy-io/react-auth';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCircleIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
@@ -31,7 +31,7 @@ const CreateTicket = () => {
 	return (
 		<section
 			className={cn('w-full md:h-full border border-border rounded-xl p-3  bg-background-lighter relative h-[593px] flex flex-col justify-between', {
-				'border-2 border-primary/70 bg-background-light': state === RoundState.FILLING,
+				'border-2 border-primary bg-background-light': state === RoundState.FILLING,
 				'border border-foreground/50': isDisabled,
 			})}
 		>
@@ -48,7 +48,7 @@ const CreateTicket = () => {
 			<nav className={'flex justify-between'}>
 				<div
 					className={cn('flex flex-row items-center gap-1', {
-						'animate-pulse blur-sm': isLoading || isFetching,
+						'animate-pulse blur-xs': isLoading || isFetching,
 					})}
 				>
 					<BetValue value={price} withIcon withMillify={false} /> / {t('create.line')}
@@ -58,7 +58,7 @@ const CreateTicket = () => {
 						symbolUnlocked
 							? {
 									scale: [1, 1.2, 1],
-									textShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 1px hsl(var(--primary))'],
+									textShadow: ['0 0 0 0 var(--primary)', '0 0 20px 10px var(--primary)', '0 0 20px 1px var(--primary)'],
 								}
 							: {
 									scale: 1,
@@ -84,7 +84,7 @@ const CreateTicket = () => {
 					)}
 				</motion.div>
 			</nav>
-			<div className={'flex flex-col flex-grow'}>
+			<div className={'flex flex-col grow'}>
 				<TicketList />
 			</div>
 		</section>
@@ -115,12 +115,7 @@ const TicketList = () => {
 	};
 
 	const handleAddLine = () => {
-		if (draftTickets.length >= 9)
-			return toast({
-				title: 'Error',
-				description: 'Maximum is 9 lines per ticket',
-				variant: 'destructive',
-			});
+		if (draftTickets.length >= 9) return toast.error('Maximum is 9 lines per ticket');
 		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
 	};
 
@@ -130,25 +125,13 @@ const TicketList = () => {
 			return;
 		}
 		if (duplicates) {
-			return toast({
-				title: 'Error',
-				description: 'You can not proceed with duplicate lines',
-				variant: 'destructive',
-			});
+			return toast.error('You can not proceed with duplicate lines');
 		}
 		if (filledLines.length === 0) {
-			return toast({
-				title: 'Error',
-				description: 'You must fill at least one line',
-				variant: 'destructive',
-			});
+			return toast.error('You must fill at least one line');
 		}
 		if (filledLines.length !== draftTickets.length) {
-			return toast({
-				title: 'Error',
-				description: 'You must fill all lines',
-				variant: 'destructive',
-			});
+			return toast.error('You must fill all lines');
 		}
 		updateState(RoundState.PLACING);
 	};
@@ -213,7 +196,7 @@ const TicketList = () => {
 							</div>
 						)
 					}
-					className={'flex-grow flex flex-col justify-between'}
+					className={'grow flex flex-col justify-between'}
 					renderItem={(ticket: ILine, index: number) => (
 						<Line
 							key={index}
@@ -283,7 +266,6 @@ const TicketList = () => {
 };
 
 const MoreLinesTooltip = () => {
-	const { t } = useTranslation('lottery', { keyPrefix: 'create' });
 	return (
 		<TooltipProvider>
 			<Tooltip>

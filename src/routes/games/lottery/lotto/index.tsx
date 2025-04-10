@@ -9,7 +9,7 @@ import { useRoundState } from '@/src/lib/query/state';
 import { RoundState } from '@/src/lib/types';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
-import { Toaster } from '@betfinio/components/ui';
+import { SonnerToaster as Toaster } from '@betfinio/components/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -28,7 +28,7 @@ export function LotteryPage() {
 	return (
 		<div className={'lottery overflow-hidden'}>
 			<Watchers />
-			<div className={'p-2 md:p-3 lg:p-4 flex flex-col items-center gap-2 md:gap-3 lg:gap-4 2xl:pr-0'}>
+			<div className={'flex flex-col items-center gap-2 md:gap-3 lg:gap-4 p-2 2xl:px-0 md:py-3 lg:py-4'}>
 				<Header />
 				<div className={'grid grid-cols-6 grid-rows-2 md:grid-rows-1 grid-auto-rows gap-6 w-full md:h-[593px]'}>
 					<AnimatePresence mode={'popLayout'}>

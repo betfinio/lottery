@@ -5,9 +5,8 @@ import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
 import { shootConfetti } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { toast } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
-import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator } from '@betfinio/components/ui';
+import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator, toast } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBalance } from 'betfinio_context/lib/query';
 import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide-react';
@@ -46,6 +45,8 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	const { data: freeLines = 0n } = useFreeLinesCount(address ?? ZeroAddress);
 
+	const maxFreeLinesToUse = BigInt(Math.min(Number(freeLines), buy.lines.length * buy.rounds.length));
+
 	// Mutations
 	const { mutateAsync: unlock, isPending: isUnlockPending, reset: resetUnlock } = useUnlockMultibet();
 	const { mutateAsync: buyTickets, isSuccess: isBuySuccess, isPending: isBuyPending, reset: resetBuy, data } = useBuyTicket();
@@ -59,7 +60,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		}
 	}, [isOpen]);
 
-	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice - freeLines * ticketPrice;
+	const totalAmount = BigInt(buy.lines.length) * BigInt(buy.rounds.length) * ticketPrice - maxFreeLinesToUse * ticketPrice;
 
 	// Auto-advance to buy step if already unlocked
 	useEffect(() => {
@@ -77,8 +78,14 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			setTickets([EMPTY_LINE]);
 			shootConfetti();
 			updateState(RoundState.FILLING);
+
+			if (buy.recipient.toLowerCase() !== address?.toLowerCase()) {
+				return;
+			}
+
 			setTab('active');
 
+			console.log('data', data);
 			// Merge fresh on-chain data with subgraph data
 			logsByHash({ hash: data as Address }).then((newTickets) => {
 				queryClient.setQueryData<IRoundTicket[]>(['lottery', 'tickets', 'active', address?.toLowerCase()], (old = []) => [
@@ -86,6 +93,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 					...old.filter((ot) => !newTickets.some((nt) => nt.token === ot.token)), // Remove duplicates
 				]);
 			});
+			setStep('buy');
 		}
 	}, [step, address, queryClient]);
 
@@ -101,10 +109,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 	const handleBuy = async () => {
 		if (balance < totalAmount) {
-			toast({
-				title: 'Insufficient balance, bro',
-				variant: 'destructive',
-			});
+			toast.error('Insufficient balance, bro');
 			return;
 		}
 		try {
@@ -180,9 +185,9 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 									Buy {buy.rounds.length} ticket(s) for <BetValue value={totalAmount} withIcon />
 								</div>
 							</div>
-							{freeLines > 0n && (
+							{maxFreeLinesToUse > 0n && (
 								<div className="text-sm text-muted-foreground text-center">
-									Your <span className=" text-primary">{Number(freeLines)} free lines</span> will be used
+									Your <span className=" text-primary">{Number(maxFreeLinesToUse)} free lines</span> will be used
 								</div>
 							)}
 							{/* Action buttons */}

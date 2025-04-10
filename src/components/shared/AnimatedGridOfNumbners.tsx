@@ -35,7 +35,7 @@ export const AnimatedGridOfNumbners: FC<AnimatedGridOfNumbnersProps> = ({ number
 								ease: 'easeInOut',
 								repeat: 0,
 							}}
-							className={cn('aspect-[4/3] cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all border-2 border-transparent', {
+							className={cn('aspect-4/3 cursor-pointer bg-secondary rounded-lg flex items-center justify-center transition-all border-2 border-transparent', {
 								'bg-primary text-primary-foreground border-none ': !isPrimaryNumber && numbers.includes(index + 1),
 								'bg-success text-success-foreground border-none': !isPrimaryNumber && numbers.length === 5 && numbers.includes(index + 1),
 								'bg-destructive text-destructive-foreground border-none': !isPrimaryNumber && numbers.length > 5 && numbers.includes(index + 1),

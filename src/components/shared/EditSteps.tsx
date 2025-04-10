@@ -60,6 +60,12 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 		}
 	}, [step, address, queryClient]);
 
+	useEffect(() => {
+		if (isEditSuccess && data) {
+			setStep('done');
+		}
+	}, [data, isEditSuccess]);
+
 	// Handlers
 	const handleUnlock = async () => {
 		try {
@@ -73,7 +79,6 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 	const handleEdit = async () => {
 		try {
 			await editTicket({ ticket });
-			setStep('done');
 		} catch (error) {
 			setStep('edit');
 		}

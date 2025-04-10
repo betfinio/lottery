@@ -43,7 +43,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 		<>
 			<motion.div
 				initial={{ opacity: 0, scale: 0.7 }}
-				animate={{ opacity: 1, scale: 1, rotateX: editMode ? 90 : 0 }}
+				animate={{ opacity: 1, scale: 1 }}
 				exit={{ opacity: 0, scale: 0.7 }}
 				transition={{ duration: 0.2, ease: 'easeInOut', delay: editMode ? 0 : 0.2 }}
 				style={{ transformStyle: 'preserve-3d' }}
@@ -145,9 +145,9 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 				})}
 			/>
 
-			<div className={'relative h-5 z-[1]'}>
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-3 bg-background-light z-[2]'} />
-				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-3 bg-background-light z-[2]'} />
+			<div className={'relative h-5 z-1'}>
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -left-2.5 bg-background z-2'} />
+				<div className={'rounded-full border border-purple-box w-4 h-4 absolute -right-2.5 bg-background z-2'} />
 				<div className={'border border-dashed border-t-0 w-full top-2 border-purple-box absolute'} />
 			</div>
 			{isNew ? renderNewFooter() : renderRegularFooter()}
@@ -157,7 +157,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 
 export const NumberComponent: FC<PropsWithChildren<{ isSymbol?: boolean; className?: string }>> = ({ children, isSymbol = false, className = '' }) => {
 	return (
-		<svg height="33" width="33" className={cn({ 'regular-number': !isSymbol, 'symbol-number': isSymbol }, className)} role="presentation">
+		<svg height="33" width="33" className={cn(className, { 'regular-number': !isSymbol, 'symbol-number': isSymbol })} role="presentation">
 			<polygon
 				points="10 1, 23 1, 32 10, 32 22,
 				23 32, 10 32, 1 23, 1 10"
