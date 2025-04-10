@@ -61,15 +61,15 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 					</div>
 				</div>
 				{/* Tickets */}
-				<div className="flex-grow relative flex flex-col">
+				<div className="grow relative flex flex-col">
 					{applyPagination ? (
-						<div className="flex-grow flex-col flex gap-2">
+						<div className="grow flex-col flex gap-2">
 							<div className="text-muted-foreground text-base mb-2">{t('round.yourWinningTickets')}</div>
 							<Pagination
 								items={tickets}
 								itemsPerPage={1}
 								renderItem={(ticket) => <TicketCard ticket={ticket} winningLine={winningLine} totalLines={ticket.totalLines} />}
-								className="flex-grow h-auto flex flex-col justify-center"
+								className="grow h-auto flex flex-col justify-center"
 							/>
 						</div>
 					) : (

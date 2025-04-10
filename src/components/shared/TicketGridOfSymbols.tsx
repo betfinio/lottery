@@ -18,7 +18,7 @@ export const TicketGridOfSymbols: FC<TicketGridOfSymbolsProps> = ({ symbol, numb
 					animate={
 						symbol === index + 1 && numbers.length === 5
 							? {
-									boxShadow: ['0 0 0 0 hsl(var(--primary))', '0 0 20px 10px hsl(var(--primary))', '0 0 20px 2px hsl(var(--primary))'],
+									boxShadow: ['0 0 0 0 var(--primary)', '0 0 20px 10px var(--primary)', '0 0 20px 2px var(--primary)'],
 									scale: [1, 1.2, 1],
 								}
 							: {
@@ -33,7 +33,7 @@ export const TicketGridOfSymbols: FC<TicketGridOfSymbolsProps> = ({ symbol, numb
 						repeat: 0,
 					}}
 					className={cn(
-						'aspect-[4/3] border-2  border-foreground/50 cursor-pointer bg-secondary/90 rounded-lg flex items-center justify-center transition-all hover:border-foreground',
+						'aspect-4/3 border-2  border-foreground/50 cursor-pointer bg-secondary/90 rounded-lg flex items-center justify-center transition-all hover:border-foreground',
 						{
 							'border-primary border-2  bg-foreground/30 scale-110': symbol === index + 1,
 						},

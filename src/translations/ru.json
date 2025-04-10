@@ -1,3 +1,9 @@
 {
-	"title": "Шаблон"
+	"title": "Шаблон",
+	"tables": {
+		"headers": {
+			"myLinesCount": "Мои линии",
+			"result": "Результат"
+		}
+	}
 }

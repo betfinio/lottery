@@ -38,7 +38,7 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 
 	return (
 		<>
-			<EditSteps ticket={{ ...ticket, lines: newLines }} isOpen={isOpen} setIsOpen={handleSetIsOpen} />
+			{isOpen && <EditSteps ticket={{ ...ticket, lines: newLines }} isOpen={isOpen} setIsOpen={handleSetIsOpen} />}
 			<div className={'max-w-[384px] w-[98vw] mx-auto p-2 md:p-3 lg:p-4 flex flex-col gap-2 md:gap-3 lg:gap-4'}>
 				<DialogTitle className={'hidden'} />
 				<DialogDescription aria-describedby={undefined} className={'hidden'} />

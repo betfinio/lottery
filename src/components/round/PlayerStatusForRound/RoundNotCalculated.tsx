@@ -9,7 +9,7 @@ export const RoundNotCalculated: FC = () => {
 	const [symbol, setSymbol] = useState(0);
 	const [numbers, setNumbers] = useState<number[]>([]);
 	const round = useGetRoundFromParams();
-	const { data: status, refetch: refetchRoundStatus } = useRoundStatus(round);
+	const { refetch: refetchRoundStatus } = useRoundStatus(round);
 	const winningNumbers = useRoundFinishedNumbersSpitting(round);
 
 	useEffect(() => {
@@ -52,7 +52,7 @@ export const RoundNotCalculated: FC = () => {
 				<AnimatedGridOfNumbners primaryNumbers={winningNumbersToShow} numbers={numbersToShow} toggleNumber={() => {}} />
 				<TicketGridOfSymbols symbol={winningSymbolToShow || symbol} numbers={numbers} changeSymbol={() => {}} />
 			</div>
-			<PlayerTickets className="!h-[360px]" />
+			<PlayerTickets className="h-[360px]!" />
 		</div>
 	);
 };

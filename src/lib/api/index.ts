@@ -5,7 +5,7 @@ import { decodeLine, decodeLines, encodeLines, parseLine } from '@/src/lib/utils
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { LostTicketsClaimerABI, LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
-import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, writeContract } from '@wagmi/core';
+import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import { type Address, Log, encodeAbiParameters, parseAbiParameters } from 'viem';
 import { getBlock, getContractEvents } from 'viem/actions';
@@ -181,12 +181,14 @@ export const buyTicket = async (options: { lines: ILine[]; rounds: Address[]; re
 		functionName: 'multiPlaceBet',
 		args: [PARTNER_ADDRESS, games, amounts, datas],
 	});
-	return writeContract(config, {
+	const result = await writeContract(config, {
 		abi: MultiBetABI,
 		address: MULTIBET_ADDRESS,
 		functionName: 'multiPlaceBet',
 		args: [PARTNER_ADDRESS, games, amounts, datas],
 	});
+	await waitForTransactionReceipt(config, { hash: result });
+	return result;
 };
 
 export const unlockMultibet = async (config: Config) => {
@@ -243,12 +245,14 @@ export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
 		functionName: 'editTicket',
 		args: [BigInt(ticket.token), encodedLines.map(({ symbol, numbers }) => ({ symbol, numbers }))],
 	});
-	return await writeContract(config, {
+	const result = await writeContract(config, {
 		abi: LotteryABI,
 		address: LOTTERY_ADDRESS,
 		functionName: 'editTicket',
 		args: [BigInt(ticket.token), encodedLines.map(({ symbol, numbers }) => ({ symbol, numbers }))],
 	});
+	await waitForTransactionReceipt(config, { hash: result });
+	return result;
 };
 
 export const fetchWinningLine = async (round: Address, config: Config): Promise<ILine | null> => {
@@ -420,6 +424,8 @@ export const fetchFinishedRoundTransactionByRoundAddress = async (config: Config
 };
 
 export const getMintedTokensByHash = async (hash: Address, config: Config): Promise<IRoundTicket[]> => {
+	console.log('getMintedTokensByHash', hash);
+	await waitForTransactionReceipt(config, { hash: hash });
 	const receipt = await getTransactionReceipt(config, {
 		hash,
 	});
