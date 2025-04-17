@@ -1,4 +1,4 @@
-name: Create Release PRs
+name: Create Release
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   release-pr:
-    name: Create Release PRs
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
