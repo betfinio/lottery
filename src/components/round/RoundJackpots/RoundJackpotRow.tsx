@@ -2,6 +2,7 @@ import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@betfinio/components/ui';
+import { UserIcon } from 'lucide-react';
 import type { FC } from 'react';
 import Ticket from '../../icons/Ticket';
 import { JackpotRowTable } from './JackpotRowTable';
@@ -44,7 +45,7 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 					</div>
 					<div className="flex gap-1 items-center justify-center whitespace-nowrap">
 						{currentJackpot?.tickets.length}
-						<Ticket className={'w-4 h-4 text-primary'} />
+						<UserIcon className={'w-4 h-4 text-primary'} />
 					</div>
 				</div>
 			</AccordionTrigger>

@@ -1,13 +1,15 @@
 import type { GetRoundJackpotsQuery, JackpotFragment } from '@/.graphclient';
 import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
 import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
-import { truncateEthAddress } from '@betfinio/abi';
+import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
 import { Ticket as TicketIcon } from '@betfinio/components/icons';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { useUsername } from 'betfinio_context/lib/query';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
+import { useAccount } from 'wagmi';
 
 type Ticket = JackpotFragment['tickets'][number];
 const columnHelper = createColumnHelper<Ticket>();
@@ -30,11 +32,15 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 			meta: {
 				className: 'h-[50px]',
 			},
-			cell: (props) => (
-				<a href={`${ETHSCAN}/address/${props.row.original.owner}`} target="_blank" rel="noreferrer">
-					{truncateEthAddress(props.row.original.owner as Address)}
-				</a>
-			),
+			cell: (props) => {
+				const { address = ZeroAddress } = useAccount();
+				const { data: username } = useUsername(props.row.original.owner as Address, address);
+				return (
+					<a href={`${ETHSCAN}/address/${props.row.original.owner}`} className="text-bonus" target="_blank" rel="noreferrer">
+						{username}
+					</a>
+				);
+			},
 		}),
 		columnHelper.accessor('betAddress', {
 			header: t('betId'),
