@@ -1,5 +1,8 @@
 {
 	"title": "Шаблон",
+	"create": {
+		"addMore": "Заполните count, plural, =1 {1 линию =2 2 линии other # линий}"
+	},
 	"tables": {
 		"headers": {
 			"myLinesCount": "Мои линии",

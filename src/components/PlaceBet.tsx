@@ -75,7 +75,7 @@ const PlaceBet = () => {
 	// Effects
 	useEffect(() => {
 		setSelectedRounds(rounds.slice(0, 1));
-		setVisibleRounds(rounds.slice(0, 3));
+		setVisibleRounds(rounds.slice(0, 6));
 	}, [rounds]);
 
 	// Computed values
