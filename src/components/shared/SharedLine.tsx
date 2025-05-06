@@ -54,12 +54,11 @@ function SharedLine({
 		<div className={cn('flex gap-2 items-center ', className)} onClick={onClick}>
 			{line.numbers
 				.sort((a, b) => a - b)
-				.map((number, index, array) => (
-					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number, index))}>
-						<AnimatePresence mode="wait" custom={array[index]}>
+				.map((number, index) => (
+					<NumberComponent key={number} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number, index))}>
+						<AnimatePresence mode="wait">
 							<motion.div
-								key={number}
-								custom={array[index]}
+								key={index + number + line.numbers.join(',')}
 								className={'absolute top-[5px]'}
 								initial={{
 									y: -20,
