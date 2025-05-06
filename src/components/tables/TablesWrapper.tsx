@@ -6,7 +6,7 @@ import AllDraws from './AllDraws';
 
 function TablesWrapper() {
 	const { t } = useTranslation('lottery');
-	const [includeFutureDraws, setIncludeFutureDraws] = useState(false);
+	const [includeFutureDraws, setIncludeFutureDraws] = useState(true);
 	return (
 		<Tabs className={'w-full'} defaultValue={'all'}>
 			<div className="flex justify-between items-center">
