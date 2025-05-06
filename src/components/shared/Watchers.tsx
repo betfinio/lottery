@@ -11,7 +11,11 @@ function Watchers() {
 		abi: LotteryRoundABI,
 		eventName: 'TicketSold',
 		onLogs: () => {
-			queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+			queryClient.invalidateQueries({ queryKey: ['lottery', 'round', round?.address, 'tickets'] });
+			queryClient.invalidateQueries({ queryKey: ['lottery', 'round', round?.address, 'potentialJackpot'] });
+			setTimeout(() => {
+				queryClient.invalidateQueries({ queryKey: ['lottery', 'round', 'active'] });
+			}, 3000);
 		},
 	});
 

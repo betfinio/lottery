@@ -10,7 +10,7 @@ import Result from './Result';
 import Round from './Round';
 import RoundActions from './RoundActions';
 
-export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): ColumnDef<IRound, never>[] => {
+export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): ColumnDef<IRound, any>[] => {
 	const columnHelper = createColumnHelper<IRound>();
 
 	return [
