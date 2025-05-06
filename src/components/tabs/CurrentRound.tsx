@@ -24,7 +24,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 	const { data: finish = 0 } = useRoundFinish(round.address);
 	const { data: status } = useRoundStatus(round.address);
 	const { data: additionalJackpot = 0n } = useAdditionalJackpot();
-	const { data: potentialJackpot = 0n, refetch: refetchPotentialJackpot } = usePotentialJackpot(round.address);
+	const { data: potentialJackpot = 0n } = usePotentialJackpot(round.address);
 	const { data: subscriptionId } = useSubscriptionId();
 	const [displayedJackpot, setDisplayedJackpot] = useState(round.ticketPrice * BigInt(MAX_SHARES));
 	const animationRef = useRef<NodeJS.Timeout>(undefined);
@@ -62,14 +62,6 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 		};
 	}, [totalJackpot]);
 
-	useWatchContractEvent({
-		address: round.address,
-		abi: LotteryRoundABI,
-		eventName: 'TicketSold',
-		onLogs: () => {
-			refetchPotentialJackpot();
-		},
-	});
 	const network = ENVIRONMENT === 'production' ? 'polygon' : 'polygon-amoy';
 	const vrfLink = `https://vrf.chain.link/${network}#/side-drawer/subscription/${network}/${subscriptionId}`;
 
