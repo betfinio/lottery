@@ -142,7 +142,6 @@ export const useBuyTicket = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'toasts' });
 	const { t: errors } = useTranslation('shared', { keyPrefix: 'errors' });
 	const config = useConfig();
-	const queryClient = useQueryClient();
 	return useMutation<WriteContractReturnType, WriteContractErrorType, BuyTicketProps>({
 		mutationKey: ['lottery', 'buyTicket'],
 		mutationFn: (params) => buyTicket(params, config),
@@ -163,7 +162,6 @@ export const useBuyTicket = () => {
 						await waitForTransactionReceipt(config, {
 							hash: data,
 						});
-						await queryClient.invalidateQueries({ queryKey: ['lottery'] });
 					},
 					{
 						loading: t('buyTicket.sent.title'),

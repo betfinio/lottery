@@ -7,7 +7,7 @@ import { LostTicketsClaimerABI, LotteryBetABI, LotteryRoundABI, MultiBetABI, Tok
 import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
-import { type Address, Log, encodeAbiParameters, parseAbiParameters } from 'viem';
+import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
 import { getBlock, getContractEvents } from 'viem/actions';
 
 /**

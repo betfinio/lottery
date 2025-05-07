@@ -75,7 +75,6 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 			setIsOpen(false);
 			resetUnlock();
 			resetBuy();
-			setTickets([EMPTY_LINE]);
 			shootConfetti();
 			updateState(RoundState.FILLING);
 
@@ -85,9 +84,10 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 
 			setTab('active');
 
-			console.log('data', data);
+			setTickets([EMPTY_LINE]);
 			// Merge fresh on-chain data with subgraph data
-			logsByHash({ hash: data as Address }).then((newTickets) => {
+			logsByHash({ hash: data as Address }).then(async (newTickets) => {
+				await queryClient.invalidateQueries({ queryKey: ['lottery'] });
 				queryClient.setQueryData<IRoundTicket[]>(['lottery', 'tickets', 'active', address?.toLowerCase()], (old = []) => [
 					...newTickets.map((t) => ({ ...t, isLocal: true })), // Mark fresh tickets
 					...old.filter((ot) => !newTickets.some((nt) => nt.token === ot.token)), // Remove duplicates
