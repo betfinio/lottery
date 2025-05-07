@@ -25,7 +25,7 @@ import {
 } from '@/.graphclient';
 import logger from '@/src/config/logger';
 import type { IRound, IRoundTicket } from '@/src/lib/types.ts';
-import { decodeLines } from '@/src/lib/utils';
+import { JACKPOT_LINES_IN_TABLE_TO_SHOW, decodeLines } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import type { ExecutionResult } from 'graphql/execution';
 import type { Address } from 'viem';
@@ -150,7 +150,10 @@ export const fetchRoundDetails = async (round: Address) => {
 };
 
 export const fetchRoundJackpots = async (round: Address) => {
-	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, { round: round });
+	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, {
+		round: round,
+		ticketsFirst: JACKPOT_LINES_IN_TABLE_TO_SHOW,
+	});
 	return result.data;
 };
 

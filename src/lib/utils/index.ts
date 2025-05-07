@@ -194,3 +194,5 @@ export const shootConfetti = () => {
 		origin: { x: 0.5, y: 0.4 },
 	});
 };
+
+export const JACKPOT_LINES_IN_TABLE_TO_SHOW = 25;

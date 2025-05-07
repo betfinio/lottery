@@ -214,5 +214,6 @@
 	"send": "Send",
 	"noTickets": "You have no tickets",
 	"freeLines": "Free lines",
-	"connectedWalletIsNotMember": "Connected wallet is not member of Betfin. Ask someone for an invitation"
+	"connectedWalletIsNotMember": "Connected wallet is not member of Betfin. Ask someone for an invitation",
+	"jackpotTableLinesTooltip": "Only last {count} lines are shown in the table"
 }
