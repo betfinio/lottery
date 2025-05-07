@@ -1,4 +1,4 @@
-import { useGetRoundFromParams, useRoundDetails } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundDetails, useRoundTotalBetsAndClaimedBets } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
 import { Progress, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { CircleHelp } from 'lucide-react';
@@ -8,11 +8,11 @@ import { useTranslation } from 'react-i18next';
 export const ClaimingProgressBar = () => {
 	const { t } = useTranslation();
 	const round = useGetRoundFromParams();
-	const { data: roundDetails } = useRoundDetails(round);
+	const { data: roundDetails } = useRoundTotalBetsAndClaimedBets(round);
 
 	const { totalTickets, claimedTickets, isAllClaimed, progressPercentage } = useMemo(() => {
-		const total = roundDetails?.ticketCount || 0;
-		const claimed = roundDetails?.ticketClaimedCount || 0;
+		const total = Number(roundDetails?.betsCount || 0);
+		const claimed = Number(roundDetails?.betsClaimed || 0);
 		return {
 			totalTickets: total,
 			claimedTickets: claimed,
