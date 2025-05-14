@@ -23,6 +23,7 @@ import {
 	fetchTicketWinAmount,
 	fetchUsedFreeLinesCount,
 	fetchWinningLine,
+	getRoundTotalBetsAndClaimedBets,
 } from '@/src/lib/api';
 import {
 	fetchActiveRounds,
@@ -351,5 +352,16 @@ export const useSubscriptionId = () => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'subscriptionId'],
 		queryFn: () => fetchSubscriptionId(config),
+	});
+};
+
+export const useRoundTotalBetsAndClaimedBets = (round: Address) => {
+	const config = useConfig();
+	return useQuery<{
+		betsCount: bigint;
+		betsClaimed: bigint;
+	}>({
+		queryKey: ['lottery', 'round', round, 'totalBetsAndClaimedBets'],
+		queryFn: () => getRoundTotalBetsAndClaimedBets(round, config),
 	});
 };

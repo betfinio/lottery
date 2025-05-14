@@ -2,8 +2,10 @@ import Ticket from '@/src/components/Ticket.tsx';
 import type { IRoundTicket } from '@/src/lib/types.ts';
 import { equals } from '@/src/lib/utils';
 import { Button, DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
+import { useIsFetching, useIsMutating } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useUpdateTicket } from '../lib/query/mutations';
 import EditSteps from './shared/EditSteps';
 
 export interface EditTicketProps {
@@ -12,9 +14,11 @@ export interface EditTicketProps {
 }
 function EditTicket({ ticket, onClose }: EditTicketProps) {
 	const { t } = useTranslation('lottery');
+
 	const [saveEnabled, setSaveEnabled] = useState(false);
 	const [newLines, setNewLines] = useState(ticket.lines);
 	const [isOpen, setIsOpen] = useState(false);
+	const isEditPending = useIsMutating({ mutationKey: ['lottery', 'updateTicket'] });
 	const handleUpdate = (newTicket: IRoundTicket) => {
 		const edited = ticket.lines.filter((e, index) => !equals(e, newTicket.lines[index]));
 		if (edited.length > 0) {
@@ -29,9 +33,9 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 		setIsOpen(true);
 	};
 
-	const handleSetIsOpen = (isOpen: boolean) => {
+	const handleSetIsOpen = (isOpen: boolean, closeParent?: boolean) => {
 		setIsOpen(isOpen);
-		if (!isOpen) {
+		if (!isOpen && closeParent) {
 			onClose();
 		}
 	};
@@ -49,7 +53,7 @@ function EditTicket({ ticket, onClose }: EditTicketProps) {
 							{t('cancel')}
 						</Button>
 					</DialogClose>
-					<Button variant={'success'} className={'w-1/4'} onClick={onSave} disabled={!saveEnabled}>
+					<Button variant={'success'} className={'w-1/4'} onClick={onSave} disabled={!saveEnabled || !!isEditPending}>
 						{t('save')}
 					</Button>
 				</div>
