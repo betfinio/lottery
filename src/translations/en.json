@@ -123,7 +123,14 @@
 		"youWon": "YOU WON",
 		"ticketLines": "Lines",
 		"volume": "Volume",
-		"ticketsClaimed": "Tickets Claimed"
+		"ticketsClaimed": "Tickets Claimed",
+		"current": {
+			"stats": {
+				"lines": "Lines",
+				"tickets": "Tickets",
+				"volume": "Volume"
+			}
+		}
 	},
 	"validatation": {
 		"symbol": "Symbol must be selected",

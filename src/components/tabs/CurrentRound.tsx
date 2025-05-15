@@ -125,9 +125,10 @@ const PartnerLink: FC<PartnerLinkProps> = ({ text, icon, link }) => (
 );
 
 function Stats({ round }: { round: IRound }) {
+	const { t } = useTranslation('lottery', { keyPrefix: 'round.current.stats' });
 	const [displayedLines, setDisplayedLines] = useState(0);
-	const [displayedPlayers, setDisplayedPlayers] = useState(0);
-	const [displayedBank, setDisplayedBank] = useState(0n);
+	const [displayedTickets, setDisplayedTickets] = useState(0);
+	const [displayedVolume, setDisplayedVolume] = useState(0n);
 	const animationRef = useRef<NodeJS.Timeout>(undefined);
 
 	useEffect(() => {
@@ -139,15 +140,15 @@ function Stats({ round }: { round: IRound }) {
 		let currentStep = 0;
 
 		const linesStepValue = (round.linesCount - displayedLines) / steps;
-		const playersStepValue = (round.ticketCount - displayedPlayers) / steps;
-		const bankStepValue = (BigInt(round.bank) - displayedBank) / BigInt(steps);
+		const ticketsStepValue = (round.ticketCount - displayedTickets) / steps;
+		const volumeStepValue = (BigInt(round.bank) - displayedVolume) / BigInt(steps);
 
 		const animate = () => {
 			currentStep++;
 			if (currentStep <= steps) {
 				setDisplayedLines(Math.floor(displayedLines + linesStepValue * currentStep));
-				setDisplayedPlayers(Math.floor(displayedPlayers + playersStepValue * currentStep));
-				setDisplayedBank(displayedBank + bankStepValue * BigInt(currentStep));
+				setDisplayedTickets(Math.floor(displayedTickets + ticketsStepValue * currentStep));
+				setDisplayedVolume(displayedVolume + volumeStepValue * BigInt(currentStep));
 				animationRef.current = setTimeout(animate, 1000 / steps);
 			}
 		};
@@ -163,9 +164,9 @@ function Stats({ round }: { round: IRound }) {
 
 	return (
 		<div className="grid grid-cols-3 gap-3">
-			<StatBox label="Lines" value={displayedLines} icon={<TicketIcon className="w-4 h-4" />} />
-			<StatBox label="Players" value={displayedPlayers} icon={<UserIcon className="w-4 h-4" />} />
-			<StatBox label="Volume" value={<BetValue value={displayedBank} withIcon />} />
+			<StatBox label={t('lines')} value={displayedLines} icon={<TicketIcon className="w-4 h-4" />} />
+			<StatBox label={t('tickets')} value={displayedTickets} icon={<UserIcon className="w-4 h-4" />} />
+			<StatBox label={t('volume')} value={<BetValue value={displayedVolume} withIcon />} />
 		</div>
 	);
 }
