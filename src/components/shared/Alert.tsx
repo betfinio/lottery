@@ -1,5 +1,5 @@
-import { useLocalStorage } from '@/src/lib/query/state';
 import { Button, Checkbox, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
+import { useLocalStorage } from 'betfinio_context/lib/query';
 import { type MouseEvent, type PropsWithChildren, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
