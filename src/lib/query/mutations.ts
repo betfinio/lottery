@@ -117,22 +117,22 @@ export const useUpdateTicket = () => {
 		onSuccess: async (data) => {
 			console.log('data', data);
 			if (data !== undefined) {
-				const promise = async () => {
-					console.log('showing toast');
-					await waitForTransactionReceipt(config, {
-						hash: data,
+				return new Promise<void>((resolve) => {
+					const promise = async () => {
+						await waitForTransactionReceipt(config, {
+							hash: data,
+						});
+						await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
+						await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'all'] });
+						resolve();
+					};
+					toast.promise(promise, {
+						loading: t('editTicket.sent.title'),
+						success: t('editTicket.sent.description'),
+						error: errors('unknown'),
+						action: getTransactionLink(data),
 					});
-					await queryClient.invalidateQueries({ queryKey: ['lottery', 'round'] });
-					await queryClient.invalidateQueries({ queryKey: ['lottery', 'tickets', 'all'] });
-				};
-				toast.promise(promise, {
-					loading: t('editTicket.sent.title'),
-					success: t('editTicket.sent.description'),
-					error: errors('unknown'),
-					action: getTransactionLink(data),
 				});
-			} else {
-				toast.error(errors('unknown'));
 			}
 		},
 	});

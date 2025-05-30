@@ -1,18 +1,22 @@
 import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
+import { JACKPOT_LINES_IN_TABLE_TO_SHOW } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@betfinio/components/ui';
+import { AccordionContent, AccordionItem, AccordionTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { UserIcon } from 'lucide-react';
 import type { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import Ticket from '../../icons/Ticket';
 import { JackpotRowTable } from './JackpotRowTable';
-import type { JACKPOTS, JackpotRowItem } from './constants';
+import type { JackpotRowItem } from './constants';
+
 interface RoundJackpotRowProps {
 	jackpot: JackpotRowItem;
 }
 export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 	const round = useGetRoundFromParams();
 	const { data: jackpotData, isLoading } = useRoundJackpots(round);
+	const { t } = useTranslation('lottery');
 
 	const currentJackpot = jackpotData?.[jackpot.id][0];
 	const hasNoTickets = !currentJackpot?.tickets || currentJackpot?.tickets.length === 0;
@@ -44,8 +48,15 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 						/>
 					</div>
 					<div className="flex gap-1 items-center justify-center whitespace-nowrap">
-						{currentJackpot?.tickets.length}
-						<UserIcon className={'w-4 h-4 text-primary'} />
+						{currentJackpot?.linesCount}
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<Ticket className={'w-4 h-4 text-primary'} />
+								</TooltipTrigger>
+								<TooltipContent>{t('jackpotTableLinesTooltip', { count: JACKPOT_LINES_IN_TABLE_TO_SHOW })}</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
 					</div>
 				</div>
 			</AccordionTrigger>

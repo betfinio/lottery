@@ -16,7 +16,7 @@ export type Step = 'unlock' | 'edit' | 'done';
 interface EditStepsProps {
 	ticket: IRoundTicket; // Ticket purchase parameters
 	isOpen: boolean; // Dialog open state
-	setIsOpen: (isOpen: boolean) => void; // Dialog state setter
+	setIsOpen: (isOpen: boolean, closeParent?: boolean) => void; // Dialog state setter
 }
 
 function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
@@ -53,7 +53,7 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 	// Cleanup after purchase completion
 	useEffect(() => {
 		if (step === 'done') {
-			setIsOpen(false);
+			setIsOpen(false, true);
 			resetUnlock();
 			shootConfetti();
 			refetchActiveTickets();
@@ -65,7 +65,6 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 			setStep('done');
 		}
 	}, [data, isEditSuccess]);
-
 	// Handlers
 	const handleUnlock = async () => {
 		try {
