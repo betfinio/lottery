@@ -551,3 +551,19 @@ export const fetchSubscriptionId = async (config: Config) => {
 		args: [],
 	});
 };
+
+export const getRoundTotalBetsAndClaimedBets = async (round: Address, config: Config) => {
+	const betsCount = await readContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'betsCount',
+		args: [],
+	});
+	const betsClaimed = await readContract(config, {
+		abi: LotteryRoundABI,
+		address: round,
+		functionName: 'betsClaimed',
+		args: [],
+	});
+	return { betsCount, betsClaimed };
+};

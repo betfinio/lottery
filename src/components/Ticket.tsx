@@ -273,8 +273,9 @@ const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 };
 const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 	const { t } = useTranslation('lottery');
+	const [open, setOpen] = useState(false);
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button
 					size="freeSize"
@@ -286,7 +287,7 @@ const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 				</Button>
 			</DialogTrigger>
 			<DialogContent className={'lottery'}>
-				<EditTicket ticket={ticket} onClose={() => {}} />
+				<EditTicket ticket={ticket} onClose={() => setOpen(false)} />
 			</DialogContent>
 		</Dialog>
 	);

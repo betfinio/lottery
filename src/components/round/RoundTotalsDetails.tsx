@@ -13,11 +13,11 @@ export function RoundTotalsDetails() {
 	const { data: lines = 10n, isLoading: isLinesLoading } = useLinesCount(round);
 	const { isLoading: isPriceLoading } = useTicketPrice(round);
 	const { data: roundDetails } = useRoundDetails(round);
-	const { data: jackpots } = useRoundJackpots(round);
-	const bank = roundDetails?.bank || 0n;
+	const { data: jackpots, isLoading: isJackpotsLoading } = useRoundJackpots(round);
+	const bank = roundDetails?.bank;
 
 	const claimedJackpot = useMemo(() => {
-		if (!jackpots) return 0n;
+		if (!jackpots) return;
 
 		return Object.values(jackpots).reduce((acc, jackpot) => {
 			return acc + BigInt(jackpot?.[0]?.claimed || 0n);
@@ -25,6 +25,7 @@ export function RoundTotalsDetails() {
 	}, [jackpots]);
 
 	const paidToStaking = useMemo(() => {
+		if (!claimedJackpot || !bank) return;
 		return bank - claimedJackpot;
 	}, [bank, claimedJackpot]);
 
@@ -33,8 +34,12 @@ export function RoundTotalsDetails() {
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3 md:col-span-2">
 				<Ticket className="w-12 h-12 md:w-16 md:h-16 text-primary" />
 				<div className="flex flex-col items-center">
-					<BetValue className={cn('text-xl', { 'blur-xs animated-pulse': isLinesLoading || isPriceLoading })} value={bank} withIcon />
-					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isLinesLoading })}>
+					<BetValue
+						className={cn('text-xl', { 'blur-xs animated-pulse': isLinesLoading || isPriceLoading || isJackpotsLoading || bank === undefined })}
+						value={bank || 123n}
+						withIcon
+					/>
+					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isLinesLoading || isJackpotsLoading })}>
 						{Number(lines)} {t('lines')}
 					</div>
 				</div>
@@ -50,11 +55,11 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur-xs animated-pulse': isLinesLoading || isPriceLoading,
-							'text-success': paidToStaking > 0n,
-							'text-destructive': paidToStaking < 0n,
+							'blur-xs animated-pulse': isLinesLoading || isPriceLoading || !paidToStaking,
+							'text-success': paidToStaking && paidToStaking > 0n,
+							'text-destructive': paidToStaking && paidToStaking < 0n,
 						})}
-						value={paidToStaking}
+						value={paidToStaking ?? 42n}
 						withIcon
 					/>
 					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>
