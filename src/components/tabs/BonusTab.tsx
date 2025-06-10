@@ -10,8 +10,9 @@ import {
 import { useClaimUnclaimedTickets } from '@/src/lib/query/mutations';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Badge, Button, Progress, Separator } from '@betfinio/components/ui';
+import { Badge, Button, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@betfinio/components/ui';
 import { StarIcon, TicketsIcon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
 import Ticket from '../icons/Ticket';
 
@@ -46,17 +47,38 @@ function BonusTab() {
 		</div>
 	);
 }
-
+const claimOptions = [1, 25, 50, 100, 250, 500, 1000];
 function FreeLinesChallenge() {
 	const { address = ZeroAddress } = useAccount();
 	const { data: lostTicketsToClaim = 0n } = useLostTicketsToClaim();
 	const { data: lostTicketsClaimed = 0n } = useLostTicketsClaimed(address);
 	const { data: unclaimedTickets = [] } = useUnclaimedTickets();
 	const { mutate: claimUnclaimedTickets } = useClaimUnclaimedTickets();
-	const toClaim = Math.min(100, unclaimedTickets.length);
+
+	const maxAmountToClaim = 1000;
+	const minAmountToClaim = 1;
+
+	const [toClaim, setToClaim] = useState(minAmountToClaim);
+	const [availableToClaim, setAvailableToClaim] = useState(0);
+
+	useEffect(() => {
+		setAvailableToClaim(Math.max(0, unclaimedTickets.length));
+	}, [unclaimedTickets.length]);
+
+	const sortedOptions = useMemo(() => {
+		return Array.from(
+			new Set(
+				[minAmountToClaim, maxAmountToClaim, availableToClaim, ...claimOptions]
+					.filter((opt) => opt <= availableToClaim && opt <= maxAmountToClaim)
+					.sort((a, b) => a - b),
+			),
+		);
+	}, [availableToClaim]);
+
 	const handleClaim = () => {
 		claimUnclaimedTickets({ tickets: unclaimedTickets.slice(0, toClaim) });
 	};
+
 	return (
 		<div className="bg-secondary rounded-xl p-4 flex flex-col items-center justify-center w-full gap-2">
 			<div className="flex flex-row items-center justify-start gap-2 w-full">
@@ -66,13 +88,30 @@ function FreeLinesChallenge() {
 					<span className="text-primary">1 free line</span>
 				</div>
 			</div>
-			<div className="flex flex-row justify-between items-end w-full text-muted-foreground gap-1">
-				{toClaim > 0 ? (
-					<Button size="freeSize" className={cn('px-2')} onClick={handleClaim}>
-						Claim {toClaim} tickets
-					</Button>
-				) : (
-					<Badge className="bg-muted text-muted-foreground">All claimed</Badge>
+			<div
+				className={cn(
+					'flex flex-row justify-between items-center w-full text-muted-foreground gap-1',
+					availableToClaim > 0 ? 'justify-between' : 'justify-end',
+				)}
+			>
+				{availableToClaim > 0 && (
+					<div className="flex flex-row gap-1">
+						<Select value={toClaim.toString()} onValueChange={(value) => setToClaim(Number(value))}>
+							<SelectTrigger className="w-24">
+								<SelectValue placeholder="Select Tariff" />
+							</SelectTrigger>
+							<SelectContent className="min-w-24">
+								{sortedOptions?.map((opt) => (
+									<SelectItem key={opt} value={opt.toString()}>
+										<span>{opt}</span>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						<Button size="freeSize" className={cn('px-2 border')} onClick={handleClaim} disabled={toClaim > availableToClaim}>
+							Claim {toClaim} tickets
+						</Button>
+					</div>
 				)}
 				<div>
 					<span className="text-primary">{Number(lostTicketsClaimed)}</span> / {Number(lostTicketsToClaim)}
