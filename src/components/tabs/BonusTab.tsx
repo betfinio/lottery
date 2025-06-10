@@ -47,7 +47,7 @@ function BonusTab() {
 		</div>
 	);
 }
-const claimOptions = [1, 25, 50, 100, 250, 500, 1000];
+const claimOptions = [1, 5, 10, 25, 50, 100, 200];
 function FreeLinesChallenge() {
 	const { address = ZeroAddress } = useAccount();
 	const { data: lostTicketsToClaim = 0n } = useLostTicketsToClaim();
@@ -55,7 +55,7 @@ function FreeLinesChallenge() {
 	const { data: unclaimedTickets = [] } = useUnclaimedTickets();
 	const { mutate: claimUnclaimedTickets } = useClaimUnclaimedTickets();
 
-	const maxAmountToClaim = 1000;
+	const maxAmountToClaim = 200;
 	const minAmountToClaim = 1;
 
 	const [toClaim, setToClaim] = useState(minAmountToClaim);
