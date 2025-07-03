@@ -1,7 +1,7 @@
+import { type FC, useEffect, useMemo, useState } from 'react';
 import { useGetRoundFromParams, useRoundStatus } from '@/src/lib/query';
 import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
 import { randomize } from '@/src/lib/utils';
-import { type FC, useEffect, useMemo, useState } from 'react';
 import { AnimatedGridOfNumbners } from '../../shared/AnimatedGridOfNumbners';
 import { TicketGridOfSymbols } from '../../shared/TicketGridOfSymbols';
 import PlayerTickets from './PlayerTickets';

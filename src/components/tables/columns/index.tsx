@@ -1,7 +1,7 @@
-import type { IRound } from '@/src/lib/types';
 import { BetValue } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import type { TFunction } from 'i18next';
+import type { IRound } from '@/src/lib/types';
 import Count from './Count';
 import Finish from './Finish';
 import MyLinesBank from './MyLinesBank';

@@ -1,10 +1,7 @@
-import CurrentRound from '@/src/components/tabs/CurrentRound.tsx';
-import { useFreeLinesCount, useSelectedRound } from '@/src/lib/query';
-import { ZeroAddress } from '@betfinio/abi';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
-import { SearchIcon, StarIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useAccount } from 'wagmi';
+import CurrentRound from '@/src/components/tabs/CurrentRound.tsx';
+import { useSelectedRound } from '@/src/lib/query';
 import { useDrawInfoTab } from '../lib/query/state';
 import type { DrawTab } from '../lib/types';
 import ActiveTicketsList from './tabs/ActiveTicketsList';
@@ -12,8 +9,6 @@ import BonusTab, { BonusTabIcon } from './tabs/BonusTab';
 import OldTicketsList from './tabs/OldTicketsList';
 
 const DrawInfo = () => {
-	const { address = ZeroAddress } = useAccount();
-
 	const { t } = useTranslation('lottery');
 	const { data: round } = useSelectedRound();
 	const { tab, setTab } = useDrawInfoTab();

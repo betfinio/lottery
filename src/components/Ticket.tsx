@@ -1,8 +1,3 @@
-import Countdown from '@/src/components/Countdown.tsx';
-import EditTicket from '@/src/components/EditTicket.tsx';
-import { useRoundFinish, useRoundStatus, useTicketPrice, useWinningLine } from '@/src/lib/query';
-import { type ActiveTicketMode, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
-import { compareLines, equals } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -13,12 +8,17 @@ import { ChevronDown, PencilIcon, PencilLineIcon, SendIcon } from 'lucide-react'
 import { DateTime } from 'luxon';
 import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import Countdown from '@/src/components/Countdown.tsx';
+import EditTicket from '@/src/components/EditTicket.tsx';
+import { useRoundFinish, useRoundStatus, useTicketPrice, useWinningLine } from '@/src/lib/query';
+import { type ActiveTicketMode, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
+import { compareLines } from '@/src/lib/utils';
 import { ETHSCAN, LOTTERY_ADDRESS } from '../globals.ts';
 import EditMode from './EditMode.tsx';
 import SendTicket from './SendTicket.tsx';
-import TicketStatus from './TicketStatus.tsx';
 import SharedLine from './shared/SharedLine.tsx';
 import Claim from './status/Claim.tsx';
+import TicketStatus from './TicketStatus.tsx';
 
 export interface TicketProps {
 	ticket: IRoundTicket;

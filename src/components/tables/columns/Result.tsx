@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next';
+import type { Address } from 'viem';
 import WinningLine from '@/src/components/tables/columns/WinningLine.tsx';
 import { useRoundFinish, useRoundStatus } from '@/src/lib/query';
 import { RoundStatus } from '@/src/lib/types';
-import { useTranslation } from 'react-i18next';
-import type { Address } from 'viem';
 import Countdown from '../../Countdown';
 
 function Result({ round }: { round: Address }) {

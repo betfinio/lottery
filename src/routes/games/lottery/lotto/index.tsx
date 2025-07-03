@@ -1,3 +1,8 @@
+import { cn } from '@betfinio/components';
+import { useMediaQuery } from '@betfinio/components/hooks';
+import { SonnerToaster as Toaster } from '@betfinio/components/ui';
+import { createFileRoute } from '@tanstack/react-router';
+import { AnimatePresence, motion } from 'framer-motion';
 import CreateTicket from '@/src/components/CreateTicket.tsx';
 import DrawInfo from '@/src/components/DrawInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';
@@ -7,11 +12,6 @@ import TablesWrapper from '@/src/components/tables/TablesWrapper';
 import { useSelectedRound } from '@/src/lib/query';
 import { useRoundState } from '@/src/lib/query/state';
 import { RoundState } from '@/src/lib/types';
-import { cn } from '@betfinio/components';
-import { useMediaQuery } from '@betfinio/components/hooks';
-import { SonnerToaster as Toaster } from '@betfinio/components/ui';
-import { createFileRoute } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
 
 export const Route = createFileRoute('/games/lottery/lotto/')({
 	component: LotteryPage,

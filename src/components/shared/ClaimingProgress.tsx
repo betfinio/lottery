@@ -1,9 +1,9 @@
-import { useGetRoundFromParams, useRoundDetails, useRoundTotalBetsAndClaimedBets } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
 import { Progress, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
 import { CircleHelp } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGetRoundFromParams, useRoundTotalBetsAndClaimedBets } from '@/src/lib/query';
 
 export const ClaimingProgressBar = () => {
 	const { t } = useTranslation();

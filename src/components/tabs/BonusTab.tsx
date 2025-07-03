@@ -1,3 +1,9 @@
+import { ZeroAddress } from '@betfinio/abi';
+import { cn } from '@betfinio/components';
+import { Badge, Button, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@betfinio/components/ui';
+import { StarIcon, TicketsIcon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useAccount } from 'wagmi';
 import {
 	useBoughtLinesCount,
 	useExchangeRate,
@@ -8,12 +14,6 @@ import {
 	useUsedFreeLinesCount,
 } from '@/src/lib/query';
 import { useClaimUnclaimedTickets } from '@/src/lib/query/mutations';
-import { ZeroAddress } from '@betfinio/abi';
-import { cn } from '@betfinio/components';
-import { Badge, Button, Progress, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator } from '@betfinio/components/ui';
-import { StarIcon, TicketsIcon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { useAccount } from 'wagmi';
 import Ticket from '../icons/Ticket';
 
 function BonusTab() {

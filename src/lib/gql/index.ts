@@ -1,4 +1,8 @@
+import { ZeroAddress } from '@betfinio/abi';
+import type { ExecutionResult } from 'graphql/execution';
+import type { Address } from 'viem';
 import {
+	execute,
 	GetActiveRoundsDocument,
 	type GetActiveRoundsQuery,
 	GetOldRoundsDocument,
@@ -21,14 +25,10 @@ import {
 	type Round,
 	type RoundFragment,
 	type Ticket,
-	execute,
 } from '@/.graphclient';
 import logger from '@/src/config/logger';
 import type { IRound, IRoundTicket } from '@/src/lib/types.ts';
-import { JACKPOT_LINES_IN_TABLE_TO_SHOW, decodeLines } from '@/src/lib/utils';
-import { ZeroAddress } from '@betfinio/abi';
-import type { ExecutionResult } from 'graphql/execution';
-import type { Address } from 'viem';
+import { decodeLines, JACKPOT_LINES_IN_TABLE_TO_SHOW } from '@/src/lib/utils';
 
 export const fetchActiveRounds = async (): Promise<IRound[]> => {
 	logger.start('fetching active rounds');

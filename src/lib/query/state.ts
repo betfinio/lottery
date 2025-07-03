@@ -1,9 +1,9 @@
-import { ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP } from '@/src/globals';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Address } from 'viem';
-import { useRoundFinishedTimeStamp, useWinningLine } from '.';
+import { ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP } from '@/src/globals';
 import { type DrawTab, RoundState, type TicketsTab } from '../types';
+import { useRoundFinishedTimeStamp, useWinningLine } from '.';
 
 // use query that saves state of round
 

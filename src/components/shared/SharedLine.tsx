@@ -1,9 +1,9 @@
-import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
-import { useDraftLines } from '@/src/lib/query';
-import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import { useEffect, useMemo } from 'react';
+import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
+import { useDraftLines } from '@/src/lib/query';
+import type { ILine } from '@/src/lib/types.ts';
 
 function SharedLine({
 	line,

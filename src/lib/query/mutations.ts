@@ -1,3 +1,12 @@
+import { ZeroAddress } from '@betfinio/abi';
+import { toast } from '@betfinio/components/ui';
+import { useQueryClient } from '@tanstack/react-query';
+import { waitForTransactionReceipt } from '@wagmi/core';
+import { getTransactionLink } from 'betfinio_context/lib/helpers';
+import { useTranslation } from 'react-i18next';
+import type { Address, WriteContractErrorType, WriteContractReturnType } from 'viem';
+import { useAccount, useConfig } from 'wagmi';
+import { useMutation } from 'wagmi/query';
 import {
 	buyTicket,
 	claimTicket,
@@ -13,15 +22,6 @@ import {
 	updateTicket,
 } from '@/src/lib/api';
 import type { ILine, IRoundTicket } from '@/src/lib/types.ts';
-import { ZeroAddress } from '@betfinio/abi';
-import { toast } from '@betfinio/components/ui';
-import { useQueryClient } from '@tanstack/react-query';
-import { waitForTransactionReceipt } from '@wagmi/core';
-import { getTransactionLink } from 'betfinio_context/lib/helpers';
-import { useTranslation } from 'react-i18next';
-import type { Address, WriteContractErrorType, WriteContractReturnType } from 'viem';
-import { useAccount, useConfig } from 'wagmi';
-import { useMutation } from 'wagmi/query';
 
 export interface BuyTicketProps {
 	lines: ILine[];

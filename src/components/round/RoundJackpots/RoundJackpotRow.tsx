@@ -1,14 +1,13 @@
-import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
-import { JACKPOT_LINES_IN_TABLE_TO_SHOW } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { AccordionContent, AccordionItem, AccordionTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { UserIcon } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
+import { JACKPOT_LINES_IN_TABLE_TO_SHOW } from '@/src/lib/utils';
 import Ticket from '../../icons/Ticket';
-import { JackpotRowTable } from './JackpotRowTable';
 import type { JackpotRowItem } from './constants';
+import { JackpotRowTable } from './JackpotRowTable';
 
 interface RoundJackpotRowProps {
 	jackpot: JackpotRowItem;

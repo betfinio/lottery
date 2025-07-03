@@ -1,7 +1,7 @@
-import Ticket from '@/src/components/Ticket.tsx';
-import Pagination from '@/src/components/shared/Pagination';
-import type { ActiveTicketMode, IRoundTicket } from '@/src/lib/types.ts';
 import { useState } from 'react';
+import Pagination from '@/src/components/shared/Pagination';
+import Ticket from '@/src/components/Ticket.tsx';
+import type { IRoundTicket } from '@/src/lib/types.ts';
 
 export interface TicketsListProps {
 	tickets: IRoundTicket[];
@@ -21,18 +21,6 @@ const ticketsToHide = {
 	9: 3,
 };
 
-// Row span mapping based on line count
-const rowSpanMap = {
-	2: 'row-span-5',
-	3: 'row-span-6',
-	4: 'row-span-7',
-	5: 'row-span-8',
-	6: 'row-span-9',
-	7: 'row-span-10',
-	8: 'row-span-11',
-	9: 'row-span-12',
-};
-
 function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsListProps) {
 	const [expanded, setExpanded] = useState<IRoundTicket | null>(null);
 
@@ -48,7 +36,6 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 
 		// Expanded ticket view
 		if (expanded.token === ticket.token) {
-			const lineCount = ticket.lines.length as keyof typeof rowSpanMap;
 			return <Ticket old={old} ticket={ticket} key={index} mode="expanded" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 

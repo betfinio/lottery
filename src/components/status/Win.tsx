@@ -1,7 +1,7 @@
-import { useRoundStatus, useTicketResult } from '@/src/lib/query';
-import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { Badge } from '@betfinio/components/ui';
 import { useTranslation } from 'react-i18next';
+import { useRoundStatus, useTicketResult } from '@/src/lib/query';
+import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 
 function Win({ ticket }: { ticket: IRoundTicket }) {
 	const { t } = useTranslation('lottery');

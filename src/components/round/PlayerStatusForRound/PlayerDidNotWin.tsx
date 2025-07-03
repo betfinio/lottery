@@ -1,5 +1,3 @@
-import { MAX_SHARES } from '@/src/globals';
-import { useAdditionalJackpot, useGetRoundFromParams, useRoundDetails, useRoundTicketsByPlayer, useTicketPrice } from '@/src/lib/query';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -10,6 +8,8 @@ import millify from 'millify';
 import { type FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { MAX_SHARES } from '@/src/globals';
+import { useAdditionalJackpot, useGetRoundFromParams, useRoundDetails, useRoundTicketsByPlayer, useTicketPrice } from '@/src/lib/query';
 import { StatBox } from '../../shared/StatBox';
 
 export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets }) => {

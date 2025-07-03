@@ -1,4 +1,3 @@
-import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { motion } from 'framer-motion';
@@ -6,22 +5,23 @@ import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
+import type { ILine } from '@/src/lib/types.ts';
 import { useDraftLines, useLinesAvailability, useSelectedRound } from '../lib/query';
 import { equals, isDuplicate, randomize } from '../lib/utils';
 import { AnimatedGridOfNumbners } from './shared/AnimatedGridOfNumbners';
 import { TicketGridOfSymbols } from './shared/TicketGridOfSymbols';
+
 const animationDuration = 1000;
 const animationInterval = 100;
 
 const EditMode: FC<{
 	ticket: ILine;
-	onBack: () => void;
 	round?: Address;
 	onSave?: (ticket: ILine) => void;
 	order: number;
 	editMode: boolean;
 	shouldValidateAvaliability?: boolean;
-}> = ({ order, onBack, ticket, onSave, editMode, round, shouldValidateAvaliability = false }) => {
+}> = ({ order, ticket, onSave, editMode, round, shouldValidateAvaliability = false }) => {
 	const { t } = useTranslation('lottery');
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);

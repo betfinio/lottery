@@ -1,11 +1,10 @@
+import { Button, DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
+import { useIsMutating } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Ticket from '@/src/components/Ticket.tsx';
 import type { IRoundTicket } from '@/src/lib/types.ts';
 import { equals } from '@/src/lib/utils';
-import { Button, DialogClose, DialogDescription, DialogTitle } from '@betfinio/components/ui';
-import { useIsFetching, useIsMutating } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useUpdateTicket } from '../lib/query/mutations';
 import EditSteps from './shared/EditSteps';
 
 export interface EditTicketProps {

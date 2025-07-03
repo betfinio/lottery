@@ -1,7 +1,6 @@
+import type { ReactElement } from 'react';
 import type { GetRoundJackpotsQuery } from '@/.graphclient';
 import { COMBINATIONS_MAP } from '@/src/lib/utils';
-import type { ReactElement } from 'react';
-import { BronzeStar, type CustomIconProps, GoldStar, SilverStar } from '../../icons';
 import { JackpotFrame } from '../../shared/JackpotTiara/JackpotFrame';
 
 export interface JackpotRowItem {

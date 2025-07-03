@@ -1,14 +1,4 @@
-import {
-	linesAvailabilityQuery,
-	useActiveRounds,
-	useDraftLines,
-	useFreeLinesCount,
-	useLinesAvailability,
-	useSelectedRound,
-	useTicketPrice,
-} from '@/src/lib/query';
-import { type IRound, RoundState } from '@/src/lib/types.ts';
-import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
+import { truncateEthAddress, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Ticket } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
@@ -34,7 +24,7 @@ import {
 	toast,
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAllowance, useBalance, useIsMember } from 'betfinio_context/lib/query';
+import { useIsMember } from 'betfinio_context/lib/query';
 import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
@@ -42,6 +32,16 @@ import { type FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
 import { useAccount, useConfig } from 'wagmi';
+import {
+	linesAvailabilityQuery,
+	useActiveRounds,
+	useDraftLines,
+	useFreeLinesCount,
+	useLinesAvailability,
+	useSelectedRound,
+	useTicketPrice,
+} from '@/src/lib/query';
+import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ETHSCAN } from '../globals';
 import { useRoundState } from '../lib/query/state';
 import BuySteps from './shared/BuySteps';
