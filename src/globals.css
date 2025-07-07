@@ -1,8 +1,6 @@
 @import "tailwindcss";
-@import "@betfinio/components/globals.css";
 @import "tw-animate-css";
-
-@config '../tailwind.config.ts';
+@import "@betfinio/components/globals.css" important;
 
 @theme inline layer(base) {
 	--color-gold: var(--gold);
