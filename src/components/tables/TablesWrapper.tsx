@@ -1,7 +1,7 @@
-import MyDraws from '@/src/components/tables/MyDraws.tsx';
-import { SwitchComponent, Tabs, TabsContent, TabsList, TabsTrigger, Toggle } from '@betfinio/components/ui';
+import { SwitchComponent, Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import MyDraws from '@/src/components/tables/MyDraws.tsx';
 import AllDraws from './AllDraws';
 
 function TablesWrapper() {

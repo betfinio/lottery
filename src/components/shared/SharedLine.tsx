@@ -1,9 +1,9 @@
-import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
-import { useDraftLines } from '@/src/lib/query';
-import type { ILine } from '@/src/lib/types.ts';
 import { cn } from '@betfinio/components';
 import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import { useEffect, useMemo } from 'react';
+import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
+import { useDraftLines } from '@/src/lib/query';
+import type { ILine } from '@/src/lib/types.ts';
 
 function SharedLine({
 	line,
@@ -56,7 +56,7 @@ function SharedLine({
 				.sort((a, b) => a - b)
 				.map((number, index, array) => (
 					<NumberComponent key={index} className={cn(numberClassName, 'relative', dynamicNumberClassName?.(number, index))}>
-						<AnimatePresence mode="wait" custom={array[index]}>
+						<AnimatePresence mode="popLayout">
 							<motion.div
 								key={number}
 								custom={array[index]}
@@ -74,7 +74,7 @@ function SharedLine({
 									opacity: 0,
 								}}
 								transition={{
-									duration: 0.2,
+									duration: 0.28,
 								}}
 							>
 								{number || '-'}
@@ -91,7 +91,7 @@ function SharedLine({
 				animate={symbolControls}
 			>
 				<NumberComponent isSymbol className={cn(symbolClassName)}>
-					<AnimatePresence mode="wait">
+					<AnimatePresence mode="popLayout">
 						<motion.div
 							key={line.symbol + line.numbers.join(',')}
 							custom={line.symbol}
@@ -107,6 +107,9 @@ function SharedLine({
 							exit={{
 								y: 20,
 								opacity: 0,
+							}}
+							transition={{
+								duration: 0.28,
 							}}
 						>
 							<SymbolElement symbol={line.symbol} />

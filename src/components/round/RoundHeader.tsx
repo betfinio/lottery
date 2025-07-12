@@ -1,12 +1,12 @@
-import { ETHSCAN } from '@/src/globals';
-import { useGetRoundFromParams, useRoundDetails } from '@/src/lib/query';
-import { getTimeFromSeconds } from '@/src/lib/utils';
 import { truncateEthAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
 import { Link } from '@tanstack/react-router';
 import { Undo2Icon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { ETHSCAN } from '@/src/globals';
+import { useGetRoundFromParams, useRoundDetails } from '@/src/lib/query';
+import { getTimeFromSeconds } from '@/src/lib/utils';
 import { CopyLocation } from '../shared/CopyLocation';
 
 export const RoundHeader = () => {

@@ -1,8 +1,8 @@
-import TicketsList from '@/src/components/tabs/TicketsList.tsx';
-import { useActiveTickets } from '@/src/lib/query';
 import { LoaderIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import TicketsList from '@/src/components/tabs/TicketsList.tsx';
+import { useActiveTickets } from '@/src/lib/query';
 
 function ActiveTicketsList() {
 	const { t } = useTranslation('lottery');

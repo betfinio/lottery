@@ -1,8 +1,8 @@
+import { useTranslation } from 'react-i18next';
+import type { Address } from 'viem';
 import Line from '@/src/components/shared/SharedLine';
 import { useWinningLine } from '@/src/lib/query';
 import { useManualRequest } from '@/src/lib/query/mutations.ts';
-import { useTranslation } from 'react-i18next';
-import type { Address } from 'viem';
 
 function WinningLine({ round }: { round: Address }) {
 	const { t } = useTranslation('lottery');

@@ -1,7 +1,3 @@
-import { useActiveTickets, useEditAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { useUnlockEdit, useUpdateTicket } from '@/src/lib/query/mutations';
-import type { IRoundTicket } from '@/src/lib/types';
-import { shootConfetti } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Separator } from '@betfinio/components/ui';
@@ -10,6 +6,10 @@ import { CheckIcon, LoaderIcon, LockIcon, ShoppingCartIcon, XIcon } from 'lucide
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { useActiveTickets, useEditAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useUnlockEdit, useUpdateTicket } from '@/src/lib/query/mutations';
+import type { IRoundTicket } from '@/src/lib/types';
+import { shootConfetti } from '@/src/lib/utils';
 // Steps for the ticket edit flow
 export type Step = 'unlock' | 'edit' | 'done';
 
@@ -70,7 +70,7 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 		try {
 			await unlock();
 			setStep('edit');
-		} catch (error) {
+		} catch {
 			setStep('unlock');
 		}
 	};
@@ -78,7 +78,7 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 	const handleEdit = async () => {
 		try {
 			await editTicket({ ticket });
-		} catch (error) {
+		} catch {
 			setStep('edit');
 		}
 	};

@@ -6,6 +6,7 @@
 		"jsx": "react-jsx",
 		"noEmit": true,
 		"strict": true,
+		"noCheck": true,
 		"skipLibCheck": true,
 		"isolatedModules": true,
 		"declaration": false,

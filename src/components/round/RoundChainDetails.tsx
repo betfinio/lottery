@@ -1,12 +1,11 @@
-import { ETHSCAN } from '@/src/globals';
-import { useFinishedRoundTransactionByRoundAddress, useGetRoundFromParams, useSelectedRound } from '@/src/lib/query';
-import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
+import { truncateEthAddress, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
 import { ShieldCheckIcon } from 'lucide-react';
-import { DateTime } from 'luxon';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ETHSCAN } from '@/src/globals';
+import { useFinishedRoundTransactionByRoundAddress, useGetRoundFromParams } from '@/src/lib/query';
 
 export const RoundChainDetails: FC = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });

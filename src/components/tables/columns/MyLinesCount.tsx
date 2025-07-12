@@ -1,7 +1,7 @@
-import { useMyLinesSold } from '@/src/lib/query';
 import { ZeroAddress } from '@betfinio/abi';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { useMyLinesSold } from '@/src/lib/query';
 import Count from './Count';
 
 function MyLinesCount({ round }: { round: Address }) {

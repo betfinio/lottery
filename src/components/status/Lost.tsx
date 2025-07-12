@@ -1,10 +1,10 @@
+import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { HelpCircleIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useRoundStatus, useTicketStatus, useWinningLine } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
 import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
 import { compareLines } from '@/src/lib/utils';
-import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { HelpCircleIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 function Lost({ ticket }: { ticket: IRoundTicket }) {
 	const { t } = useTranslation('lottery');

@@ -1,6 +1,6 @@
-import { ETHSCAN } from '@/src/globals.ts';
 import { truncateEthAddress } from '@betfinio/abi';
 import type { Address } from 'viem';
+import { ETHSCAN } from '@/src/globals.ts';
 
 function Round({ address }: { address: Address }) {
 	const handleStopPropagation = (e: React.MouseEvent<HTMLAnchorElement>) => {

@@ -1,7 +1,4 @@
-import type { GetRoundJackpotsQuery, JackpotFragment } from '@/.graphclient';
-import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
-import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
-import { ZeroAddress, truncateEthAddress } from '@betfinio/abi';
+import { truncateEthAddress, ZeroAddress } from '@betfinio/abi';
 import { Ticket as TicketIcon } from '@betfinio/components/icons';
 import { BetValue, DataTable } from '@betfinio/components/shared';
 import { type ColumnDef, createColumnHelper } from '@tanstack/react-table';
@@ -10,6 +7,9 @@ import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import type { GetRoundJackpotsQuery, JackpotFragment } from '@/.graphclient';
+import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
+import { useGetRoundFromParams, useRoundJackpots } from '@/src/lib/query';
 
 type Ticket = JackpotFragment['tickets'][number];
 const columnHelper = createColumnHelper<Ticket>();
@@ -19,6 +19,8 @@ interface JackpotRowTableProps {
 }
 export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 	const round = useGetRoundFromParams();
+	const { address = ZeroAddress } = useAccount();
+
 	const { data: jackpotData } = useRoundJackpots(round);
 	if (!jackpotData) return null;
 	const currentJackpot = jackpotData[id][0];
@@ -33,7 +35,6 @@ export const JackpotRowTable: FC<JackpotRowTableProps> = ({ id }) => {
 				className: 'h-[50px]',
 			},
 			cell: (props) => {
-				const { address = ZeroAddress } = useAccount();
 				const { data: username } = useUsername(props.row.original.owner as Address, address);
 				return (
 					<a href={`${ETHSCAN}/address/${props.row.original.owner}`} className="text-bonus" target="_blank" rel="noreferrer">

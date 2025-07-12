@@ -1,6 +1,6 @@
-import { useGetRoundFromParams, useRoundFinishedTimeStamp, useRoundStatus, useWinningLine } from '@/src/lib/query';
 import { LotteryRoundABI } from '@betfinio/abi';
 import { useWatchContractEvent } from 'wagmi';
+import { useGetRoundFromParams, useRoundFinishedTimeStamp, useRoundStatus, useWinningLine } from '@/src/lib/query';
 
 export const RoundWatchers = () => {
 	const roundAddress = useGetRoundFromParams();

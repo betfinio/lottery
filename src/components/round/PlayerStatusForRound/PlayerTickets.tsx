@@ -1,10 +1,10 @@
-import { useGetRoundFromParams, useRoundTicketsByPlayer } from '@/src/lib/query';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { useGetRoundFromParams, useRoundTicketsByPlayer } from '@/src/lib/query';
 import TicketsList from '../../tabs/TicketsList';
 
 const PlayerTickets: FC<{ className?: string }> = ({ className }) => {

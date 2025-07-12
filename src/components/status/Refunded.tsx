@@ -1,8 +1,8 @@
+import { Badge } from '@betfinio/components/ui';
+import { useTranslation } from 'react-i18next';
 import { useRoundStatus, useTicketClaimed, useTicketStatus } from '@/src/lib/query';
 import { useClaimTicket } from '@/src/lib/query/mutations';
 import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
-import { Badge } from '@betfinio/components/ui';
-import { useTranslation } from 'react-i18next';
 
 function Refunded({ ticket }: { ticket: IRoundTicket }) {
 	const { t } = useTranslation('lottery');

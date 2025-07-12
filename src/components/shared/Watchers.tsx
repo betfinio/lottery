@@ -1,7 +1,7 @@
-import { useSelectedRound } from '@/src/lib/query';
 import { LotteryRoundABI } from '@betfinio/abi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWatchContractEvent } from 'wagmi';
+import { useSelectedRound } from '@/src/lib/query';
 
 function Watchers() {
 	const { data: round } = useSelectedRound();

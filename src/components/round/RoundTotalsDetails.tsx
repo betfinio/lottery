@@ -1,9 +1,9 @@
-import { useGetRoundFromParams, useLinesCount, useRoundDetails, useRoundJackpots, useTicketPrice } from '@/src/lib/query';
 import { cn } from '@betfinio/components';
 import { Bag } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGetRoundFromParams, useLinesCount, useRoundDetails, useRoundJackpots, useTicketPrice } from '@/src/lib/query';
 import Ticket from '../icons/Ticket.tsx';
 import { LuckyNumbers } from './LuckyNumbers.tsx';
 
