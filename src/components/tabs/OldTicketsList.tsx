@@ -1,7 +1,7 @@
-import TicketsList from '@/src/components/tabs/TicketsList.tsx';
-import { useOldTickets } from '@/src/lib/query';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import TicketsList from '@/src/components/tabs/TicketsList.tsx';
+import { useOldTickets } from '@/src/lib/query';
 
 function OldTicketsList() {
 	const { t } = useTranslation('lottery');

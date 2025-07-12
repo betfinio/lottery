@@ -1,11 +1,11 @@
-import { useRoundStatus, useTicketClaimed, useTicketPrice, useTicketResult, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
-import { useClaimTicket } from '@/src/lib/query/mutations';
-import { EMPTY_LINE, type IRoundTicket, RoundStatus } from '@/src/lib/types';
-import { calculateTicketPrize } from '@/src/lib/utils';
 import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button } from '@betfinio/components/ui';
 import { LoaderIcon } from 'lucide-react';
 import { useMemo } from 'react';
+import { useRoundStatus, useTicketClaimed, useTicketPrice, useTicketResult, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
+import { useClaimTicket } from '@/src/lib/query/mutations';
+import { EMPTY_LINE, type IRoundTicket, RoundStatus } from '@/src/lib/types';
+import { calculateTicketPrize } from '@/src/lib/utils';
 import { FreeTicketTooltip } from '../shared/FreeTicketTooltip';
 
 function Claim({ ticket }: { ticket: IRoundTicket }) {

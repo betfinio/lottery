@@ -1,8 +1,8 @@
-import { useMyLinesSold } from '@/src/lib/query';
 import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { useMyLinesSold } from '@/src/lib/query';
 
 function MyLinesBank({ round, ticketPrice }: { round: Address; ticketPrice: bigint }) {
 	const { address = ZeroAddress } = useAccount();

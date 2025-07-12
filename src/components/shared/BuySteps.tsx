@@ -1,8 +1,3 @@
-import { useDraftLines, useFreeLinesCount, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { type BuyTicketProps, useBuyTicket, useLoadMintedTokens, useUnlockMultibet } from '@/src/lib/query/mutations';
-import { useDrawInfoTab, useRoundState } from '@/src/lib/query/state';
-import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
-import { shootConfetti } from '@/src/lib/utils';
 import { ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
@@ -14,6 +9,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
 import { useAccount } from 'wagmi';
+import { useDraftLines, useFreeLinesCount, useMultiAllowance, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { type BuyTicketProps, useBuyTicket, useLoadMintedTokens, useUnlockMultibet } from '@/src/lib/query/mutations';
+import { useDrawInfoTab, useRoundState } from '@/src/lib/query/state';
+import { EMPTY_LINE, type IRoundTicket, RoundState } from '@/src/lib/types';
+import { shootConfetti } from '@/src/lib/utils';
 // Steps for the ticket purchase flow
 export type Step = 'unlock' | 'buy' | 'done';
 
@@ -102,7 +102,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		try {
 			await unlock();
 			setStep('buy');
-		} catch (error) {
+		} catch {
 			setStep('unlock');
 		}
 	};
@@ -115,7 +115,7 @@ function BuySteps({ buy, isOpen, setIsOpen }: BuyStepsProps) {
 		try {
 			await buyTickets({ ...buy });
 			setStep('done');
-		} catch (error) {
+		} catch {
 			setStep('buy');
 		}
 	};

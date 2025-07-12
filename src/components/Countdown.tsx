@@ -1,6 +1,6 @@
-import { type TimeDiff, getDiff } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { useEffect, useRef, useState } from 'react';
+import { getDiff, type TimeDiff } from '@/src/lib/utils';
 
 export interface CountdownProps {
 	finish: number;

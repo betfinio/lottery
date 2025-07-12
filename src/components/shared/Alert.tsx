@@ -1,7 +1,7 @@
-import { useLocalStorage } from '@/src/lib/query/state';
 import { Button, Checkbox, Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@betfinio/components/ui';
-import { type MouseEvent, type PropsWithChildren, type ReactNode, useState } from 'react';
+import { type PropsWithChildren, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocalStorage } from '@/src/lib/query/state';
 
 export interface AlertProps extends PropsWithChildren {
 	storageKey: string;
@@ -16,7 +16,7 @@ function Alert({ storageKey, children, trigger, isValid, onSuccess }: AlertProps
 
 	const { value = false, setValue } = useLocalStorage<boolean>(storageKey);
 	const [checkboxChecked, setCheckboxChecked] = useState(false);
-	const handleClick = (e: MouseEvent) => {
+	const handleClick = () => {
 		if (!isValid) {
 			onSuccess();
 			return;

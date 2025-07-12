@@ -1,3 +1,8 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useParams } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import type { Address } from 'viem';
+import { type Config, useConfig } from 'wagmi';
 import {
 	fetchAdditionalJackpot,
 	fetchBoughtLinesCount,
@@ -38,11 +43,6 @@ import {
 	fetchUnclaimedTickets,
 } from '@/src/lib/gql';
 import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useParams } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import type { Address } from 'viem';
-import { type Config, useConfig } from 'wagmi';
 import { encodeLine } from '../utils';
 
 /**

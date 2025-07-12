@@ -95,27 +95,27 @@ fragment Jackpot on Jackpot {
 	}
 }
 
-query GetRoundJackpots($round: String!, $ticketsFirst: Int=25) {
+query GetRoundJackpots($round: String!, $ticketsFirst: Int = 25) {
 	jackpot1: jackpots(where: { round: $round, combination: "0x352b31" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot2: jackpots(where: { round: $round, combination: "0x35" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot3: jackpots(where: { round: $round, combination: "0x342b31" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot4: jackpots(where: { round: $round, combination: "0x34" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot5: jackpots(where: { round: $round, combination: "0x332b31" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot6: jackpots(where: { round: $round, combination: "0x33" }) {
-		...Jackpot 
+		...Jackpot
 	}
 	jackpot7: jackpots(where: { round: $round, combination: "0x322b31" }) {
-		...Jackpot 
+		...Jackpot
 	}
 }
 

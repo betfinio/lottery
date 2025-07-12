@@ -1,9 +1,9 @@
-import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
-import type { ILine, IRoundTicket } from '@/src/lib/types';
-import { compareLines, partlyEquals } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import type { FC } from 'react';
 import { useMemo } from 'react';
+import { ETHSCAN, LOTTERY_ADDRESS } from '@/src/globals';
+import type { ILine, IRoundTicket } from '@/src/lib/types';
+import { compareLines, partlyEquals } from '@/src/lib/utils';
 import { NumberComponent, SymbolElement } from '../Line';
 
 interface TicketCardProps {

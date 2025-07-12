@@ -1,7 +1,6 @@
 import { cn } from '@betfinio/components';
 import { forwardRef } from 'react';
 import { BfIcon } from './BfIcon';
-import { GradientImage } from './GradientImage';
 import { JackpotStarsSpread } from './JackpotStarsSpread';
 
 export interface JackpotFrameProps extends React.ComponentPropsWithoutRef<'svg'> {

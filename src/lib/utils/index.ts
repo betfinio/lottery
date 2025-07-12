@@ -1,7 +1,7 @@
-import type { GTicket, ILine } from '@/src/lib/types.ts';
 import confetti from 'canvas-confetti';
 import { DateTime } from 'luxon';
 import { type Address, decodeAbiParameters } from 'viem';
+import type { GTicket, ILine } from '@/src/lib/types.ts';
 export interface TimeDiff {
 	days: number;
 	hours: number;
@@ -58,6 +58,7 @@ export const randomize = (from = 1): ILine => {
 	const selectedNumbers = numbers.slice(0, 5).sort((a, b) => a - b);
 	// select a random symbol
 	const symbol = Math.floor(Math.random() * 5) + 1;
+	console.log(selectedNumbers);
 	return { symbol, numbers: selectedNumbers };
 };
 

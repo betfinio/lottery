@@ -1,6 +1,6 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import ActiveTicketsList from '@/src/components/tabs/ActiveTicketsList.tsx';
 import { useTicketsTab } from '@/src/lib/query/state';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@betfinio/components/ui';
 import OldTicketsList from './OldTicketsList';
 
 function MyTickets() {

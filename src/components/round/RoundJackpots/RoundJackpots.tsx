@@ -1,7 +1,7 @@
 import { Accordion } from '@betfinio/components/ui';
 import { useTranslation } from 'react-i18next';
-import { RoundJackpotRow } from './RoundJackpotRow';
 import { JACKPOTS } from './constants';
+import { RoundJackpotRow } from './RoundJackpotRow';
 export const RoundJackpots = () => {
 	const { t } = useTranslation('lottery');
 	return (

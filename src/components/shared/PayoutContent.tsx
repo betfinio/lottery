@@ -1,15 +1,24 @@
-import { useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import type { ILine } from '@/src/lib/types';
-import { partlyEquals } from '@/src/lib/utils';
 import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
 import { BetValue } from '@betfinio/components/shared';
-import { DialogClose, DialogDescription, DialogTitle, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { DialogContent, DialogHeader } from '@betfinio/components/ui';
-import { HelpCircleIcon, InfoIcon, XIcon } from 'lucide-react';
+import {
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@betfinio/components/ui';
+import { HelpCircleIcon, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { NumberComponent, SymbolElement } from '../Line';
+import { useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import type { ILine } from '@/src/lib/types';
+import { partlyEquals } from '@/src/lib/utils';
 import Ticket from '../icons/Ticket';
+import { NumberComponent, SymbolElement } from '../Line';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
 
 function PayoutContent() {

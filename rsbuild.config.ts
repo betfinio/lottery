@@ -3,7 +3,6 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginSvgr } from '@rsbuild/plugin-svgr';
 import { TanStackRouterRspack } from '@tanstack/router-plugin/rspack';
-import { dependencies } from './package.json';
 
 const PORT = 4007;
 
@@ -12,9 +11,6 @@ export default defineConfig({
 		port: PORT,
 		cors: {
 			origin: '*',
-		},
-		headers: {
-			'Access-Control-Allow-Origin': '*',
 		},
 	},
 	dev: {
@@ -33,62 +29,35 @@ export default defineConfig({
 	plugins: [
 		pluginReact(),
 		pluginSvgr(),
-		pluginModuleFederation({
-			name: 'betfinio_lottery',
-			remotes: {
-				betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
+		pluginModuleFederation(
+			{
+				name: 'betfinio_lottery',
+				remotes: {
+					betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
+				},
+				exposes: {
+					'./styles': './src/styles.ts',
+					'./routes/index': './src/routes/games/lottery/lotto/index.tsx',
+					'./routes/$round': './src/routes/games/lottery/lotto/$round.tsx',
+					'./i18n': './src/i18n.ts',
+				},
+				manifest: true,
+				dts: true,
+				shared: [
+					'react',
+					'react-dom',
+					'@tanstack/react-router',
+					'@tanstack/react-query',
+					'i18next',
+					'react-i18next',
+					'wagmi',
+					'@privy-io/react-auth',
+					'@privy-io/wagmi',
+					'@betfinio/components',
+				],
 			},
-			exposes: {
-				'./styles': './src/styles.ts',
-				'./routes/index': './src/routes/games/lottery/lotto/index.tsx',
-				'./routes/$round': './src/routes/games/lottery/lotto/$round.tsx',
-				'./i18n': './src/i18n.ts',
-			},
-			manifest: true,
-			dts: true,
-			shared: {
-				react: {
-					singleton: true,
-					requiredVersion: dependencies.react,
-				},
-				'react-dom': {
-					singleton: true,
-					requiredVersion: dependencies['react-dom'],
-				},
-				'@tanstack/react-router': {
-					singleton: true,
-					requiredVersion: dependencies['@tanstack/react-router'],
-				},
-				'@tanstack/react-query': {
-					singleton: true,
-					requiredVersion: dependencies['@tanstack/react-query'],
-				},
-				i18next: {
-					singleton: true,
-					requiredVersion: dependencies.i18next,
-				},
-				'react-i18next': {
-					singleton: true,
-					requiredVersion: dependencies['react-i18next'],
-				},
-				wagmi: {
-					singleton: true,
-					requiredVersion: dependencies.wagmi,
-				},
-				'@privy-io/react-auth': {
-					singleton: true,
-					requiredVersion: dependencies['@privy-io/react-auth'],
-				},
-				'@privy-io/wagmi': {
-					singleton: true,
-					requiredVersion: dependencies['@privy-io/wagmi'],
-				},
-				'@betfinio/components': {
-					singleton: true,
-					requiredVersion: dependencies['@betfinio/components'],
-				},
-			},
-		}),
+			{},
+		),
 	],
 	tools: {
 		rspack: {

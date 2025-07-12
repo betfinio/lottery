@@ -1,8 +1,8 @@
-import type { ILine, IRoundTicket } from '@/src/lib/types';
 import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { ILine, IRoundTicket } from '@/src/lib/types';
 import { FreeTicketTooltip } from '../../shared/FreeTicketTooltip';
 import { JackpotFrame } from '../../shared/JackpotTiara/JackpotFrame';
 import Pagination from '../../shared/Pagination';

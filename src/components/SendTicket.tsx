@@ -1,6 +1,6 @@
 import { Button, DialogTitle, Input } from '@betfinio/components/ui';
 import { LoaderIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { type Address, isAddress } from 'viem';
 import { useSendTicket } from '../lib/query/mutations';
 import type { IRoundTicket } from '../lib/types';

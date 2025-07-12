@@ -1,3 +1,8 @@
+import { ZeroAddress } from '@betfinio/abi';
+import { SonnerToaster as Toaster } from '@betfinio/components/ui';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
+import { useAccount } from 'wagmi';
 import { PlayerStatusRoundPrecheck } from '@/src/components/round/PlayerStatusForRound/PlayerStatusRoundPrecheck';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
@@ -7,11 +12,6 @@ import { RoundWatchers } from '@/src/components/round/RoundWatchers';
 import ClaimingProgressBar from '@/src/components/shared/ClaimingProgress';
 import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer } from '@/src/lib/query';
 import { RoundStatus } from '@/src/lib/types';
-import { ZeroAddress } from '@betfinio/abi';
-import { SonnerToaster as Toaster } from '@betfinio/components/ui';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { useAccount } from 'wagmi';
 
 export const statusesAllowedToSeeRound = [RoundStatus.CLAIMING, RoundStatus.DONE, RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING, RoundStatus.GENERATING];
 
@@ -41,7 +41,7 @@ export function HistoryRoundPage() {
 	return (
 		<>
 			<RoundWatchers />
-			<div className="lottery   p-2 md:p-3 lg:p-4 f 2xl:pr-0">
+			<div className="lottery p-2 md:p-3 lg:p-4 f 2xl:pr-0 max-w-screen-2xl mx-auto">
 				<RoundHeader />
 				<RoundTotalsDetails />
 				<PlayerStatusRoundPrecheck />

@@ -1,5 +1,3 @@
-import { DYNAMIC_STAKING_ADDRESS } from '@/src/globals';
-import { useActiveRounds, useRoundFinish, useRoundStatus, useSelectedRound } from '@/src/lib/query';
 import { Bag, PayTable } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
@@ -9,6 +7,8 @@ import { useBalance } from 'betfinio_context/lib/query';
 import { BookIcon, HeadsetIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DYNAMIC_STAKING_ADDRESS } from '@/src/globals';
+import { useActiveRounds, useRoundFinish, useRoundStatus, useSelectedRound } from '@/src/lib/query';
 import Countdown from '../Countdown';
 import Ticket from '../icons/Ticket';
 import PayoutContent from './PayoutContent';
