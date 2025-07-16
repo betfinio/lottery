@@ -40,7 +40,7 @@ export function RoundTotalsDetails() {
 						withIcon
 					/>
 					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isLinesLoading || isJackpotsLoading })}>
-						{Number(lines)} {t('lines')}
+						{Number(lines)} {t('lines', { count: Number(lines) })}
 					</div>
 				</div>
 			</div>

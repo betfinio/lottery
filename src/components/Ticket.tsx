@@ -238,7 +238,7 @@ const Header: FC<{
 					#{ticket.token}
 				</a>
 				<div className={'text text-muted-foreground'}>
-					{ticket.lines.length} {t('lines')}
+					{ticket.lines.length} {t('create.lines', { count: ticket.lines.length })}
 				</div>
 				{old && <div className={'text-muted-foreground/50'}>{DateTime.fromSeconds(finish).toFormat('dd/MM T')}</div>}
 			</div>

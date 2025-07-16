@@ -203,7 +203,7 @@ const PlaceBet = () => {
 			<div className={'p-3 flex flex-col items-start gap-2'}>
 				<div className="flex flex-row justify-end w-full px-2">
 					<div>
-						{selectedRounds.length} {t('selected')}
+						{selectedRounds.length} {t('create.selected', { count: selectedRounds.length })}
 					</div>
 				</div>
 				<ScrollArea className={cn('w-full', 'h-[300px]')} type="auto">
