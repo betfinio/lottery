@@ -50,8 +50,10 @@ export const RoundJackpotRow: FC<RoundJackpotRowProps> = ({ jackpot }) => {
 						{currentJackpot?.linesCount}
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger>
-									<Ticket className={'w-4 h-4 text-primary'} />
+								<TooltipTrigger asChild>
+									<span className="cursor-pointer">
+										<Ticket className={'w-4 h-4 text-primary'} />
+									</span>
 								</TooltipTrigger>
 								<TooltipContent>{t('jackpotTableLinesTooltip', { count: JACKPOT_LINES_IN_TABLE_TO_SHOW })}</TooltipContent>
 							</Tooltip>

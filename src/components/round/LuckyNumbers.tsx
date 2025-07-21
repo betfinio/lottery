@@ -27,7 +27,13 @@ export const LuckyNumbers: FC<LuckyNumbersProps> = ({ round }) => {
 	useEffect(() => {
 		if (winningNumbers.isComplete) {
 			setCurrentLine({ numbers: winningNumbers.allNumbers.slice(0, 5), symbol: winningNumbers.allNumbers[5] });
-		} // Stop animation when real data arrives
+			return; // Stop animation when real data arrives
+		}
+
+		// Don't start animation if we're still loading and have no revealed numbers
+		if (isFetching && winningNumbersToShow.length === 0) {
+			return;
+		}
 
 		const interval = setInterval(() => {
 			if (winningNumbersToShow.length > 0) {
