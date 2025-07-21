@@ -14,10 +14,10 @@ export function RoundTotalsDetails() {
 	const { isLoading: isPriceLoading } = useTicketPrice(round);
 	const { data: roundDetails } = useRoundDetails(round);
 	const { data: jackpots, isLoading: isJackpotsLoading } = useRoundJackpots(round);
-	const bank = roundDetails?.bank;
+	const bank = roundDetails?.bank ?? 0n;
 
 	const claimedJackpot = useMemo(() => {
-		if (!jackpots) return;
+		if (!jackpots) return 0n;
 
 		return Object.values(jackpots).reduce((acc, jackpot) => {
 			return acc + BigInt(jackpot?.[0]?.claimed || 0n);
@@ -25,7 +25,6 @@ export function RoundTotalsDetails() {
 	}, [jackpots]);
 
 	const paidToStaking = useMemo(() => {
-		if (!claimedJackpot || !bank) return;
 		return bank - claimedJackpot;
 	}, [bank, claimedJackpot]);
 
@@ -55,11 +54,11 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur-xs animated-pulse': isLinesLoading || isPriceLoading || !paidToStaking,
+							'blur-xs animated-pulse': isLinesLoading || isPriceLoading || paidToStaking === undefined,
 							'text-success': paidToStaking && paidToStaking > 0n,
 							'text-destructive': paidToStaking && paidToStaking < 0n,
 						})}
-						value={paidToStaking ?? 42n}
+						value={paidToStaking}
 						withIcon
 					/>
 					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>

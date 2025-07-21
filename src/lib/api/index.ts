@@ -3,7 +3,7 @@ import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
 import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
-import { getBlock, getContractEvents } from 'viem/actions';
+import { getBlock, getBlockNumber, getContractEvents } from 'viem/actions';
 import logger from '@/src/config/logger';
 import { CLAIMER_ADDRESS, LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
 import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
@@ -50,8 +50,6 @@ export const fetchRoundStatus = async (round: Address, config: Config) => {
 		args: [round],
 	});
 
-	console.log(balance, status, 'balance');
-
 	if (balance === 0n && status === 5) {
 		return RoundStatus.ENDED_WITHOUT_BETS;
 	}
@@ -87,12 +85,19 @@ export const fetchRoundFinishedTimeStamp = async (config: Config, round: Address
 
 	if (finish > BigInt(Math.floor(Date.now() / 1000))) return 0;
 	const fromBlock = await getBlockByTimestamp(Number(finish));
+	let endBlock = fromBlock + 65n * 30n; // Keep original logic
+	const currentBlock = await getBlockNumber(config.getClient());
+
+	if (currentBlock < endBlock) {
+		endBlock = currentBlock; // Event hasn't happened yet, don't look into the future
+	}
+
 	const randomGeneratedTime = await getContractEvents(config.getClient(), {
 		abi: LotteryRoundABI,
 		address: round,
 		eventName: 'RoundFinished',
 		fromBlock: fromBlock,
-		toBlock: fromBlock + 65n * 30n,
+		toBlock: endBlock,
 	});
 
 	if (randomGeneratedTime.length === 0) return 0;
