@@ -1,9 +1,9 @@
 import * as React from 'react';
 import type { CustomIconProps } from '.';
 
-export const SilverStar: CustomIconProps = React.forwardRef(({ ...props }, ref) => {
+export const SilverStar: CustomIconProps = React.forwardRef(({ ...props }) => {
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" role="presentation" ref={ref} {...props}>
+		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" role="presentation" {...props}>
 			<path
 				d="M12 0.480469L15.7093 7.99441L24 9.19908L18.001 15.048L19.4166 23.3062L12 19.4083L4.5834 23.3062L6.00101 15.048L0 9.19908L8.29272 7.99441L12 0.480469Z"
 				fill="#DBDBDB"

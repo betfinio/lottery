@@ -58,7 +58,7 @@ export const randomize = (from = 1): ILine => {
 	const selectedNumbers = numbers.slice(0, 5).sort((a, b) => a - b);
 	// select a random symbol
 	const symbol = Math.floor(Math.random() * 5) + 1;
-	console.log(selectedNumbers);
+
 	return { symbol, numbers: selectedNumbers };
 };
 

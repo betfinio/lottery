@@ -1,6 +1,8 @@
 {
 	"title": "Šablona",
 	"create": {
+		"lines": "{count, plural, =0 {řádků} one {řádek} few {řádky} many {řádků} other {řádků}}",
+		"selected": "{count, plural, =0 {vybráno} one {vybráno} few {vybráno} many {vybráno} other {vybráno}}",
 		"addMore": "Vyplňte {count, plural, =1 {1 řádek} =2 {2 řádky} other {# řádků}}",
 		"symbolUnlocked": "Symbol odemčen"
 	},

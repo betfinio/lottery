@@ -9,7 +9,7 @@ interface CopyLocationProps {
 	iconClassName?: string;
 	children?: React.ReactNode;
 }
-export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toastMessage, className, iconClassName, children }, ref) => {
+export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toastMessage, className, iconClassName, children }) => {
 	const [addressCopied, setAddressCopied] = useState(false);
 
 	const handleCopyRoundAddress = async () => {
@@ -22,7 +22,7 @@ export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toa
 	};
 
 	return (
-		<div ref={ref} className={cn('cursor-pointer', className)} onClick={() => !addressCopied && handleCopyRoundAddress()}>
+		<div className={cn('cursor-pointer', className)} onClick={() => !addressCopied && handleCopyRoundAddress()}>
 			{addressCopied ? (
 				<CheckIcon className={cn('text-success', iconClassName)} />
 			) : (

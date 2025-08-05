@@ -2,7 +2,7 @@ import { cn } from '@betfinio/components';
 import React from 'react';
 import type { CustomIconProps } from '.';
 
-export const Ticket: CustomIconProps = React.forwardRef(({ ...props }, ref) => {
+export const Ticket: CustomIconProps = React.forwardRef(({ ...props }) => {
 	return (
 		<svg
 			width="50"
@@ -10,7 +10,6 @@ export const Ticket: CustomIconProps = React.forwardRef(({ ...props }, ref) => {
 			viewBox="0 0 50 50"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
-			ref={ref}
 			className={cn('text-primary', props.className)}
 			role="presentation"
 			{...props}
