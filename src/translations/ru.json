@@ -10,5 +10,6 @@
 			"myLinesCount": "Мои линии",
 			"result": "Результат"
 		}
-	}
+	},
+	"copiedCurrentRoundRef": "Скопировано в буфер обмена"
 }
