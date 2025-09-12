@@ -106,10 +106,10 @@ export const useUpdateTicket = () => {
 		mutationKey: ['lottery', 'updateTicket'],
 		mutationFn: ({ ticket }) => updateTicket(ticket, config),
 		onError: (error) => {
-			// @ts-ignore
+			// @ts-expect-error
 			if (error.cause?.reason) {
 				toast.error(t('errors.title'), {
-					// @ts-ignore
+					// @ts-expect-error
 					description: t(`errors.${error.cause.reason}`, { defaultValue: errors(error.cause.reason) }),
 				});
 			}
@@ -147,10 +147,10 @@ export const useBuyTicket = () => {
 		mutationFn: (params) => buyTicket(params, config),
 		onError: (error) => {
 			console.log(error);
-			// @ts-ignore
+			// @ts-expect-error
 			if (error.cause?.reason) {
 				toast.error(t('errors.title'), {
-					// @ts-ignore
+					// @ts-expect-error
 					description: t(`errors.${error.cause.reason}`, { defaultValue: errors(error.cause.reason) }),
 				});
 			}

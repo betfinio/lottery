@@ -1,9 +1,16 @@
-@import "@betfinio/components/globals.css";
-@import "tailwindcss";
+@layer components, theme, base, utilities;
+
+@import "@betfinio/components/globals.css" layer(components);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
 @import "tw-animate-css";
 
-@config "../tailwind.config.ts";
-
+@layer utilities {
+	.lottery {
+		@tailwind utilities;
+		@import "@betfinio/components/globals.css" layer(components);
+	}
+}
 @theme inline layer(base) {
 	--color-gold: var(--gold);
 	--color-silver: var(--silver);

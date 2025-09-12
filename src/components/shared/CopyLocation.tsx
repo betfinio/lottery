@@ -13,8 +13,8 @@ export const CopyLocation = forwardRef<HTMLDivElement, CopyLocationProps>(({ toa
 	const [addressCopied, setAddressCopied] = useState(false);
 
 	const handleCopyRoundAddress = async () => {
-		toast.success(toastMessage);
 		await navigator.clipboard.writeText(location.href);
+		toast.info(toastMessage);
 		setAddressCopied(true);
 		setTimeout(() => {
 			setAddressCopied(false);

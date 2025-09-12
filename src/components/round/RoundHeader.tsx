@@ -16,6 +16,7 @@ export const RoundHeader = () => {
 	const { t } = useTranslation('lottery', {
 		keyPrefix: 'round',
 	});
+	const { t: tShared } = useTranslation('shared', { keyPrefix: 'clipboard' });
 	return (
 		<div className="flex flex-row justify-center relative w-full">
 			<div className="absolute left-0 top-0">
@@ -42,7 +43,7 @@ export const RoundHeader = () => {
 				</div>
 			</div>
 			<div className="flex items-center gap-2 absolute right-0 top-2 ">
-				<CopyLocation toastMessage={t('copiedCurrentRoundRef')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
+				<CopyLocation toastMessage={tShared('copied')} iconClassName="w-4 h-4" className="flex gap-2 items-center">
 					<div className="cursor-pointer">{t('share')}</div>
 				</CopyLocation>
 			</div>

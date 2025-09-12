@@ -131,7 +131,7 @@ const PlaceBet = () => {
 					const date = new Date(e.finish * 1000);
 					return date.getDate() === calendarDate.getDate() && date.getMonth() === calendarDate.getMonth() && date.getFullYear() === calendarDate.getFullYear();
 				});
-				if (!round) return;
+				if (!round) return undefined;
 				return {
 					address: round.address,
 					finish: round.finish,
