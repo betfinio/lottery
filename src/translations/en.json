@@ -2,6 +2,8 @@
 	"title": "Template",
 	"create": {
 		"line": "line",
+		"lines": "{count, plural, =0 {lines} one {line} other {lines}}",
+		"selected": "{count, plural, =0 {selected} one {selected} other {selected}}",
 		"addMore": "Fill {count, plural, =1 {1 more line} =2 {2 more lines} other {# more lines}}",
 		"addMoreTooltip": "Ticket with 3 or more lines has activated SYMBOL. Symbol is the only way to win SUPERJACKPOT with 5x higher payout (see paytable). Symbol also brings you higher probability of winning free ticket.",
 		"symbolUnlocked": "Symbol unlocked"
@@ -100,7 +102,7 @@
 		"drawId": "Draw ID",
 		"totalBets": "Total bets",
 		"luckyNumbers": "Lucky numbers",
-		"lines": "lines",
+		"lines": "{count, plural, =0 {lines} one {line} other {lines}}",
 		"paidToStaking": "Paid to staking",
 		"betId": "Bet ID",
 		"ticketOwner": "Owner",
@@ -112,7 +114,6 @@
 		"betSize": "Bet size",
 		"multiplicator": "Multiplicator",
 		"share": "Share",
-		"copiedCurrentRoundRef": "Selected round link copied",
 		"yourWinningTickets": "Your winning tickets",
 		"roundIsOver": "Round Is Over",
 		"youCouldWin": "You Could Win",

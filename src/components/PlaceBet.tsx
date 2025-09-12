@@ -131,7 +131,7 @@ const PlaceBet = () => {
 					const date = new Date(e.finish * 1000);
 					return date.getDate() === calendarDate.getDate() && date.getMonth() === calendarDate.getMonth() && date.getFullYear() === calendarDate.getFullYear();
 				});
-				if (!round) return;
+				if (!round) return undefined;
 				return {
 					address: round.address,
 					finish: round.finish,
@@ -203,7 +203,7 @@ const PlaceBet = () => {
 			<div className={'p-3 flex flex-col items-start gap-2'}>
 				<div className="flex flex-row justify-end w-full px-2">
 					<div>
-						{selectedRounds.length} {t('selected')}
+						{selectedRounds.length} {t('create.selected', { count: selectedRounds.length })}
 					</div>
 				</div>
 				<ScrollArea className={cn('w-full', 'h-[300px]')} type="auto">

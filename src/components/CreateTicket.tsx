@@ -240,7 +240,7 @@ const TicketList = () => {
 								>
 									{address ? (
 										<>
-											{t('proceed')} ({filledLines.length} {t('lines')})
+											{t('proceed')} ({filledLines.length} {t('create.lines', { count: filledLines.length })})
 											<ArrowRightIcon className={'w-4 h-4'} />
 										</>
 									) : (

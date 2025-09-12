@@ -6,7 +6,7 @@ import { JackpotStarsSpread } from './JackpotStarsSpread';
 export interface JackpotFrameProps extends React.ComponentPropsWithoutRef<'svg'> {
 	animateStars?: boolean;
 }
-export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ className = 'text-gold', animateStars = false, ...props }, ref) => {
+export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ className = 'text-gold', animateStars = false, ...props }) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -16,7 +16,6 @@ export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ clas
 			viewBox="0 0 320 208"
 			fill="none"
 			role="presentation"
-			ref={ref}
 			{...props}
 			className={cn(className)}
 		>

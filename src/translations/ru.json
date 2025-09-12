@@ -1,7 +1,9 @@
 {
 	"title": "Шаблон",
 	"create": {
-		"addMore": "Заполните count, plural, =1 {1 линию =2 2 линии other # линий}"
+		"lines": "{count, plural, =0 {линий} one {линию} few {линии} many {линий} other {линий}}",
+		"selected": "{count, plural, =0 {выбрано} one {выбрана} few {выбрано} many {выбрано} other {выбрано}}",
+		"addMore": "Заполните {count, plural, one {линию} few {линии} many {линий} other {линий}}"
 	},
 	"tables": {
 		"headers": {

@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error
 
 import { truncateEthAddress } from '@betfinio/abi';
 import { Certik, Polygon } from '@betfinio/components/icons';
