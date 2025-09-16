@@ -1,5 +1,5 @@
 import { cn } from '@betfinio/components';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { FC } from 'react';
 
 interface AnimatedGridOfNumbnersProps {

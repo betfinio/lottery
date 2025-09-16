@@ -1,6 +1,6 @@
 import { cn } from '@betfinio/components';
-import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { type ReactNode, useEffect, useState } from 'react';
 
 interface PaginationProps<T> {

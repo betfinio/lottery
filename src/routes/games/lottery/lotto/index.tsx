@@ -2,7 +2,7 @@ import { cn } from '@betfinio/components';
 import { useMediaQuery } from '@betfinio/components/hooks';
 import { SonnerToaster as Toaster } from '@betfinio/components/ui';
 import { createFileRoute } from '@tanstack/react-router';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import CreateTicket from '@/src/components/CreateTicket.tsx';
 import DrawInfo from '@/src/components/DrawInfo.tsx';
 import PlaceBet from '@/src/components/PlaceBet.tsx';

@@ -42,7 +42,11 @@ export default defineConfig({
 					'./i18n': './src/i18n.ts',
 				},
 				manifest: true,
-				dts: true,
+				dts: {
+					consumeTypes: {
+						typesOnBuild: true,
+					},
+				},
 				shared: [
 					'react',
 					'react-dom',

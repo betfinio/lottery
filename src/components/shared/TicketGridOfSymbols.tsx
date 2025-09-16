@@ -1,5 +1,5 @@
 import { cn } from '@betfinio/components';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { FC } from 'react';
 import { SymbolElement } from '../Line';
 

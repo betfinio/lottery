@@ -1,7 +1,6 @@
-import * as React from 'react';
 import type { CustomIconProps } from '.';
 
-export const BronzeStar: CustomIconProps = React.forwardRef(({ ...props }) => {
+export const BronzeStar = ({ ...props }: CustomIconProps) => {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" role="presentation" {...props}>
 			<g clipPath="url(#clip0_1965_30793)">
@@ -76,6 +75,6 @@ export const BronzeStar: CustomIconProps = React.forwardRef(({ ...props }) => {
 			</defs>
 		</svg>
 	);
-});
+};
 
 export default BronzeStar;
