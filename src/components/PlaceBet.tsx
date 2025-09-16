@@ -25,9 +25,9 @@ import {
 } from '@betfinio/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIsMember } from 'betfinio_context/lib/query';
-import { motion } from 'framer-motion';
 import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
+import { motion } from 'motion/react';
 import { type FC, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';

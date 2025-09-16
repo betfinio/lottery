@@ -1,7 +1,7 @@
-import * as React from 'react';
+import type * as React from 'react';
 import type { CustomIconProps } from '.';
 
-export const SilverStar: CustomIconProps = React.forwardRef(({ ...props }) => {
+export const SilverStar: React.FC<CustomIconProps> = ({ ...props }) => {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" role="presentation" {...props}>
 			<path
@@ -71,6 +71,6 @@ export const SilverStar: CustomIconProps = React.forwardRef(({ ...props }) => {
 			</defs>
 		</svg>
 	);
-});
+};
 
 export default SilverStar;

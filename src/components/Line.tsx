@@ -1,7 +1,7 @@
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
-import { motion } from 'framer-motion';
 import { PencilIcon, ShuffleIcon, TrashIcon } from 'lucide-react';
+import { motion } from 'motion/react';
 import { type FC, type PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditMode from '@/src/components/EditMode.tsx';

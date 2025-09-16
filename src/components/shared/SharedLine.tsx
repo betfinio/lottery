@@ -1,5 +1,5 @@
 import { cn } from '@betfinio/components';
-import { AnimatePresence, motion, useAnimation } from 'framer-motion';
+import { AnimatePresence, motion, useAnimation } from 'motion/react';
 import { useEffect, useMemo } from 'react';
 import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
 import { useDraftLines } from '@/src/lib/query';

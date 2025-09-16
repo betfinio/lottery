@@ -1,12 +1,11 @@
 import { cn } from '@betfinio/components';
-import { forwardRef } from 'react';
 import { BfIcon } from './BfIcon';
 import { JackpotStarsSpread } from './JackpotStarsSpread';
 
 export interface JackpotFrameProps extends React.ComponentPropsWithoutRef<'svg'> {
 	animateStars?: boolean;
 }
-export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ className = 'text-gold', animateStars = false, ...props }) => {
+export const JackpotFrame = ({ className = 'text-gold', animateStars = false, ...props }: JackpotFrameProps) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -47,4 +46,4 @@ export const JackpotFrame = forwardRef<SVGSVGElement, JackpotFrameProps>(({ clas
 			</defs>
 		</svg>
 	);
-});
+};

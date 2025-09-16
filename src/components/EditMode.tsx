@@ -1,7 +1,7 @@
 import { cn } from '@betfinio/components';
 import { Button } from '@betfinio/components/ui';
-import { motion } from 'framer-motion';
 import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
+import { motion } from 'motion/react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Address } from 'viem';
