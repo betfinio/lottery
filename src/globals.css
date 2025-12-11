@@ -11,7 +11,7 @@
 		@import "@betfinio/components/globals.css" layer(components);
 	}
 }
-@theme inline layer(base) {
+@theme inline {
 	--color-gold: var(--gold);
 	--color-silver: var(--silver);
 	--color-bronze: var(--bronze);
