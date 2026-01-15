@@ -17,7 +17,5 @@ dist/
 bun.lockb
 .graphclient
 
-.npmrc
-
 my.variables
 my.secrets
