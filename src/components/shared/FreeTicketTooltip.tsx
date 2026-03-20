@@ -8,7 +8,7 @@ export const FreeTicketTooltip = () => {
 				<TooltipTrigger>
 					<Ticket className="w-4 h-4 text-success" />
 				</TooltipTrigger>
-				<TooltipContent className="lottery">Free Line(s)</TooltipContent>
+				<TooltipContent>Free Line(s)</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
 	);

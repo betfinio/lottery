@@ -264,7 +264,7 @@ const PlaceBet = () => {
 							)}
 						</div>
 					</DialogTrigger>
-					<DialogContent className={'lottery'}>
+					<DialogContent>
 						<NewRecipientDialog onSave={handleSaveRecipient} onCancel={() => setNewRecipientDialogOpen(false)} />
 					</DialogContent>
 				</Dialog>

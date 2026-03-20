@@ -271,7 +271,7 @@ const MoreLinesTooltip = () => {
 				<TooltipTrigger>
 					<CircleHelp className={'w-4 h-4 fill-foreground text-background'} />
 				</TooltipTrigger>
-				<TooltipContent className="lottery">
+				<TooltipContent>
 					<div className="max-w-[300px]">
 						<AddMoreLinesText />
 					</div>

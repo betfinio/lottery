@@ -41,7 +41,7 @@ export function HistoryRoundPage() {
 	return (
 		<>
 			<RoundWatchers />
-			<div className="lottery p-2 md:p-3 lg:p-4 f 2xl:pr-0">
+			<div className="p-2 md:p-3 lg:p-4 f 2xl:pr-0">
 				<RoundHeader />
 				<RoundTotalsDetails />
 				<PlayerStatusRoundPrecheck />

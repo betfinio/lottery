@@ -265,7 +265,7 @@ const SendPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 					{t('send')}
 				</Button>
 			</DialogTrigger>
-			<DialogContent className={'lottery'}>
+			<DialogContent>
 				<SendTicket ticket={ticket} onClose={() => setOpen(false)} />
 			</DialogContent>
 		</Dialog>
@@ -286,7 +286,7 @@ const EditPill: FC<{ ticket: IRoundTicket }> = ({ ticket }) => {
 					{t('edit')}
 				</Button>
 			</DialogTrigger>
-			<DialogContent className={'lottery'}>
+			<DialogContent>
 				<EditTicket ticket={ticket} onClose={() => setOpen(false)} />
 			</DialogContent>
 		</Dialog>

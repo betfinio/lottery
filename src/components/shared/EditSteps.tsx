@@ -97,7 +97,7 @@ function EditSteps({ ticket, isOpen, setIsOpen }: EditStepsProps) {
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogContent className="lottery rounded-xl">
+			<DialogContent className="rounded-xl">
 				<div className="w-[300px] p-4 flex flex-col gap-4">
 					<DialogTitle className="font-normal flex justify-between text-muted-foreground">
 						{t('youAreEditingTicket')}

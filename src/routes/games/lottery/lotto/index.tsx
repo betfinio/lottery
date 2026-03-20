@@ -26,7 +26,7 @@ export function LotteryPage() {
 	const isRotate = isMobile || isTablet;
 
 	return (
-		<div className={'lottery overflow-hidden max-w-screen-2xl mx-auto w-full'}>
+		<div className={'overflow-hidden max-w-screen-2xl mx-auto w-full'}>
 			<Watchers />
 			<div className={'flex flex-col items-center gap-2 md:gap-3 lg:gap-4 p-2 2xl:px-0 md:py-3 lg:py-4'}>
 				<Header />

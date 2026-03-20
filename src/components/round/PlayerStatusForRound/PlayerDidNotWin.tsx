@@ -33,7 +33,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 	}, [ticketPrice, roundDetails]);
 
 	return (
-		<div className="h-fit md:h-[590px]  min-w-[388px] border-2 border-aura rounded-lg p-8 flex flex-col items-center md:justify-between gap-4 ">
+		<div className="h-fit md:h-[590px]  min-w-[388px] border-2 border-[var(--aura)] rounded-lg p-8 flex flex-col items-center md:justify-between gap-4 ">
 			<div className="text-2xl font-semibold mb-4 md:mb-11">{t('roundIsOver')}</div>
 			<div className="flex flex-col gap-2 md:gap-4 items-center mb-4 md:mb-11">
 				<div className="text-base font-semibold">{t('youCouldWin')}</div>

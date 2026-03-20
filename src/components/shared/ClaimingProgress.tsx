@@ -41,7 +41,7 @@ export const ClaimingProgressBar = () => {
 				</span>
 				<TooltipProvider>
 					<Tooltip>
-						<TooltipTrigger className="lottery">
+						<TooltipTrigger>
 							<CircleHelp className="w-4 h-4 fill-foreground text-background" />
 						</TooltipTrigger>
 						<TooltipContent>

@@ -40,7 +40,7 @@ function PayoutContent() {
 		{ coef: 1n, line: { numbers: [1, 2, 6, 7, 8], symbol: 1 }, name: t('jackpot7'), subtitle: '1 : 23' },
 	];
 	return (
-		<DialogContent className={'lottery'}>
+		<DialogContent>
 			<div className={'w-[98vw] max-w-[384px] md:max-w-[650px] p-2 overflow-y-scroll max-h-[90vh]'}>
 				<DialogHeader>
 					<DialogTitle className="flex justify-center font-normal p-2 text-xl">
@@ -62,9 +62,9 @@ function PayoutContent() {
 										<JackpotFrame
 											animateStars
 											className={cn('w-full h-full', {
-												'text-gold': jackpot.coef >= 15_000n,
-												'text-silver': jackpot.coef >= 5n && jackpot.coef < 15_000n,
-												'text-bronze': jackpot.coef >= 1n && jackpot.coef < 5n,
+												'text-[var(--gold)]': jackpot.coef >= 15_000n,
+												'text-[var(--silver)]': jackpot.coef >= 5n && jackpot.coef < 15_000n,
+												'text-[var(--bronze)]': jackpot.coef >= 1n && jackpot.coef < 5n,
 											})}
 										/>
 										<div className={'absolute top-1 left-0 w-full h-full flex flex-col items-center justify-center'}>
@@ -114,7 +114,7 @@ function PayoutContent() {
 														</div>
 													)}
 												</TooltipTrigger>
-												<TooltipContent className="lottery">
+												<TooltipContent>
 													<div className="max-w-[300px]">Bonus jackpot is 4% of all bets cumulative from all rounds.</div>
 												</TooltipContent>
 											</Tooltip>

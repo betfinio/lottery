@@ -1,59 +1,6 @@
-@layer components, theme, base, utilities;
-
-@import "@betfinio/components/globals.css" layer(components);
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/preflight.css" layer(base);
+@import "@betfinio/components/globals.css";
 @import "tw-animate-css";
+@import "tailwindcss";
+@import "./local.css";
 
-@layer utilities {
-	.lottery {
-		@tailwind utilities;
-		@import "@betfinio/components/globals.css" layer(components);
-	}
-}
-@theme inline {
-	--color-gold: var(--gold);
-	--color-silver: var(--silver);
-	--color-bronze: var(--bronze);
-	--color-aura: var(--aura);
-	--color-success: var(--success);
-	--color-destructive: var(--destructive);
-	--color-bonus: var(--bonus);
-	--breakpoint-2xl: 1440px;
-}
-
-@layer base {
-	*,
-	::after,
-	::before,
-	::backdrop,
-	::file-selector-button {
-		border-color: var(--color-border, currentcolor);
-	}
-	:root {
-		--gold: hsl(45 89% 52%);
-		--silver: hsl(0, 0%, 86%);
-		--bronze: hsl(33, 57%, 56%);
-		--aura: hsl(48, 100%, 89%);
-	}
-}
-
-@utility symbol-number {
-	stroke: hsla(33, 67%, 48%, 1);
-	color: hsla(33, 67%, 48%, 0.3);
-}
-
-@utility regular-number {
-	color: hsla(228, 11%, 47%, 0.3);
-	stroke: hsla(228, 11%, 47%, 1);
-}
-
-@layer utilities {
-	.shiny-gold {
-		background: linear-gradient(180deg, #c6a152 0%, #c8a354 26.5%, #e1c97d 52%, #b79046 76.5%, #d6b968 100%);
-	}
-
-	.create-shadow {
-		box-shadow: 0 0 40px -10px #c6a152;
-	}
-}
+@source "../@mf-types/source";

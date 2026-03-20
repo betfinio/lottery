@@ -82,7 +82,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ round }) => {
 			<Dialog>
 				<DialogTrigger className={'flex flex-col items-center'}>
 					<div className="relative flex items-center justify-center">
-						<JackpotFrame animateStars className="text-gold" />
+						<JackpotFrame animateStars className="text-[var(--gold)]" />
 						<div className="absolute top-20 text-2xl text-secondary-foreground flex flex-col items-center">
 							<div className="text-foreground text-lg">{t('totalWinnings')}</div>
 							<div className="flex flex-row gap-1 items-center">

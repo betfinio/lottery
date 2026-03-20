@@ -24,11 +24,11 @@ export const PlayerWon: FC<PlayerWonProps> = ({ winningLine, tickets, placedAmou
 
 	return (
 		<div className="min-h-[590px] min-w-[388px]">
-			<div className="border-2 border-aura rounded-lg relative pt-[224px] px-8 shadow-[0_0_10px_0] shadow-aura flex flex-col h-full">
+			<div className="border-2 border-[var(--aura)] rounded-lg relative pt-[224px] px-8 shadow-[0_0_10px_0] shadow-[var(--aura)] flex flex-col h-full">
 				{/* Tiara */}
 				<div className="absolute h-[208px] w-[320px] left-1/2 -translate-x-1/2 top-2">
 					<div className="relative">
-						<JackpotFrame animateStars className="text-gold " />
+						<JackpotFrame animateStars className="text-[var(--gold)]" />
 
 						<div className="absolute text-lg top-0 left-0 w-full h-full flex flex-col items-center justify-center">
 							<div className={cn({ 'mt-5': freeTicketsCount > 0 && prizeAmount > 0n })}>
