@@ -1,367 +1,228 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { Address } from 'viem';
-import { type Config, useConfig } from 'wagmi';
+import { useConfig } from 'wagmi';
+import { LOTTERY } from '@/src/globals';
 import {
-	fetchAdditionalJackpot,
-	fetchBoughtLinesCount,
-	fetchEditAllowance,
-	fetchExchangeRate,
-	fetchFinishedRoundTransactionByRoundAddress,
-	fetchFreeLinesCount,
-	fetchLinesAvailability,
-	fetchLinesCount,
-	fetchLostTicketsClaimed,
-	fetchLostTicketsToClaim,
-	fetchMultiAllowance,
-	fetchPotentialJackpot,
-	fetchRoundFinish,
-	fetchRoundFinishedTimeStamp,
-	fetchRoundStatus,
-	fetchSubscriptionId,
-	fetchTicketClaimed,
+	fetchBetClaimed,
+	fetchBetPayout,
+	fetchCurrentRoundId,
+	fetchInterval,
+	fetchRoundBank,
+	fetchRoundOffset,
 	fetchTicketPrice,
-	fetchTicketResult,
-	fetchTicketRound,
-	fetchTicketStatus,
-	fetchTicketWinAmount,
-	fetchUsedFreeLinesCount,
-	fetchWinningLine,
-	getRoundTotalBetsAndClaimedBets,
+	fetchWinningTicket,
 } from '@/src/lib/api';
-import {
-	fetchActiveRounds,
-	fetchActiveTickets,
-	fetchMyLinesSold,
-	fetchOldRounds,
-	fetchOldTickets,
-	fetchPlayerRounds,
-	fetchRoundDetails,
-	fetchRoundJackpots,
-	fetchRoundTicketsByPlayer,
-	fetchUnclaimedTickets,
-} from '@/src/lib/gql';
-import { EMPTY_LINE, type ILine, type IRound, type IRoundTicket } from '@/src/lib/types.ts';
-import { encodeLine } from '../utils';
+import { fetchPlayerBets, fetchPlayerBetsByRound, fetchPlayerRounds, fetchRoundBets, fetchRoundDetails, fetchRounds, fetchUnclaimedBets } from '@/src/lib/gql';
+import { EMPTY_TICKET, type IBet, type ITicket, type IRound } from '@/src/lib/types';
+import { decodeTicket } from '@/src/lib/utils';
 
 /**
- *  Example of hook that reads data from fetcher(api
+ * Parse the `$round` route param (a bigint-as-string) into a bigint.
  */
+export const useGetRoundFromParams = (): bigint => {
+	const { round } = useParams({ strict: false }) as { round?: string };
+	return BigInt(round ?? '0');
+};
 
-export const useTicketPrice = (round?: Address) => {
+export const useTicketPrice = () => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'ticketPrice', round],
-		queryFn: () => fetchTicketPrice(round, config),
+		queryKey: ['lottery', 'ticketPrice'],
+		queryFn: () => fetchTicketPrice(config),
 	});
 };
 
-export const useMultiAllowance = (address?: Address) => {
+export const useInterval = () => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'allowance', 'multibet', address],
-		queryFn: () => fetchMultiAllowance(address, config),
+		queryKey: ['lottery', 'interval'],
+		queryFn: () => fetchInterval(config),
 	});
 };
 
-export const useEditAllowance = (address?: Address) => {
+export const useRoundOffset = () => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'allowance', 'edit', address],
-		queryFn: () => fetchEditAllowance(address, config),
+		queryKey: ['lottery', 'roundOffset'],
+		queryFn: () => fetchRoundOffset(config),
 	});
 };
 
-export const useRoundStatus = (round: Address) => {
+export const useCurrentRoundId = () => {
 	const config = useConfig();
-	return useQuery({
-		queryKey: ['lottery', 'round', round, 'status'],
-		queryFn: () => fetchRoundStatus(round, config),
+	return useQuery<bigint>({
+		queryKey: ['lottery', 'currentRoundId'],
+		queryFn: () => fetchCurrentRoundId(config),
+		refetchInterval: 10_000,
 	});
 };
 
-export const useActiveRounds = () => {
+export const useRounds = () => {
 	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'round', 'active'],
-		queryFn: () => fetchActiveRounds(),
+		queryKey: ['lottery', 'rounds'],
+		queryFn: () => fetchRounds(),
 	});
 };
 
-export const useOldRounds = () => {
-	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'round', 'old'],
-		queryFn: () => fetchOldRounds(),
-	});
+/**
+ * Returns all subgraph rounds (past) + current + next N future rounds.
+ * Future rounds without bets get an empty skeleton so the UI can show them for betting.
+ */
+const EMPTY_ROUNDS: IRound[] = [];
+export const useAvailableRounds = (futureCount = 10) => {
+	const { data: currentRoundId } = useCurrentRoundId();
+	const { data: subgraphRounds = EMPTY_ROUNDS } = useRounds();
+
+	return useMemo(() => {
+		if (currentRoundId === undefined) return subgraphRounds;
+
+		const merged = new Map<string, IRound>();
+
+		// Add all subgraph rounds (includes past rounds with bets)
+		for (const r of subgraphRounds) {
+			merged.set(r.roundId.toString(), r);
+		}
+
+		// Add current + future round skeletons (only if not already in subgraph)
+		for (let i = 0; i < futureCount; i++) {
+			const id = currentRoundId + BigInt(i);
+			const key = id.toString();
+			if (!merged.has(key)) {
+				merged.set(key, {
+					roundId: id,
+					address: LOTTERY,
+					status: 'open',
+					started: 0,
+					betsCount: 0,
+					betsAmount: 0n,
+					winNumbers: null,
+					winSymbol: null,
+				});
+			}
+		}
+
+		return Array.from(merged.values());
+	}, [currentRoundId, subgraphRounds, futureCount]);
 };
 
-export const useOldTickets = (address?: Address) => {
-	return useQuery<IRoundTicket[]>({
-		queryKey: ['lottery', 'tickets', 'old', address],
-		queryFn: () => fetchOldTickets(address),
-	});
-};
-
-export const useActiveTickets = (address?: Address) => {
+export const useRoundDetails = (roundId: bigint) => {
 	return useQuery({
-		queryKey: ['lottery', 'tickets', 'active', address?.toLowerCase()],
-		queryFn: () => fetchActiveTickets(address),
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
+		queryKey: ['lottery', 'round', roundId.toString()],
+		queryFn: () => fetchRoundDetails(roundId),
+	});
+};
+
+export const useRoundBets = (roundId: bigint) => {
+	return useQuery<IBet[]>({
+		queryKey: ['lottery', 'round', roundId.toString(), 'bets'],
+		queryFn: () => fetchRoundBets(roundId),
+	});
+};
+
+export const usePlayerBetsByRound = (roundId: bigint, player: Address) => {
+	return useQuery<IBet[]>({
+		queryKey: ['lottery', 'round', roundId.toString(), 'bets', player],
+		queryFn: () => fetchPlayerBetsByRound(roundId, player),
+	});
+};
+
+export const usePlayerBets = (player?: Address) => {
+	return useQuery<IBet[]>({
+		queryKey: ['lottery', 'bets', player],
+		queryFn: () => fetchPlayerBets(player!),
+		enabled: !!player,
+	});
+};
+
+export const usePlayerRounds = (player?: Address) => {
+	return useQuery<IRound[]>({
+		queryKey: ['lottery', 'rounds', 'player', player],
+		queryFn: () => fetchPlayerRounds(player!),
+		enabled: !!player,
 	});
 };
 
 export const useSelectedRound = () => {
-	const { data: rounds = [] } = useActiveRounds();
+	const { data: currentRoundId } = useCurrentRoundId();
 	const queryClient = useQueryClient();
+
 	useEffect(() => {
-		if (rounds.length > 0) {
-			queryClient.setQueryData(['lottery', 'round', 'selected'], rounds[0]);
+		if (currentRoundId !== undefined) {
+			queryClient.setQueryData(['lottery', 'round', 'selected'], currentRoundId);
 		}
-	}, [rounds, queryClient]);
-	return useQuery<IRound>({
+	}, [currentRoundId, queryClient]);
+
+	return useQuery<bigint>({
 		queryKey: ['lottery', 'round', 'selected'],
-		initialData: rounds[0],
+		initialData: currentRoundId,
 	});
 };
 
-export const useDraftLines = () => {
+export const useDraftTickets = () => {
 	const queryClient = useQueryClient();
-	const setTickets = (tickets: ILine[]) => {
-		queryClient.setQueryData(['lottery', 'lines', 'draft'], tickets);
+	const setTickets = (tickets: ITicket[]) => {
+		queryClient.setQueryData(['lottery', 'tickets', 'draft'], tickets);
 	};
 	return {
-		...useQuery<ILine[]>({
-			queryKey: ['lottery', 'lines', 'draft'],
-			initialData: [EMPTY_LINE],
+		...useQuery<ITicket[]>({
+			queryKey: ['lottery', 'tickets', 'draft'],
+			initialData: [EMPTY_TICKET],
 		}),
 		setTickets,
 	};
 };
 
-export const useWinningLine = (round: Address) => {
+export const useWinningLine = (roundId: bigint) => {
 	const config = useConfig();
-	return useQuery<ILine | null>({
-		queryKey: ['lottery', 'round', round, 'winningLine'],
-		queryFn: () => fetchWinningLine(round, config),
+	return useQuery({
+		queryKey: ['lottery', 'round', roundId.toString(), 'winningLine'],
+		queryFn: async () => {
+			const result = await fetchWinningTicket(roundId, config);
+			if (!result) return null;
+			return decodeTicket(result);
+		},
 	});
 };
 
-export const useLinesCount = (round: Address) => {
+export const useRoundBank = (roundId: bigint) => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'round', round, 'bank'],
-		queryFn: () => fetchLinesCount(round, config),
+		queryKey: ['lottery', 'round', roundId.toString(), 'bank'],
+		queryFn: () => fetchRoundBank(roundId, config),
 	});
 };
 
-export const useRoundFinish = (round: Address) => {
-	const config = useConfig();
-	return useQuery<number>({
-		queryKey: ['lottery', 'round', round, 'finish'],
-		queryFn: () => fetchRoundFinish(round, config),
-		refetchOnMount: false,
-	});
-};
-
-export const useTicketStatus = (ticket: Address) => {
-	const config = useConfig();
-	return useQuery({
-		queryKey: ['lottery', 'ticket', ticket, 'status'],
-		queryFn: () => fetchTicketStatus(ticket, config),
-	});
-};
-
-export const useTicketResult = (ticket: Address, round: Address) => {
-	const { data: winningLine } = useWinningLine(round);
-	const config = useConfig();
-	return useQuery({
-		queryKey: ['lottery', 'ticket', ticket, round, 'result', winningLine],
-		queryFn: () => fetchTicketResult(ticket, winningLine ? encodeLine(winningLine) : { symbol: 0, numbers: 0 }, config),
-	});
-};
-
-export const useTicketRound = (ticket: Address) => {
-	const config = useConfig();
-	return useQuery({
-		queryKey: ['lottery', 'ticket', ticket, 'round'],
-		queryFn: () => fetchTicketRound(ticket, config),
-	});
-};
-
-export const useTicketClaimed = (ticket: Address) => {
+export const useBetClaimed = (betAddress: Address) => {
 	const config = useConfig();
 	return useQuery<boolean>({
-		queryKey: ['lottery', 'ticket', ticket, 'claimed'],
-		queryFn: () => fetchTicketClaimed(ticket, config),
+		queryKey: ['lottery', 'bet', betAddress, 'claimed'],
+		queryFn: () => fetchBetClaimed(betAddress, config),
 	});
 };
 
-export const useTicketWinAmount = (ticket: Address) => {
+export const useBetPayout = (betAddress: Address) => {
 	const config = useConfig();
 	return useQuery<bigint>({
-		queryKey: ['lottery', 'ticket', ticket, 'winAmount'],
-		queryFn: () => fetchTicketWinAmount(ticket, config),
+		queryKey: ['lottery', 'bet', betAddress, 'payout'],
+		queryFn: () => fetchBetPayout(betAddress, config),
 	});
 };
 
-export const useAdditionalJackpot = () => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'additionalJackpot'],
-		queryFn: () => fetchAdditionalJackpot(config),
+export const useUnclaimedBets = () => {
+	return useQuery<Address[]>({
+		queryKey: ['lottery', 'unclaimedBets'],
+		queryFn: () => fetchUnclaimedBets(),
 	});
 };
 
-export const usePotentialJackpot = (round: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'round', round, 'potentialJackpot'],
-		queryFn: () => fetchPotentialJackpot(round, config),
-	});
-};
-
-export const useRoundTicketsByPlayer = (round: Address, address: Address) => {
-	return useQuery<IRoundTicket[]>({
-		queryKey: ['lottery', 'round', round, 'tickets', address],
-		queryFn: () => fetchRoundTicketsByPlayer(round, address),
-	});
-};
-
-export const usePlayerRounds = (address?: Address) => {
-	return useQuery<IRound[]>({
-		queryKey: ['lottery', 'rounds', 'player', address],
-		queryFn: () => fetchPlayerRounds(address),
-	});
-};
-
-export const linesAvailabilityQuery = (round: Address | undefined, lines: ILine[], config: Config) => {
-	return { queryKey: ['lottery', 'round', round, 'lines', lines, 'availability'], queryFn: () => fetchLinesAvailability(round, lines, config) };
-};
-export const useLinesAvailability = (round: Address | undefined, lines: ILine[], enabled: boolean) => {
-	const config = useConfig();
-	return useQuery<boolean[]>({
-		...linesAvailabilityQuery(round, lines, config),
-		enabled,
-	});
-};
-
-export const useGetRoundFromParams = () => {
-	const { round } = useParams({ from: '/games/lottery/lotto/$round' });
-
-	return round as Address;
-};
-
-export const useRoundDetails = (round: Address) => {
-	return useQuery({
-		queryKey: ['lottery', 'details', 'round', round],
-		queryFn: () => fetchRoundDetails(round),
-	});
-};
-
-export const useRoundJackpots = (round: Address) => {
-	return useQuery({
-		queryKey: ['lottery', 'jackpots', 'round', round],
-		queryFn: () => fetchRoundJackpots(round),
-	});
-};
-
-export const useFinishedRoundTransactionByRoundAddress = (round: Address) => {
-	const config = useConfig();
-
-	const { data: roundFinish, isLoading: isRoundFinishLoading } = useRoundFinish(round);
-	return useQuery({
-		queryKey: ['lottery', 'round', 'finishedRoundTransaction', round],
-		queryFn: () => fetchFinishedRoundTransactionByRoundAddress(config, round, roundFinish),
-		enabled: !!roundFinish && !isRoundFinishLoading,
-	});
-};
-
-export const useMyLinesSold = (round: Address, player: Address) => {
-	return useQuery<number>({
-		queryKey: ['lottery', 'round', round, 'lines', player],
-		queryFn: () => fetchMyLinesSold(round, player),
-	});
-};
-
-export const useRoundFinishedTimeStamp = (round: Address) => {
-	const config = useConfig();
-	return useQuery<number>({
-		queryKey: ['lottery', 'round', round, 'finishedTimeStamp'],
-		queryFn: () => fetchRoundFinishedTimeStamp(config, round),
-	});
-};
-
-export const useFreeLinesCount = (address: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'freeLines', address],
-		queryFn: () => fetchFreeLinesCount(address, config),
-	});
-};
-
-export const useUsedFreeLinesCount = (address: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'usedFreeLines', address],
-		queryFn: () => fetchUsedFreeLinesCount(address, config),
-	});
-};
-
-export const useBoughtLinesCount = (address: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'boughtLines', address],
-		queryFn: () => fetchBoughtLinesCount(address, config),
-	});
-};
-
-export const useLostTicketsToClaim = () => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'lostTicketsToClaim'],
-		queryFn: () => fetchLostTicketsToClaim(config),
-	});
-};
-
-export const useExchangeRate = () => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'exchangeRate'],
-		queryFn: () => fetchExchangeRate(config),
-	});
-};
-
-export const useLostTicketsClaimed = (address: Address) => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'lostTicketsClaimed', address],
-		queryFn: () => fetchLostTicketsClaimed(address, config),
-	});
-};
-
-export const useUnclaimedTickets = () => {
-	return useQuery<bigint[]>({
-		queryKey: ['lottery', 'unclaimedTickets'],
-		queryFn: () => fetchUnclaimedTickets(),
-	});
-};
-
-export const useSubscriptionId = () => {
-	const config = useConfig();
-	return useQuery<bigint>({
-		queryKey: ['lottery', 'subscriptionId'],
-		queryFn: () => fetchSubscriptionId(config),
-	});
-};
-
-export const useRoundTotalBetsAndClaimedBets = (round: Address) => {
-	const config = useConfig();
-	return useQuery<{
-		betsCount: bigint;
-		betsClaimed: bigint;
-	}>({
-		queryKey: ['lottery', 'round', round, 'totalBetsAndClaimedBets'],
-		queryFn: () => getRoundTotalBetsAndClaimedBets(round, config),
-	});
+/**
+ * Compute round timing from interval and offset.
+ * Round N covers: [(N * interval - offset), ((N+1) * interval - offset))
+ */
+export const getRoundTimes = (roundId: bigint, interval: bigint, offset: bigint) => {
+	const start = Number(roundId * interval - offset);
+	const end = Number((roundId + 1n) * interval - offset);
+	return { start, end };
 };

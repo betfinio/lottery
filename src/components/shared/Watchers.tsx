@@ -1,21 +1,16 @@
-import { LotteryRoundABI } from '@betfinio/abi';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWatchContractEvent } from 'wagmi';
-import { useSelectedRound } from '@/src/lib/query';
+import { LOTTERY } from '@/src/globals';
+import { LotteryGameABI } from '@/src/lib/abi/LotteryGameABI';
 
 function Watchers() {
-	const { data: round } = useSelectedRound();
 	const queryClient = useQueryClient();
 	useWatchContractEvent({
-		address: round?.address,
-		abi: LotteryRoundABI,
-		eventName: 'TicketSold',
+		address: LOTTERY,
+		abi: LotteryGameABI,
+		eventName: 'BetPlaced',
 		onLogs: () => {
-			queryClient.invalidateQueries({ queryKey: ['lottery', 'round', round?.address, 'tickets'] });
-			queryClient.invalidateQueries({ queryKey: ['lottery', 'round', round?.address, 'potentialJackpot'] });
-			setTimeout(() => {
-				queryClient.invalidateQueries({ queryKey: ['lottery', 'round', 'active'] });
-			}, 3000);
+			queryClient.invalidateQueries({ queryKey: ['lottery'] });
 		},
 	});
 

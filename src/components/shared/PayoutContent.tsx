@@ -14,19 +14,17 @@ import {
 } from '@betfinio/components/ui';
 import { HelpCircleIcon, XIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import type { ILine } from '@/src/lib/types';
+import { useTicketPrice } from '@/src/lib/query';
+import type { ITicket } from '@/src/lib/types';
 import { partlyEquals } from '@/src/lib/utils';
-import Ticket from '../icons/Ticket';
 import { NumberComponent, SymbolElement } from '../Line';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
 
 function PayoutContent() {
 	const { t } = useTranslation('lottery');
-	const { data: selectedRound } = useSelectedRound();
-	const { data: price = 0n } = useTicketPrice(selectedRound?.address);
+	const { data: price = 0n } = useTicketPrice();
 	const { isMobile } = useMediaQuery();
-	const correctLine: ILine = {
+	const correctLine: ITicket = {
 		numbers: [1, 2, 3, 4, 5],
 		symbol: 1,
 	};
@@ -98,13 +96,7 @@ function PayoutContent() {
 										</NumberComponent>
 									</div>
 									<div className={'flex flex-col items-center justify-center'}>
-										{jackpot.coef > 1n ? (
-											<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
-										) : (
-											<div className={'flex flex-row items-center gap-1'}>
-												1 <Ticket className={'text-success w-4 h-4'} />
-											</div>
-										)}
+										<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
 										<TooltipProvider>
 											<Tooltip>
 												<TooltipTrigger>

@@ -30,6 +30,7 @@
 		"proceedFor": "Proceed for",
 		"unlockMultiBet": "Unlock MultiBet",
 		"waitingForResult": "Waiting for result",
+		"waitingForDraw": "Waiting for draw",
 		"manualRequest": "Manual Request"
 	},
 	"toasts": {

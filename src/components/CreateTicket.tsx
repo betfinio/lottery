@@ -6,9 +6,9 @@ import { ArrowRightIcon, CircleHelp, LockIcon, LockOpenIcon, PencilIcon, PlusCir
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
-import { useDraftLines, useSelectedRound, useTicketPrice } from '@/src/lib/query';
-import { EMPTY_LINE, type ILine, RoundState } from '@/src/lib/types.ts';
-import { useRoundState } from '../lib/query/state.ts';
+import { useDraftTickets, useSelectedRound, useTicketPrice } from '@/src/lib/query';
+import { useRoundState } from '@/src/lib/query/state.ts';
+import { EMPTY_TICKET, type ITicket, RoundState } from '@/src/lib/types.ts';
 import { isDuplicate, randomize } from '../lib/utils/index.ts';
 import { AddMoreLinesText } from './AddMoreLinesText.tsx';
 import Line from './Line.tsx';
@@ -17,13 +17,14 @@ import Pagination from './shared/Pagination';
 
 const CreateTicket = () => {
 	const { t } = useTranslation('lottery');
-	const { data: round } = useSelectedRound();
-	const { state } = useRoundState(round?.address);
-	const { data: price = 1000, isLoading, isFetching } = useTicketPrice(round?.address);
-	const { data: draftTickets = [] } = useDraftLines();
+	const { data: selectedRoundId } = useSelectedRound();
+	const { state } = useRoundState(selectedRoundId);
+	const { data: price = 1000, isLoading, isFetching } = useTicketPrice();
+	const { data: draftTickets = [] } = useDraftTickets();
 
-	const filledLines = draftTickets.filter((line: ILine) => line.numbers.every((number) => number !== 0));
-	const symbolUnlocked = filledLines.length >= 3;
+	const filledTickets = draftTickets.filter((ticket: ITicket) => ticket.numbers.every((number) => number !== 0));
+	// In v2, symbol is always unlocked (no minimum lines requirement)
+	const symbolUnlocked = true;
 
 	const isDisabled = state !== RoundState.FILLING;
 
@@ -50,7 +51,7 @@ const CreateTicket = () => {
 						'animate-pulse blur-xs': isLoading || isFetching,
 					})}
 				>
-					<BetValue value={price} withIcon withMillify={false} /> / {t('create.line')}
+					<BetValue value={price} withIcon withMillify={false} /> / {t('create.ticket')}
 				</div>
 				<motion.div
 					animate={
@@ -78,7 +79,7 @@ const CreateTicket = () => {
 						</div>
 					) : (
 						<>
-							{t('create.addMore', { count: 3 - filledLines.length })} <MoreLinesTooltip />
+							{t('create.addMore', { count: 3 - filledTickets.length })} <MoreLinesTooltip />
 						</>
 					)}
 				</motion.div>
@@ -92,13 +93,13 @@ const CreateTicket = () => {
 
 const TicketList = () => {
 	const { t } = useTranslation('lottery');
-	const { data: draftTickets = [], setTickets } = useDraftLines();
-	const { data: round } = useSelectedRound();
-	const { state, updateState } = useRoundState(round?.address);
+	const { data: draftTickets = [], setTickets } = useDraftTickets();
+	const { data: selectedRoundId } = useSelectedRound();
+	const { state, updateState } = useRoundState(selectedRoundId);
 	const { address } = useAccount();
 	const { connectWallet } = usePrivy();
 
-	const updateTicket = (index: number, newTicket: ILine) => {
+	const updateTicket = (index: number, newTicket: ITicket) => {
 		const updatedTickets = [...draftTickets];
 		updatedTickets[index] = newTicket;
 		setTickets(updatedTickets);
@@ -106,15 +107,15 @@ const TicketList = () => {
 
 	const deleteTicket = (index: number) => {
 		if (draftTickets.length === 1) {
-			setTickets([EMPTY_LINE]);
+			setTickets([EMPTY_TICKET]);
 			return;
 		}
-		const updatedTickets = draftTickets.filter((_: ILine, i: number) => i !== index);
+		const updatedTickets = draftTickets.filter((_: ITicket, i: number) => i !== index);
 		setTickets(updatedTickets);
 	};
 
-	const handleAddLine = () => {
-		if (draftTickets.length >= 9) return toast.error('Maximum is 9 lines per ticket');
+	const handleAddTicket = () => {
+		if (draftTickets.length >= 9) return toast.error('Maximum is 9 tickets per bet');
 		setTickets([...draftTickets, { numbers: [0, 0, 0, 0, 0], symbol: 0 }]);
 	};
 
@@ -124,13 +125,13 @@ const TicketList = () => {
 			return;
 		}
 		if (duplicates) {
-			return toast.error('You can not proceed with duplicate lines');
+			return toast.error('You can not proceed with duplicate tickets');
 		}
-		if (filledLines.length === 0) {
-			return toast.error('You must fill at least one line');
+		if (filledTickets.length === 0) {
+			return toast.error('You must fill at least one ticket');
 		}
-		if (filledLines.length !== draftTickets.length) {
-			return toast.error('You must fill all lines');
+		if (filledTickets.length !== draftTickets.length) {
+			return toast.error('You must fill all tickets');
 		}
 		updateState(RoundState.PLACING);
 	};
@@ -138,12 +139,12 @@ const TicketList = () => {
 		updateState(RoundState.FILLING);
 	};
 
-	const filledLines = draftTickets.filter((line: ILine) => line.numbers.every((number) => number !== 0));
-	// Check that there are no same lines with same numbers(sort by numbers) and symbol
-	const duplicates = isDuplicate(filledLines);
+	const filledTickets = draftTickets.filter((ticket: ITicket) => ticket.numbers.every((number) => number !== 0));
+	// Check that there are no same tickets with same numbers(sort by numbers) and symbol
+	const duplicates = isDuplicate(filledTickets);
 
 	const handleDeleteAll = () => {
-		setTickets([EMPTY_LINE]);
+		setTickets([EMPTY_TICKET]);
 	};
 	const handleRandomizeAll = () => {
 		setTickets(draftTickets.map(() => randomize()));
@@ -169,7 +170,7 @@ const TicketList = () => {
 										</Button>
 									}
 									storageKey="lottery-deleteAll"
-									isValid={filledLines.length > 1}
+									isValid={filledTickets.length > 1}
 								>
 									<div className="flex flex-col">
 										<div className="text-lg font-semibold">{t('doYouReallyWantToDeleteAllDraftedLines')}</div>
@@ -185,7 +186,7 @@ const TicketList = () => {
 										</Button>
 									}
 									storageKey="lottery-randomizeAll"
-									isValid={filledLines.length > 0}
+									isValid={filledTickets.length > 0}
 								>
 									<div className="flex flex-col">
 										<div className="text-lg font-semibold">{t('doYouWantToRandomizeAllLines')}</div>
@@ -196,7 +197,7 @@ const TicketList = () => {
 						)
 					}
 					className={'grow flex flex-col justify-between'}
-					renderItem={(ticket: ILine, index: number) => (
+					renderItem={(ticket: ITicket, index: number) => (
 						<Line
 							key={index}
 							line={ticket}
@@ -204,7 +205,7 @@ const TicketList = () => {
 							onEdit={(newTicket) => updateTicket(index, newTicket)}
 							onDelete={() => deleteTicket(index)}
 							isDisabled={isDisabled}
-							symbolUnlocked={filledLines.length >= 3}
+							symbolUnlocked={true}
 							showDelete={draftTickets.length > 1}
 						/>
 					)}
@@ -222,10 +223,10 @@ const TicketList = () => {
 							className={cn('border-primary text-secondary-foreground gap-1 hover:scale-105 transition-all', {
 								'col-span-2': state !== RoundState.FILLING,
 							})}
-							onClick={handleAddLine}
+							onClick={handleAddTicket}
 						>
 							<PlusCircleIcon className={'w-4 h-4'} />
-							{t('addLine')}
+							{t('addTicket')}
 						</Button>
 					)}
 
@@ -235,12 +236,12 @@ const TicketList = () => {
 							trigger={
 								<Button
 									className="gap-1 hover:scale-105 transition-all"
-									disabled={filledLines.length !== draftTickets.length}
+									disabled={filledTickets.length !== draftTickets.length}
 									variant={!address ? 'default' : 'success'}
 								>
 									{address ? (
 										<>
-											{t('proceed')} ({filledLines.length} {t('create.lines', { count: filledLines.length })})
+											{t('proceed')} ({filledTickets.length} {t('create.tickets', { count: filledTickets.length })})
 											<ArrowRightIcon className={'w-4 h-4'} />
 										</>
 									) : (
@@ -249,7 +250,7 @@ const TicketList = () => {
 								</Button>
 							}
 							storageKey="lottery-unlockSymbol"
-							isValid={filledLines.length < 3}
+							isValid={filledTickets.length < 3}
 						>
 							<div className="flex flex-col">
 								<div className="text-base font-semibold whitespace-nowrap">Do you really want to continue without symbol?</div>

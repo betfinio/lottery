@@ -5,12 +5,11 @@ import { useSelectedRound } from '@/src/lib/query';
 import { useDrawInfoTab } from '../lib/query/state';
 import type { DrawTab } from '../lib/types';
 import ActiveTicketsList from './tabs/ActiveTicketsList';
-import BonusTab, { BonusTabIcon } from './tabs/BonusTab';
 import OldTicketsList from './tabs/OldTicketsList';
 
 const DrawInfo = () => {
 	const { t } = useTranslation('lottery');
-	const { data: round } = useSelectedRound();
+	const { data: roundId } = useSelectedRound();
 	const { tab, setTab } = useDrawInfoTab();
 
 	return (
@@ -22,21 +21,15 @@ const DrawInfo = () => {
 						<TabsTrigger value={'active'}>{t('activeTickets')}</TabsTrigger>
 						<TabsTrigger value={'old'}>{t('oldTickets')}</TabsTrigger>
 					</div>
-					<TabsTrigger value={'bonus'} className={'p-0 size-[34px] aspect-square'}>
-						<BonusTabIcon />
-					</TabsTrigger>
 				</TabsList>
 				<TabsContent value={'draw'} className={'w-full grow border border-border bg-background-light rounded-xl  overflow-hidden'}>
-					{round && <CurrentRound round={round} />}
+					{roundId !== undefined && <CurrentRound roundId={roundId} />}
 				</TabsContent>
 				<TabsContent value={'active'} className={'w-full grow border border-border bg-background-light rounded-xl  overflow-hidden p-2 pb-0'}>
 					<ActiveTicketsList />
 				</TabsContent>
 				<TabsContent value={'old'} className={'w-full grow border border-border bg-background-light rounded-xl  overflow-hidden p-2 pb-0'}>
 					<OldTicketsList />
-				</TabsContent>
-				<TabsContent value={'bonus'} className={'w-full grow border border-border bg-background-light rounded-xl  overflow-hidden p-2 pb-0'}>
-					<BonusTab />
 				</TabsContent>
 			</Tabs>
 		</div>

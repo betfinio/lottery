@@ -1,10 +1,7 @@
-export const TOKEN = import.meta.env.PUBLIC_TOKEN_ADDRESS;
-export const PARTNER_ADDRESS = import.meta.env.PUBLIC_PARTNER_ADDRESS;
-export const LOTTERY_ADDRESS = import.meta.env.PUBLIC_LOTTERY_ADDRESS;
-export const MAX_SHARES = 188_500;
-export const MULTIBET_ADDRESS = import.meta.env.PUBLIC_MULTIBET_ADDRESS;
-export const CLAIMER_ADDRESS = import.meta.env.PUBLIC_CLAIMER_ADDRESS;
-export const ETHSCAN = import.meta.env.PUBLIC_ETHSCAN;
-export const DYNAMIC_STAKING_ADDRESS = import.meta.env.PUBLIC_DYNAMIC_STAKING_ADDRESS;
-export const ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP = 30; //seconds;
-export const ENVIRONMENT = import.meta.env.PUBLIC_ENVIRONMENT;
+import type { Address } from 'viem';
+
+export const LOTTERY = import.meta.env.PUBLIC_LOTTERY_ADDRESS as Address;
+export const LOTTERY_STRATEGY = import.meta.env.PUBLIC_LOTTERY_STRATEGY_ADDRESS as Address;
+export const PARTNER = import.meta.env.PUBLIC_PARTNER_ADDRESS as Address;
+export const CORE = import.meta.env.PUBLIC_CORE_ADDRESS as Address;
+export const ETHSCAN = import.meta.env.PUBLIC_ETHSCAN as string;

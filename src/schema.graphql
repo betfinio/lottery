@@ -1,132 +1,106 @@
-query GetActiveRounds($now: BigInt) {
-	rounds(first: 100, where: { timestamp_gt: $now }, orderBy: timestamp, orderDirection: asc) {
-		...Round
-	}
-}
-
-query GetOldRounds($now: BigInt) {
-	rounds(first: 1000, where: { timestamp_lte: $now }, orderBy: timestamp, orderDirection: desc) {
-		...Round
-	}
-}
-
-fragment Round on Round {
-	id
-	round
-	timestamp
-	blockNumber
-	ticketPrice
-	ticketsCount
-	linesCount
-	bank
-	ticketClaimedCount
-}
-
-fragment Ticket on Ticket {
-	id
-	owner
-	tokenId
-	round {
-		id
+query LotteryRounds($address: Bytes) {
+	rounds(where: { address: $address, status_not: "cancelled" }, orderBy: round, orderDirection: desc, first: 1000) {
 		round
-		timestamp
-		blockNumber
-	}
-	betAddress
-	lines {
-		id
-		numbers
-		symbol
-	}
-	linesCount
-	created
-	claimed
-	updated
-	amount
-	symbolUnlocked
-}
-
-query GetPlayerRounds($player: Bytes, $now: BigInt) {
-	rounds(where: { tickets_: { owner: $player } }, orderBy: timestamp, orderDirection: desc) {
-		...Round
+		address
+		status
+		started
+		betsCount
+		betsAmount
+		winNumbers
+		winSymbol
 	}
 }
 
-query GetTickets($player: Bytes, $now: BigInt) {
-	active: tickets(where: { owner: $player, round_: { timestamp_gte: $now } }, orderBy: round__timestamp, orderDirection: asc, first: 1000) {
-		...Ticket
-	}
-	old: tickets(where: { owner: $player, round_: { timestamp_lt: $now } }, orderBy: round__timestamp, orderDirection: desc, first: 1000) {
-		...Ticket
-	}
-}
-
-query GetPlayerTicketByRound($round: Bytes, $player: Bytes) {
-	tickets(where: { round_: { round: $round }, owner: $player }, orderBy: created, orderDirection: desc, first: 1000) {
-		...Ticket
-	}
-}
-
-query GetRoundDetails($round: Bytes!) {
-	rounds(where: { round: $round }) {
-		...Round
-	}
-}
-
-fragment Jackpot on Jackpot {
-	id
-	round {
-		isAllClaimed
-	}
-	combination
-	claimed
-	linesCount
-
-	tickets(first: $ticketsFirst) {
-		tokenId
-		owner
+query LotteryRoundBets($address: Bytes, $round: BigInt) {
+	bets(where: { address: $address, round_: { round: $round } }, first: 1000, orderBy: blockTimestamp, orderDirection: asc) {
+		player
+		recipient
+		amount
 		betAddress
-		lines(where: { claimed_gt: 0 }) {
-			symbol
+		status
+		prize
+		blockTimestamp
+		tickets {
 			numbers
-			claimed
-			combination
+			symbol
 		}
 	}
 }
 
-query GetRoundJackpots($round: String!, $ticketsFirst: Int = 25) {
-	jackpot1: jackpots(where: { round: $round, combination: "0x352b31" }) {
-		...Jackpot
-	}
-	jackpot2: jackpots(where: { round: $round, combination: "0x35" }) {
-		...Jackpot
-	}
-	jackpot3: jackpots(where: { round: $round, combination: "0x342b31" }) {
-		...Jackpot
-	}
-	jackpot4: jackpots(where: { round: $round, combination: "0x34" }) {
-		...Jackpot
-	}
-	jackpot5: jackpots(where: { round: $round, combination: "0x332b31" }) {
-		...Jackpot
-	}
-	jackpot6: jackpots(where: { round: $round, combination: "0x33" }) {
-		...Jackpot
-	}
-	jackpot7: jackpots(where: { round: $round, combination: "0x322b31" }) {
-		...Jackpot
+query LotteryPlayerBetsByRound($address: Bytes, $round: BigInt, $player: Bytes) {
+	bets(where: { address: $address, round_: { round: $round }, player: $player }, orderBy: blockTimestamp, orderDirection: desc) {
+		player
+		recipient
+		amount
+		betAddress
+		status
+		prize
+		blockTimestamp
+		tickets {
+			numbers
+			symbol
+		}
+		round {
+			round
+			status
+			winNumbers
+			winSymbol
+		}
 	}
 }
 
-query GetPlayerTickets($player: Bytes, $round: Bytes) {
-	tickets(where: { owner: $player, round_: { round: $round } }, orderBy: created, orderDirection: desc) {
-		...Ticket
+query LotteryPlayerBets($address: Bytes, $player: Bytes) {
+	bets(where: { address: $address, player: $player }, orderBy: blockTimestamp, orderDirection: desc, first: 1000) {
+		player
+		amount
+		betAddress
+		status
+		prize
+		blockTimestamp
+		tickets {
+			numbers
+			symbol
+		}
+		round {
+			round
+			status
+			started
+			betsAmount
+			winNumbers
+			winSymbol
+		}
 	}
 }
 
-query GetUnclaimedTickets {
-	tickets(where: { status: 0, round_: { winLine_not: null } }, first: 500, orderBy: tokenId, orderDirection: desc) {
-		tokenId
+query LotteryRoundsByPlayer($address: Bytes, $player: Bytes) {
+	rounds(where: { address: $address, bets_: { player: $player } }, orderBy: round, orderDirection: desc) {
+		round
+		address
+		status
+		started
+		betsCount
+		betsAmount
+		winNumbers
+		winSymbol
+	}
+}
+
+query LotteryRoundDetails($address: Bytes, $round: BigInt) {
+	rounds(where: { address: $address, round: $round }) {
+		round
+		address
+		status
+		started
+		betsCount
+		betsAmount
+		winNumbers
+		winSymbol
+	}
+}
+
+query LotteryUnclaimedBets($address: Bytes) {
+	bets(where: { address: $address, status: "pending", round_: { status: "settled" } }, first: 500, orderBy: blockTimestamp, orderDirection: desc) {
+		betAddress
+		player
 	}
 }

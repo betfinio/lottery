@@ -1,73 +1,68 @@
 import type { Address } from 'viem';
 
-export interface ILine {
+/** A single ticket: 5 numbers (1-25) + 1 symbol (1-5) */
+export interface ITicket {
 	symbol: number;
 	numbers: number[];
 }
 
+/** Encoded ticket (bitmask representation) */
 export interface GTicket {
 	symbol: number;
 	numbers: number;
 }
 
 export interface IRound {
-	address: Address;
-	finish: number;
-	ticketCount: number;
-	linesCount: number;
-	bank: bigint;
-	ticketPrice: bigint;
-	ticketClaimedCount: number;
+	roundId: bigint;
+	address: Address; // game contract address
+	status: string; // "open" | "spinning" | "settled" | "cancelled"
+	started: number;
+	betsCount: number;
+	betsAmount: bigint;
+	winNumbers: number | null; // uint32 bitmask, null until settled
+	winSymbol: number | null; // 1-5, null until settled
 }
 
-export interface IRoundTicket {
-	round: Address;
+/** A bet: contains 1-10 tickets */
+export interface IBet {
+	roundId: bigint;
 	player: Address;
-	token: number;
 	betAddress: Address;
-	lines: ILine[];
-	isLocal?: boolean;
+	amount: bigint;
+	status: string; // "pending" | "resolved" | "refunded"
+	prize: bigint | null;
+	tickets: ITicket[];
 }
 
-export interface IRoundTicketWithWinningCoef extends IRoundTicket {
+export interface IBetWithPrize extends IBet {
+	prizeAmount: bigint;
+}
+
+export interface IBetWithWinningCoef extends IBet {
 	winningCoef: bigint;
 	winingAmount: bigint;
-	placedAmount: bigint;
 	prizeAmount: bigint;
-	freeTicketsCount: number;
+	placedAmount: bigint;
 }
 
 export type ActiveTicketMode = 'full' | 'compact' | 'minimal' | 'expanded' | 'hidden';
 
+export enum RoundStatusEnum {
+	None = 0,
+	Open = 1,
+	SpinRequested = 2,
+	ResultReady = 3,
+	Settled = 4,
+	Cancelled = 5,
+}
+
+export const EMPTY_TICKET: ITicket = { symbol: 0, numbers: [0, 0, 0, 0, 0] };
+
+/** UI state for the ticket creation flow (filling tickets vs placing bet) */
 export enum RoundState {
-	FILLING = 0,
-	PLACING = 1,
-	FINISHED = 2,
-	//todo: add more states
+	FILLING = 'filling',
+	PLACING = 'placing',
 }
 
-export const EMPTY_LINE: ILine = { symbol: 0, numbers: [0, 0, 0, 0, 0] };
-
-export enum RoundStatus {
-	NONE = 0,
-	BETTING = 1,
-	PENDING = 2,
-	DONE = 3,
-	CLAIMING = 4,
-	WAITING_FOR_REQUEST = 5,
-	REFUND = 6,
-	READY_FOR_REFUND = 7,
-	REFUNDING = 8,
-	ENDED_WITHOUT_BETS = 9,
-	GENERATING = 10,
-}
-
-export interface JackpotCombination {
-	player: Address;
-	bet: Address;
-	winAmount: bigint;
-	ticketNumber: number;
-}
-
-export type DrawTab = 'draw' | 'active' | 'old' | 'bonus';
+export type DrawTab = 'draw' | 'active' | 'old';
 export type TicketsTab = 'active' | 'old';

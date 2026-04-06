@@ -3,23 +3,23 @@ import { Progress, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } fr
 import { CircleHelp } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGetRoundFromParams, useRoundTotalBetsAndClaimedBets } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundBets } from '@/src/lib/query';
 
 export const ClaimingProgressBar = () => {
 	const { t } = useTranslation();
-	const round = useGetRoundFromParams();
-	const { data: roundDetails } = useRoundTotalBetsAndClaimedBets(round);
+	const roundId = useGetRoundFromParams();
+	const { data: bets = [] } = useRoundBets(roundId);
 
 	const { totalTickets, claimedTickets, isAllClaimed, progressPercentage } = useMemo(() => {
-		const total = Number(roundDetails?.betsCount || 0);
-		const claimed = Number(roundDetails?.betsClaimed || 0);
+		const total = bets.length;
+		const claimed = bets.filter((b) => b.status === 'resolved' || b.status === 'refunded').length;
 		return {
 			totalTickets: total,
 			claimedTickets: claimed,
-			isAllClaimed: claimed === total,
+			isAllClaimed: claimed === total && total > 0,
 			progressPercentage: total > 0 ? (claimed * 100) / total : 0,
 		};
-	}, [roundDetails]);
+	}, [bets]);
 
 	return (
 		<div className="w-full flex flex-wrap items-center gap-2 md:gap-3 lg:gap-4 mt-4">

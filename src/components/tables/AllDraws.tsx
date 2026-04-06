@@ -1,10 +1,9 @@
 import { DataTable } from '@betfinio/components/shared';
-import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useActiveRounds, useOldRounds } from '@/src/lib/query';
-import type { IRound, RoundStatus } from '@/src/lib/types';
+import { getRoundTimes, useAvailableRounds, useInterval, useRoundOffset } from '@/src/lib/query';
+import type { IRound } from '@/src/lib/types';
 import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
 import { defineColumns } from './columns';
 
@@ -16,25 +15,33 @@ function AllDraws({ includeFutureDraws }: AllDrawsProps) {
 	const { t } = useTranslation('lottery', { keyPrefix: 'tables' });
 	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const navigate = useNavigate();
-	const queryClient = useQueryClient();
 
 	const columns = defineColumns(t, false);
-	const { data: oldRounds = [] } = useOldRounds();
-	const { data: activeRounds = [] } = useActiveRounds();
+	const allRounds = useAvailableRounds();
+	const { data: interval } = useInterval();
+	const { data: offset } = useRoundOffset();
 
 	const rounds = useMemo(() => {
-		const allRounds = includeFutureDraws ? [...activeRounds, ...oldRounds].sort((a, b) => b.finish - a.finish) : oldRounds;
-		return allRounds.filter((round) => round.ticketCount > 0);
-	}, [includeFutureDraws, activeRounds, oldRounds]);
+		console.log(interval, offset, allRounds);
+
+		if (!interval) return [];
+		const currentTime = Math.floor(Date.now() / 1000);
+		const filtered = includeFutureDraws
+			? allRounds
+			: allRounds.filter((round) => {
+					const { end } = getRoundTimes(round.roundId, interval, offset);
+					console.log(12323, end, currentTime);
+
+					return end <= currentTime;
+				});
+		return filtered.sort((a, b) => Number(b.roundId - a.roundId));
+	}, [includeFutureDraws, allRounds, interval, offset]);
 
 	const handleRowClick = (row: IRound) => {
-		const currentTime = Math.floor(Date.now() / 1000);
-		const roundStatus = queryClient.getQueryData(['lottery', 'round', row.address, 'status']) as RoundStatus;
-
-		if (row.finish <= currentTime && statusesAllowedToSeeRound.includes(roundStatus)) {
+		if (statusesAllowedToSeeRound.includes(row.status)) {
 			navigate({
 				to: '/games/lottery/lotto/$round',
-				params: { round: row.address },
+				params: { round: row.roundId.toString() },
 			});
 		}
 	};

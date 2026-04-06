@@ -1,9 +1,9 @@
-import type { IRoundTicket } from '../lib/types';
+import type { IBet } from '../lib/types';
 import Lost from './status/Lost';
 import Refunded from './status/Refunded';
 import Win from './status/Win';
 
-function TicketStatus({ ticket }: { ticket: IRoundTicket }) {
+function TicketStatus({ ticket }: { ticket: IBet }) {
 	return (
 		<>
 			<Lost ticket={ticket} />

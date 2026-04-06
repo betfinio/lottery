@@ -1,13 +1,18 @@
 import { LoaderIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import TicketsList from '@/src/components/tabs/TicketsList.tsx';
-import { useActiveTickets } from '@/src/lib/query';
+import { usePlayerBets } from '@/src/lib/query';
 
 function ActiveTicketsList() {
 	const { t } = useTranslation('lottery');
 	const { address } = useAccount();
-	const { data: tickets = [], isLoading } = useActiveTickets(address);
+	const { data: allBets = [], isLoading } = usePlayerBets(address);
+	// Filter to only active (pending) bets
+	const tickets = useMemo(() => allBets.filter((bet) => bet.status === 'pending'), [allBets]);
+	console.log(tickets);
+
 	if (isLoading) {
 		return (
 			<div className="flex justify-center items-center h-full">

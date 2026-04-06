@@ -1,29 +1,26 @@
 import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
-import { HelpCircleIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useRoundStatus, useTicketStatus, useWinningLine } from '@/src/lib/query';
-import { useClaimTicket } from '@/src/lib/query/mutations';
-import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
-import { compareLines } from '@/src/lib/utils';
+import { useWinningLine } from '@/src/lib/query';
+import { useClaimBet } from '@/src/lib/query/mutations';
+import type { IBet } from '@/src/lib/types';
+import { compareTickets } from '@/src/lib/utils';
 
-function Lost({ ticket }: { ticket: IRoundTicket }) {
+function Lost({ ticket }: { ticket: IBet }) {
 	const { t } = useTranslation('lottery');
-	const { data: status } = useTicketStatus(ticket.betAddress);
-	const { data: roundStatus } = useRoundStatus(ticket.round);
-	const { data: winningLine } = useWinningLine(ticket.round);
-	const { mutate: claim } = useClaimTicket();
+	const { data: winningLine } = useWinningLine(ticket.roundId);
+	const { mutate: claim } = useClaimBet();
 
 	const handleClaim = () => {
 		claim({
-			ticket: ticket.betAddress,
+			betAddress: ticket.betAddress,
 		});
 	};
 
-	const allLinesCoef = winningLine ? ticket.lines.map((line) => compareLines(line, winningLine, ticket.lines.length >= 3)).every((coef) => coef === 0) : false;
+	const allTicketsCoef = winningLine ? ticket.tickets.map((t) => compareTickets(t, winningLine)).every((coef) => coef === 0) : false;
+	const sumCoef = winningLine ? ticket.tickets.reduce((acc, t) => acc + compareTickets(t, winningLine), 0) : 0;
 
-	const sumCoef = winningLine ? ticket.lines.reduce((acc, line) => acc + compareLines(line, winningLine, ticket.lines.length >= 3), 0) : 0;
-	// if claimed as lost
-	if (status === 3n) {
+	// Resolved with no prize (lost, already validated on-chain)
+	if (ticket.status === 'resolved' && (ticket.prize === null || ticket.prize === 0n) && winningLine && allTicketsCoef) {
 		return (
 			<TooltipProvider>
 				<Tooltip>
@@ -35,15 +32,15 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 			</TooltipProvider>
 		);
 	}
-	// if round is over and not claimed
-	if (roundStatus === RoundStatus.CLAIMING && winningLine && sumCoef === 0 && status === 1n && allLinesCoef) {
+
+	// Pending but round is settled and lines don't match (predicted lost, not yet claimed)
+	if (ticket.status === 'pending' && winningLine && sumCoef === 0 && allTicketsCoef) {
 		return (
 			<TooltipProvider>
 				<Tooltip delayDuration={0}>
 					<TooltipTrigger>
 						<Badge className="bg-muted/10 text-muted-foreground hover:scale-105 transition-all flex flex-row gap-1" onClick={handleClaim}>
 							{t('lost')}
-							<HelpCircleIcon className="w-3 h-3" />
 						</Badge>
 					</TooltipTrigger>
 					<TooltipContent>{t('thisStatusIsNotYetValidatedByBlockchain')}</TooltipContent>
@@ -52,7 +49,8 @@ function Lost({ ticket }: { ticket: IRoundTicket }) {
 		);
 	}
 
-	if ((status === 1n && roundStatus === RoundStatus.WAITING_FOR_REQUEST) || roundStatus === RoundStatus.DONE) {
+	// Waiting state
+	if (ticket.status === 'pending') {
 		return <Badge className="bg-muted/10 text-muted-foreground">{t('waiting')}</Badge>;
 	}
 }

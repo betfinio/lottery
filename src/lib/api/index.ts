@@ -1,574 +1,210 @@
-import { LostTicketsClaimerABI, LotteryBetABI, LotteryRoundABI, MultiBetABI, TokenABI, ZeroAddress } from '@betfinio/abi';
-import { LotteryABI } from '@betfinio/abi/dist/contracts/Lottery';
-import { type Config, getTransactionReceipt, multicall, readContract, simulateContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
-import { getBlockByTimestamp } from 'betfinio_context/lib/gql';
+import { type Config, readContract, simulateContract, waitForTransactionReceipt, writeContract } from '@wagmi/core';
 import { type Address, encodeAbiParameters, parseAbiParameters } from 'viem';
-import { getBlock, getBlockNumber, getContractEvents } from 'viem/actions';
 import logger from '@/src/config/logger';
-import { CLAIMER_ADDRESS, LOTTERY_ADDRESS, MULTIBET_ADDRESS, PARTNER_ADDRESS, ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP, TOKEN } from '@/src/globals.ts';
-import { type GTicket, type ILine, type IRoundTicket, RoundStatus } from '@/src/lib/types.ts';
-import { decodeLine, encodeLines, parseLine } from '@/src/lib/utils';
-import { statusesAllowedToSeeRound } from '@/src/routes/games/lottery/lotto/$round';
+import { CORE, LOTTERY, LOTTERY_STRATEGY, PARTNER } from '@/src/globals';
+import { BetABI } from '@/src/lib/abi/BetABI';
+import { CoreBetABI } from '@/src/lib/abi/CoreBetABI';
+import { LotteryGameABI } from '@/src/lib/abi/LotteryGameABI';
+import { LotteryStrategyABI } from '@/src/lib/abi/LotteryStrategyABI';
+import type { GTicket, ITicket } from '@/src/lib/types';
+import { encodeTickets } from '@/src/lib/utils';
 
-/**
- *  Example of function that reads data from blockchain
- */
+// ═══════════════════════════════════════════════════════════════════════════
+// READ FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
 
-export const fetchTicketPrice = async (round: Address | undefined, config: Config): Promise<bigint> => {
-	if (!round) return 0n;
-	return await readContract(config, {
-		address: round,
-		abi: LotteryRoundABI,
+export const fetchTicketPrice = async (config: Config): Promise<bigint> => {
+	return readContract(config, {
+		address: LOTTERY_STRATEGY,
+		abi: LotteryStrategyABI,
 		functionName: 'ticketPrice',
-		args: [],
 	});
 };
 
-export const fetchRoundStatus = async (round: Address, config: Config) => {
-	if (round === ZeroAddress) return RoundStatus.NONE;
-	logger.start('fetchRoundStatus:', round);
-	const finish: bigint = await readContract(config, {
-		address: round,
-		abi: LotteryRoundABI,
-		functionName: 'finish',
-		args: [],
-	});
-
-	const status: RoundStatus = Number(
-		await readContract(config, {
-			address: round,
-			abi: LotteryRoundABI,
-			functionName: 'getStatus',
-			args: [],
-		}),
-	);
-
-	const balance = await readContract(config, {
-		address: TOKEN,
-		abi: TokenABI,
-		functionName: 'balanceOf',
-		args: [round],
-	});
-
-	if (balance === 0n && status === 5) {
-		return RoundStatus.ENDED_WITHOUT_BETS;
-	}
-
-	if (status === 5 && finish + BigInt(60 * 60) < BigInt(Math.floor(Date.now() / 1000))) {
-		return RoundStatus.READY_FOR_REFUND;
-	}
-
-	if (status === 6 && balance > 0n) {
-		return RoundStatus.REFUNDING;
-	}
-
-	const isPassed = Number(finish) < Number(Math.floor(Date.now() / 1000));
-	const isPassedAndWithinGenerationGap = isPassed && Number(finish) + 65 * 60 > Number(Math.floor(Date.now() / 1000));
-	if (isPassedAndWithinGenerationGap && statusesAllowedToSeeRound.includes(status)) {
-		const randomGeneratedBlockTimestamp = await fetchRoundFinishedTimeStamp(config, round);
-
-		if (randomGeneratedBlockTimestamp && randomGeneratedBlockTimestamp + ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP > Number(Math.floor(Date.now() / 1000))) {
-			return RoundStatus.GENERATING;
-		}
-	}
-
-	return status as RoundStatus;
-};
-
-export const fetchRoundFinishedTimeStamp = async (config: Config, round: Address) => {
-	const finish: bigint = await readContract(config, {
-		address: round,
-		abi: LotteryRoundABI,
-		functionName: 'finish',
-		args: [],
-	});
-
-	if (finish > BigInt(Math.floor(Date.now() / 1000))) return 0;
-	const fromBlock = await getBlockByTimestamp(Number(finish));
-	let endBlock = fromBlock + 65n * 30n; // Keep original logic
-	const currentBlock = await getBlockNumber(config.getClient());
-
-	if (currentBlock < endBlock) {
-		endBlock = currentBlock; // Event hasn't happened yet, don't look into the future
-	}
-
-	const randomGeneratedTime = await getContractEvents(config.getClient(), {
-		abi: LotteryRoundABI,
-		address: round,
-		eventName: 'RoundFinished',
-		fromBlock: fromBlock,
-		toBlock: endBlock,
-	});
-
-	if (randomGeneratedTime.length === 0) return 0;
-
-	const block = await getBlock(config.getClient(), {
-		blockNumber: randomGeneratedTime[0].blockNumber,
-	});
-
-	const randomGeneratedBlockTimestamp = block.timestamp;
-	return Number(randomGeneratedBlockTimestamp);
-};
-
-export const fetchLinesCount = async (round: Address, config: Config) => {
-	return await readContract(config, {
-		address: round,
-		abi: LotteryRoundABI,
-		functionName: 'ticketsCount',
-		args: [],
-	});
-};
-
-export const fetchRoundFinish = async (round: Address, config: Config) => {
-	return Number(
-		await readContract(config, {
-			address: round,
-			abi: LotteryRoundABI,
-			functionName: 'finish',
-			args: [],
-		}),
-	);
-};
-
-export const fetchMultiAllowance = async (address: Address | undefined, config: Config): Promise<bigint> => {
-	logger.start('fetchAllowance:', address);
-	if (!config || address === undefined || address === ZeroAddress) return 0n;
-	const value = (await readContract(config, {
-		abi: TokenABI,
-		address: TOKEN,
-		functionName: 'allowance',
-		args: [address, MULTIBET_ADDRESS],
-	})) as bigint;
-	logger.success('fetchAllowance:', value);
-	return value;
-};
-
-export const fetchEditAllowance = async (address: Address | undefined, config: Config): Promise<bigint> => {
-	logger.start('fetchAllowance:', address);
-	if (!config || address === undefined || address === ZeroAddress) return 0n;
-	const value = (await readContract(config, {
-		abi: TokenABI,
-		address: TOKEN,
-		functionName: 'allowance',
-		args: [address, LOTTERY_ADDRESS],
-	})) as bigint;
-	logger.success('fetchAllowance:', value);
-	return value;
-};
-
-export const buyTicket = async (options: { lines: ILine[]; rounds: Address[]; recipient: Address }, config: Config) => {
-	const { lines, rounds, recipient } = options;
-	const datas: Address[] = [];
-	const amounts: bigint[] = [];
-	const games: Address[] = [];
-	for (const round of rounds) {
-		const price = await fetchTicketPrice(round, config);
-		const totalAmount = price * BigInt(lines.length);
-		const encodedLines = encodeLines(lines);
-		const data = encodeAbiParameters(
-			parseAbiParameters(['address _round, address _player, uint256 _count, Ticket[] memory _tickets', 'struct Ticket {uint8 symbol; uint32 numbers;}']),
-			[round, recipient, BigInt(lines.length), encodedLines],
-		);
-		await simulateContract(config, {
-			abi: MultiBetABI,
-			address: MULTIBET_ADDRESS,
-			functionName: 'placeBet',
-			args: [PARTNER_ADDRESS, LOTTERY_ADDRESS, totalAmount, data],
-		});
-		datas.push(data);
-		amounts.push(totalAmount);
-		games.push(LOTTERY_ADDRESS);
-	}
-	if (games.length === 0) throw new Error('empty');
-	await simulateContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'multiPlaceBet',
-		args: [PARTNER_ADDRESS, games, amounts, datas],
-	});
-	const result = await writeContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'multiPlaceBet',
-		args: [PARTNER_ADDRESS, games, amounts, datas],
-	});
-	await waitForTransactionReceipt(config, { hash: result });
-	return result;
-};
-
-export const unlockMultibet = async (config: Config) => {
-	return writeContract(config, {
-		abi: TokenABI,
-		address: TOKEN,
-		functionName: 'approve',
-		args: [MULTIBET_ADDRESS, 1_000_000_000_000n * 10n ** 18n],
-	});
-};
-export const unlockEdit = async (config: Config) => {
-	return writeContract(config, {
-		abi: TokenABI,
-		address: TOKEN,
-		functionName: 'approve',
-		args: [LOTTERY_ADDRESS, 1_000_000_000_000n * 10n ** 18n],
-	});
-};
-export const sendTicket = async (ticket: bigint, sender: Address, recipient: Address, config: Config) => {
-	await simulateContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'transferFrom',
-		args: [sender, recipient, ticket],
-	});
-	return writeContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'transferFrom',
-		args: [sender, recipient, ticket],
-	});
-};
-
-export const manualRequest = async (round: Address, config: Config) => {
-	await simulateContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'requestRandomness',
-		args: [],
-	});
-	return writeContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'requestRandomness',
-		args: [],
-	});
-};
-
-export const updateTicket = async (ticket: IRoundTicket, config: Config) => {
-	const encodedLines = encodeLines(ticket.lines);
-	await simulateContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'editTicket',
-		args: [BigInt(ticket.token), encodedLines.map(({ symbol, numbers }) => ({ symbol, numbers }))],
-	});
-	const result = await writeContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'editTicket',
-		args: [BigInt(ticket.token), encodedLines.map(({ symbol, numbers }) => ({ symbol, numbers }))],
-	});
-	await waitForTransactionReceipt(config, { hash: result });
-	return result;
-};
-
-export const fetchWinningLine = async (round: Address, config: Config): Promise<ILine | null> => {
-	logger.start('fetchWinningLine:', round);
-	if (round === ZeroAddress) return null;
-	try {
-		const line = await readContract(config, {
-			abi: LotteryRoundABI,
-			address: round,
-			functionName: 'winTicket',
-			args: [],
-		});
-
-		if (line[0] === 0 && line[1] === 0) return null;
-		return decodeLine({ symbol: line[0], numbers: line[1] });
-	} catch (error) {
-		console.log(error);
-		return null;
-	}
-};
-
-export const manualRefund = async (round: Address, config: Config) => {
-	return writeContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'startRefund',
-		args: [],
-	});
-};
-
-export const manualDistributeRefund = async (round: Address, config: Config) => {
-	const betsCount = await readContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'betsCount',
-		args: [],
-	});
-	return writeContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'refund',
-		args: [0n, betsCount],
-	});
-};
-
-export const manualDistributeJackpot = async (round: Address, config: Config) => {
-	return writeContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'processJackpot',
-		args: [],
-	});
-};
-export const fetchTicketStatus = async (ticket: Address, config: Config) => {
+export const fetchInterval = async (config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
-		functionName: 'getStatus',
-		args: [],
+		address: LOTTERY,
+		abi: LotteryGameABI,
+		functionName: 'INTERVAL',
 	});
 };
 
-export const fetchTicketResult = async (ticket: Address, winLine: GTicket, config: Config) => {
-	logger.start('fetchTicketResult:', ticket, winLine);
+export const fetchRoundOffset = async (config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
-		functionName: 'calculateResult',
-		args: [{ numbers: winLine.numbers, symbol: winLine.symbol }],
+		address: LOTTERY,
+		abi: LotteryGameABI,
+		functionName: 'ROUND_OFFSET',
 	});
 };
 
-export const fetchTicketRound = async (ticket: Address, config: Config) => {
+export const fetchCurrentRoundId = async (config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
+		address: LOTTERY,
+		abi: LotteryGameABI,
+		functionName: 'getCurrentRoundId',
+	});
+};
+
+export const fetchRoundInfo = async (roundId: bigint, config: Config) => {
+	return readContract(config, {
+		address: LOTTERY,
+		abi: LotteryGameABI,
 		functionName: 'getRound',
-		args: [],
+		args: [roundId],
 	});
 };
 
-export const fetchTicketClaimed = async (ticket: Address, config: Config) => {
+export const fetchWinningTicket = async (roundId: bigint, config: Config) => {
+	logger.start('fetchWinningTicket:', roundId);
+	const result = await readContract(config, {
+		address: LOTTERY_STRATEGY,
+		abi: LotteryStrategyABI,
+		functionName: 'getRoundResult',
+		args: [roundId],
+	});
+	if (!result[1]) return null; // not settled
+	return { symbol: result[0].symbol, numbers: result[0].numbers };
+};
+
+export const fetchCoefficient = async (tier: number, config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
-		functionName: 'getClaimed',
-		args: [],
+		address: LOTTERY_STRATEGY,
+		abi: LotteryStrategyABI,
+		functionName: 'coefficients',
+		args: [BigInt(tier)],
 	});
 };
 
-export const claimTicket = async (ticket: Address, config: Config) => {
-	const token: bigint = await readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
-		functionName: 'getTokenId',
-		args: [],
-	});
-	await simulateContract(config, {
-		abi: LotteryABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'claim',
-		args: [token],
-	});
-	return writeContract(config, {
-		abi: LotteryABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'claim',
-		args: [token],
-	});
-};
-
-export const fetchTicketWinAmount = async (ticket: Address, config: Config) => {
+export const fetchBetStatus = async (betAddress: Address, config: Config): Promise<number> => {
 	return readContract(config, {
-		abi: LotteryBetABI,
-		address: ticket,
-		functionName: 'getResult',
-		args: [],
+		address: betAddress,
+		abi: BetABI,
+		functionName: 'status',
 	});
 };
 
-export const fetchAdditionalJackpot = async (config: Config) => {
+export const fetchBetPayout = async (betAddress: Address, config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'additionalJackpot',
-		args: [],
+		address: betAddress,
+		abi: BetABI,
+		functionName: 'payout',
 	});
 };
 
-export const fetchPotentialJackpot = async (round: Address, config: Config) => {
-	// 4% of the balance of the round
-	const balance = await readContract(config, {
-		abi: TokenABI,
-		address: TOKEN,
-		functionName: 'balanceOf',
-		args: [round],
-	});
-	return (balance * BigInt(4)) / BigInt(100);
-};
-
-export const fetchLinesAvailability = async (round: Address | undefined, lines: ILine[], config: Config): Promise<boolean[]> => {
-	if (!round) return [];
-	logger.start('fetchLinesAvailability:', round);
-	const encodedLines = encodeLines(lines);
-	const data = await multicall(config, {
-		contracts: encodedLines.map(({ symbol, numbers }) => ({
-			abi: LotteryRoundABI,
-			address: round,
-			functionName: 'isBitmapEmpty',
-			args: [encodeAbiParameters(parseAbiParameters(['uint8 symbol', 'uint32 numbers']), [symbol, numbers])],
-		})),
-	});
-	logger.success('fetchLinesAvailability:', data);
-	return data.map(({ result }) => result === true);
-};
-
-export const fetchFinishedRoundTransactionByRoundAddress = async (config: Config, round: Address, fromTimeStamp?: number) => {
-	if (!fromTimeStamp) return;
-	const fromBlock = await getBlockByTimestamp(fromTimeStamp);
-	const toBlock = await getBlockByTimestamp(fromTimeStamp + 60 * 60 * 1.5);
-	const roundFinished = await getContractEvents(config.getClient(), {
-		abi: LotteryRoundABI,
-		address: round,
-		eventName: 'RoundFinished',
-		fromBlock,
-		toBlock,
-	});
-	return roundFinished;
-};
-
-export const getMintedTokensByHash = async (hash: Address, config: Config): Promise<IRoundTicket[]> => {
-	console.log('getMintedTokensByHash', hash);
-	await waitForTransactionReceipt(config, { hash: hash });
-	const receipt = await getTransactionReceipt(config, {
-		hash,
-	});
-	// filter logs from LOTTERY_ADDRESS
-	const logs = receipt.logs.filter((log) => log.address.toLowerCase() === LOTTERY_ADDRESS.toLowerCase());
-
-	const ids = logs.map((log) => {
-		const mintedToken = BigInt(log.topics[3] ?? '0x0');
-		return mintedToken;
-	});
-
-	return await Promise.all(ids.map((id) => getTicketByTokenId(id, config)));
-};
-
-export const getTicketByTokenId = async (tokenId: bigint, config: Config): Promise<IRoundTicket> => {
-	const bet = await readContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'bets',
-		args: [tokenId],
-	});
-
-	const betInfo = await readContract(config, {
-		abi: LotteryBetABI,
-		address: bet,
-		functionName: 'getBetInfo',
-	});
-
-	const round = await readContract(config, {
-		abi: LotteryBetABI,
-		address: bet,
-		functionName: 'getRound',
-		args: [],
-	});
-	const lines = await readContract(config, {
-		abi: LotteryBetABI,
-		address: bet,
-		functionName: 'getTickets',
-	});
-	const parsedLines = lines.map((line) => parseLine(line));
-	return {
-		token: Number(tokenId),
-		round: round,
-		player: betInfo[0],
-		betAddress: bet,
-		lines: parsedLines,
-		isLocal: true,
-	};
-};
-
-export const fetchFreeLinesCount = async (address: Address, config: Config): Promise<bigint> => {
+export const fetchBetClaimed = async (betAddress: Address, config: Config): Promise<boolean> => {
 	return readContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'getFreeLines',
-		args: [address],
-	});
-};
-
-export const fetchUsedFreeLinesCount = async (address: Address, config: Config): Promise<bigint> => {
-	return readContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'freeLinesUsed',
-		args: [address],
-	});
-};
-
-export const fetchBoughtLinesCount = async (address: Address, config: Config): Promise<bigint> => {
-	return readContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'linesBought',
-		args: [address],
-	});
-};
-
-export const fetchExchangeRate = async (config: Config): Promise<bigint> => {
-	return readContract(config, {
-		abi: MultiBetABI,
-		address: MULTIBET_ADDRESS,
-		functionName: 'EXCHANGE_RATE',
-		args: [],
-	});
-};
-export const fetchLostTicketsClaimed = async (address: Address, config: Config): Promise<bigint> => {
-	return readContract(config, {
-		abi: LostTicketsClaimerABI,
-		address: CLAIMER_ADDRESS,
+		address: LOTTERY_STRATEGY,
+		abi: LotteryStrategyABI,
 		functionName: 'claimed',
-		args: [address],
+		args: [betAddress],
 	});
 };
-export const fetchLostTicketsToClaim = async (config: Config): Promise<bigint> => {
+
+export const fetchRoundBank = async (roundId: bigint, config: Config): Promise<bigint> => {
 	return readContract(config, {
-		abi: LostTicketsClaimerABI,
-		address: CLAIMER_ADDRESS,
-		functionName: 'CLAIMS_PER_LINE',
-		args: [],
+		address: LOTTERY_STRATEGY,
+		abi: LotteryStrategyABI,
+		functionName: 'roundBank',
+		args: [roundId],
 	});
 };
 
-export const claimUnclaimedTickets = async (tickets: bigint[], config: Config) => {
-	await simulateContract(config, {
-		abi: LostTicketsClaimerABI,
-		address: CLAIMER_ADDRESS,
-		functionName: 'claimLostTickets',
-		args: [tickets],
-	});
-	return writeContract(config, {
-		abi: LostTicketsClaimerABI,
-		address: CLAIMER_ADDRESS,
-		functionName: 'claimLostTickets',
-		args: [tickets],
-	});
+// ═══════════════════════════════════════════════════════════════════════════
+// WRITE FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+export const placeBet = async (options: { tickets: ITicket[]; roundIds: bigint[]; recipient: Address }, config: Config) => {
+	const { tickets, roundIds, recipient } = options;
+	const ticketPrice = await fetchTicketPrice(config);
+	const encodedTickets = encodeTickets(tickets);
+	const totalAmount = ticketPrice * BigInt(tickets.length);
+
+	// Place a bet for each selected round
+	let lastHash: Address | undefined;
+	for (const roundId of roundIds) {
+		const data = encodeAbiParameters(parseAbiParameters(['uint256 targetRoundId, Ticket[] tickets', 'struct Ticket { uint8 symbol; uint32 numbers; }']), [
+			roundId,
+			encodedTickets,
+		]);
+
+		const { request } = await simulateContract(config, {
+			abi: CoreBetABI,
+			address: CORE,
+			functionName: 'bet',
+			args: [recipient, recipient, LOTTERY, totalAmount, data, PARTNER],
+		});
+
+		const hash = await writeContract(config, request);
+
+		await waitForTransactionReceipt(config, { hash });
+		lastHash = hash;
+	}
+
+	return lastHash;
 };
 
-export const fetchSubscriptionId = async (config: Config) => {
-	return readContract(config, {
-		abi: LotteryABI,
-		address: LOTTERY_ADDRESS,
-		functionName: 'subscriptionId',
-		args: [],
+export const claimBet = async (betAddress: Address, config: Config) => {
+	const { request } = await simulateContract(config, {
+		abi: LotteryGameABI,
+		address: LOTTERY,
+		functionName: 'claim',
+		args: [betAddress],
 	});
+	return writeContract(config, request);
 };
 
-export const getRoundTotalBetsAndClaimedBets = async (round: Address, config: Config) => {
-	const betsCount = await readContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'betsCount',
-		args: [],
+export const claimBatchBets = async (betAddresses: Address[], config: Config) => {
+	const { request } = await simulateContract(config, {
+		abi: LotteryGameABI,
+		address: LOTTERY,
+		functionName: 'claimBatch',
+		args: [betAddresses],
 	});
-	const betsClaimed = await readContract(config, {
-		abi: LotteryRoundABI,
-		address: round,
-		functionName: 'betsClaimed',
-		args: [],
+	return writeContract(config, request);
+};
+
+export const spinRound = async (roundId: bigint, config: Config) => {
+	logger.start('spinRound:', roundId);
+	try {
+		const { request } = await simulateContract(config, {
+			abi: LotteryGameABI,
+			address: LOTTERY,
+			functionName: 'spin',
+			args: [roundId],
+		});
+		return writeContract(config, request);
+	} catch (error) {
+		logger.error('spinRound:', error);
+		throw error;
+	}
+};
+
+export const settleRound = async (roundId: bigint, config: Config) => {
+	const { request } = await simulateContract(config, {
+		abi: LotteryGameABI,
+		address: LOTTERY,
+		functionName: 'settle',
+		args: [roundId],
 	});
-	return { betsCount, betsClaimed };
+	return writeContract(config, request);
+};
+
+export const cancelRound = async (roundId: bigint, config: Config) => {
+	const { request } = await simulateContract(config, {
+		abi: LotteryGameABI,
+		address: LOTTERY,
+		functionName: 'cancelRound',
+		args: [roundId],
+	});
+	return writeContract(config, request);
+};
+
+export const refundBatch = async (betAddresses: Address[], config: Config) => {
+	const { request } = await simulateContract(config, {
+		abi: LotteryGameABI,
+		address: LOTTERY,
+		functionName: 'refundBatch',
+		args: [betAddresses],
+	});
+	return writeContract(config, request);
 };

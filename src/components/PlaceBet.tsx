@@ -1,6 +1,5 @@
 import { truncateEthAddress, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { Ticket } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import {
 	Button,
@@ -17,100 +16,80 @@ import {
 	ScrollArea,
 	Separator,
 	SwitchComponent,
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
 	toast,
 } from '@betfinio/components/ui';
-import { useQueryClient } from '@tanstack/react-query';
 import { useIsMember } from 'betfinio_context/lib/query';
-import { AlertTriangleIcon, ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
+import { ArrowLeftIcon, CalendarIcon, LoaderIcon, PlusCircleIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { motion } from 'motion/react';
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type Address, isAddress } from 'viem';
-import { useAccount, useConfig } from 'wagmi';
-import {
-	linesAvailabilityQuery,
-	useActiveRounds,
-	useDraftLines,
-	useFreeLinesCount,
-	useLinesAvailability,
-	useSelectedRound,
-	useTicketPrice,
-} from '@/src/lib/query';
+import { useAccount } from 'wagmi';
+import { getRoundTimes, useAvailableRounds, useDraftTickets, useInterval, useRoundOffset, useSelectedRound, useTicketPrice } from '@/src/lib/query';
 import { type IRound, RoundState } from '@/src/lib/types.ts';
 import { ETHSCAN } from '../globals';
 import { useRoundState } from '../lib/query/state';
 import BuySteps from './shared/BuySteps';
 
-const EMPTY_ARRAY: IRound[] = [];
 const PlaceBet = () => {
 	const { t } = useTranslation('lottery');
 
-	const queryClient = useQueryClient();
-	const config = useConfig();
 	// Queries
-
-	const { data: rounds = EMPTY_ARRAY } = useActiveRounds();
-	const { data: lines = [] } = useDraftLines();
-	const { data: round } = useSelectedRound();
-	const { data: ticketPrice = 0n } = useTicketPrice(round?.address);
+	const rounds = useAvailableRounds();
+	const { data: draftTickets = [] } = useDraftTickets();
+	const { data: selectedRoundId } = useSelectedRound();
+	const { data: ticketPrice = 0n } = useTicketPrice();
+	const { data: interval = 0n } = useInterval();
+	const { data: offset = 0n } = useRoundOffset();
 	const { address = ZeroAddress } = useAccount();
-	const { data: draftLines = [] } = useDraftLines();
-	const { data: freeLinesCount = 0n } = useFreeLinesCount(address);
 	const { data: isMember = false } = useIsMember(address);
+
+	// Helper to compute round end timestamp
+	const getRoundEnd = (round: IRound) => {
+		if (interval === 0n) return 0;
+		const { end } = getRoundTimes(round.roundId, interval, offset);
+		return end;
+	};
 
 	// State
 	const [recipient, setRecipient] = useState<Address | undefined>(ZeroAddress);
 	const [selectedRounds, setSelectedRounds] = useState<IRound[]>([]);
 	const [visibleRounds, setVisibleRounds] = useState<IRound[]>([]);
-	const { state, updateState } = useRoundState(round?.address);
+	const { state, updateState } = useRoundState(selectedRoundId);
 	const [newRecipientDialogOpen, setNewRecipientDialogOpen] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const toastShown = useRef(false);
 
 	// Effects
+	const roundsKey = useMemo(() => rounds.map((r) => r.roundId.toString()).join(','), [rounds]);
 	useEffect(() => {
 		setSelectedRounds(rounds.slice(0, 1));
 		setVisibleRounds(rounds.slice(0, 6));
-	}, [rounds]);
+	}, [roundsKey]);
 
 	// Computed values
-	const totalAmount = BigInt(lines.length * selectedRounds.length) * ticketPrice;
+	const totalAmount = BigInt(draftTickets.length * selectedRounds.length) * ticketPrice;
 	const isValidRecipient = recipient && isAddress(recipient as string, { strict: false });
-	const roundsAsDates = rounds.map((e: IRound) => new Date(e.finish * 1000));
-	const selectedDates = selectedRounds.map((e) => new Date(e.finish * 1000));
-	const maxFreeLinesToUse = BigInt(Math.min(Number(freeLinesCount), draftLines.length * selectedRounds.length));
-	const displayTotalAmount = totalAmount - maxFreeLinesToUse * ticketPrice;
-
-	const getHasCollisions = async () => {
-		const queries = selectedRounds.map((round) => {
-			const query = queryClient.ensureQueryData(linesAvailabilityQuery(round.address, draftLines, config));
-			return query;
-		});
-		const queriesResult = await Promise.all(queries);
-		return queriesResult.some((e) => e?.some((e) => e === false));
-	};
+	const roundsAsDates = rounds.map((e: IRound) => new Date(getRoundEnd(e) * 1000));
+	const selectedDates = selectedRounds.map((e) => new Date(getRoundEnd(e) * 1000));
 
 	// Handlers
-	const handleToggle = (value: Address[]) => {
-		const toggleRoundAddress: Address = value[0];
-		const toggleRound = rounds.find((e) => e.address === toggleRoundAddress);
+	const handleToggle = (value: bigint[]) => {
+		const toggleRoundId = value[0];
+		const toggleRound = rounds.find((e) => e.roundId === toggleRoundId);
 		if (!toggleRound) return;
-		if (selectedRounds.find((e) => e.address === toggleRoundAddress)) {
+		if (selectedRounds.find((e) => e.roundId === toggleRoundId)) {
 			if (toastShown.current) return;
 			if (selectedRounds.length === 1) {
 				toast.error('At least one draw must be selected');
 				toastShown.current = true;
 				return;
 			}
-			setSelectedRounds((prev) => prev.filter((e) => e.address !== toggleRoundAddress));
+			setSelectedRounds((prev) => prev.filter((e) => e.roundId !== toggleRoundId));
 		} else {
 			setSelectedRounds((prev) => {
-				if (prev.find((r) => r.address === toggleRound.address)) return prev;
+				if (prev.find((r) => r.roundId === toggleRound.roundId)) return prev;
 				return [...prev, toggleRound];
 			});
 			toastShown.current = false;
@@ -128,20 +107,17 @@ const PlaceBet = () => {
 		const selected = days
 			.map((calendarDate) => {
 				const round = rounds.find((e) => {
-					const date = new Date(e.finish * 1000);
+					const date = new Date(getRoundEnd(e) * 1000);
 					return date.getDate() === calendarDate.getDate() && date.getMonth() === calendarDate.getMonth() && date.getFullYear() === calendarDate.getFullYear();
 				});
 				if (!round) return undefined;
-				return {
-					address: round.address,
-					finish: round.finish,
-				} as IRound;
+				return round;
 			})
-			.filter((e) => e) as IRound[];
+			.filter((e): e is IRound => !!e);
 
 		setSelectedRounds(selected);
 		// append selected rounds to visible rounds, only unique
-		setVisibleRounds((prev) => [...prev, ...selected].filter((e, index, self) => index === self.findIndex((t) => t.address === e.address)));
+		setVisibleRounds((prev) => [...prev, ...selected].filter((e, index, self) => index === self.findIndex((t) => t.roundId === e.roundId)));
 	};
 
 	const compare = (roundDates: Date[]) => (specific: Date) =>
@@ -161,18 +137,13 @@ const PlaceBet = () => {
 		setNewRecipientDialogOpen(open);
 	};
 
-	const handleBackToLines = () => {
+	const handleBackToTickets = () => {
 		updateState(RoundState.FILLING);
 	};
 
 	const handleOpen = async () => {
 		if (!isMember) {
 			toast.error(t('connectedWalletIsNotMember'));
-			return;
-		}
-
-		if (await getHasCollisions()) {
-			toast.error('Lines are already taken');
 			return;
 		}
 
@@ -196,7 +167,7 @@ const PlaceBet = () => {
 			<div className={'p-3 flex flex-col items-center gap-1'}>
 				<h2 className={'text-lg uppercase text-secondary-foreground'}>{t('placeBet.title')}</h2>
 				<div className={'text-foreground flex flex-row gap-1 items-center'}>
-					<BetValue value={BigInt(lines.length) * ticketPrice} withIcon /> {t('placeBet.ticketPrice')}
+					<BetValue value={BigInt(draftTickets.length) * ticketPrice} withIcon /> {t('placeBet.ticketPrice')}
 				</div>
 			</div>
 			<Separator />
@@ -208,12 +179,13 @@ const PlaceBet = () => {
 				</div>
 				<ScrollArea className={cn('w-full', 'h-[300px]')} type="auto">
 					<div className={'flex flex-col gap-2'}>
-						{visibleRounds.map((date: IRound) => (
+						{visibleRounds.map((round: IRound) => (
 							<RoundInfo
-								key={date.address}
-								round={date}
-								isSelected={selectedRounds.find((e) => e.address === date.address) !== undefined}
+								key={round.roundId.toString()}
+								round={round}
+								isSelected={selectedRounds.find((e) => e.roundId === round.roundId) !== undefined}
 								toggleSelect={handleToggle}
+								getRoundEnd={getRoundEnd}
 							/>
 						))}
 					</div>
@@ -272,7 +244,7 @@ const PlaceBet = () => {
 					<Button
 						variant={'outline'}
 						className={cn('gap-1 px-4 w-auto xl:hidden', state === RoundState.FILLING && 'hidden')}
-						onClick={handleBackToLines}
+						onClick={handleBackToTickets}
 						size={'icon'}
 					>
 						<ArrowLeftIcon className={'w-4 h-4'} />
@@ -288,19 +260,9 @@ const PlaceBet = () => {
 							<LoaderIcon className={'w-4 h-4 animate-spin'} />
 						</motion.div>
 						{t('placeBet.proceedFor')}
-						{displayTotalAmount > 0n && (
-							<BetValue value={displayTotalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />
-						)}
-						{maxFreeLinesToUse > 0n && (
-							<>
-								{displayTotalAmount > 0n && '+'}
-								<div className={'flex flex-row gap-1 items-center'}>
-									{maxFreeLinesToUse} <Ticket className={'w-4 h-4 text-success-foreground'} />
-								</div>
-							</>
-						)}
+						{totalAmount > 0n && <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />}
 					</Button>
-					<BuySteps buy={{ lines, recipient: realRecipient, rounds: selectedRounds.map((e) => e.address) }} isOpen={isOpen} setIsOpen={setIsOpen} />
+					<BuySteps buy={{ tickets: draftTickets, recipient: realRecipient, roundIds: selectedRounds.map((e) => e.roundId) }} isOpen={isOpen} setIsOpen={setIsOpen} />
 				</div>
 			</div>
 		</motion.div>
@@ -310,12 +272,11 @@ const PlaceBet = () => {
 export const RoundInfo: FC<{
 	round: IRound;
 	isSelected: boolean;
-	toggleSelect: (address: Address[]) => void;
-}> = ({ round, isSelected, toggleSelect }) => {
-	const { data: draftLines = [] } = useDraftLines();
-	const { data: linesAvailability = [], isLoading } = useLinesAvailability(round.address, draftLines, isSelected);
-	const collisions = linesAvailability.map((e, index) => ({ index: index + 1, isCollision: e })).filter((e) => e.isCollision === false);
+	toggleSelect: (roundIds: bigint[]) => void;
+	getRoundEnd: (round: IRound) => number;
+}> = ({ round, isSelected, toggleSelect, getRoundEnd }) => {
 	const ref = useRef<HTMLDivElement>(null);
+	const finish = getRoundEnd(round);
 	useEffect(() => {
 		if (ref.current) {
 			ref.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
@@ -326,14 +287,13 @@ export const RoundInfo: FC<{
 		<div
 			ref={ref}
 			className={'flex flex-row justify-between cursor-pointer items-center h-14 w-full p-4 bg-secondary text-foreground rounded-lg'}
-			onClick={() => toggleSelect([round.address])}
+			onClick={() => toggleSelect([round.roundId])}
 		>
-			<div className={'text-sm'}>{DateTime.fromSeconds(round.finish).toFormat('DD, T')}</div>
+			<div className={'text-sm'}>{finish > 0 ? DateTime.fromSeconds(finish).toFormat('DD, T') : '...'}</div>
 			<div className={'flex flex-row gap-4 items-center'}>
-				{isLoading ? <LoaderIcon className={'w-4 h-4 animate-spin'} /> : collisions.length > 0 && <CollisionIndicator index={collisions.map((e) => e.index)} />}
 				<Checkbox
 					checked={isSelected}
-					onCheckedChange={() => toggleSelect([round.address])}
+					onCheckedChange={() => toggleSelect([round.roundId])}
 					className={'data-[state=checked]:bg-success w-4 h-4 data-[state=checked]:text-success-foreground data-[state=checked]:border-success'}
 				/>
 			</div>
@@ -375,18 +335,4 @@ const NewRecipientDialog = ({ onSave, onCancel }: { onSave: (address: Address) =
 	);
 };
 
-const CollisionIndicator = ({ index }: { index: number[] }) => {
-	return (
-		<TooltipProvider>
-			<Tooltip>
-				<TooltipTrigger>
-					<AlertTriangleIcon className={'w-4 h-4 text-destructive'} />
-				</TooltipTrigger>
-				<TooltipContent>
-					<div>Lines {index.join(', ')} are already taken</div>
-				</TooltipContent>
-			</Tooltip>
-		</TooltipProvider>
-	);
-};
 export default PlaceBet;

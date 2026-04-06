@@ -1,9 +1,9 @@
 import { ZeroAddress } from '@betfinio/abi';
 import { type FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { useGetRoundFromParams, useRoundStatus, useRoundTicketsByPlayer, useTicketPrice, useWinningLine } from '@/src/lib/query';
-import { type IRoundTicket, type IRoundTicketWithWinningCoef, RoundStatus } from '@/src/lib/types';
-import { calculateTicketPrize, compareLines } from '@/src/lib/utils';
+import { useGetRoundFromParams, usePlayerBetsByRound, useRoundDetails, useTicketPrice, useWinningLine } from '@/src/lib/query';
+import type { IBet, IBetWithWinningCoef } from '@/src/lib/types';
+import { calculateBetPrize, compareTickets } from '@/src/lib/utils';
 import { PlayerDidNotWin } from './PlayerDidNotWin';
 import PlayerTickets from './PlayerTickets';
 import { PlayerWon } from './PlayerWon';
@@ -11,74 +11,73 @@ import { RoundNotCalculated } from './RoundNotCalculated';
 
 export const PlayerStatusForRound: FC = () => {
 	const { address = ZeroAddress } = useAccount();
-	const round = useGetRoundFromParams();
-	const { data: roundStatus } = useRoundStatus(round);
-	const { data: tickets = [], isFetching: isFetchingTickets } = useRoundTicketsByPlayer(round, address);
-	const { data: winningLine } = useWinningLine(round);
-	const { data: ticketPrice } = useTicketPrice(round);
+	const roundId = useGetRoundFromParams();
+	const { data: roundDetails } = useRoundDetails(roundId);
+	const { data: tickets = [], isFetching: isFetchingTickets } = usePlayerBetsByRound(roundId, address);
+	const { data: winningLine } = useWinningLine(roundId);
+	const { data: ticketPrice } = useTicketPrice();
 
+	const roundStatus = roundDetails?.status;
 	const playerHasBets = tickets.length > 0 && !isFetchingTickets;
 
-	const showCalculating = [RoundStatus.WAITING_FOR_REQUEST, RoundStatus.PENDING, RoundStatus.GENERATING, undefined].includes(roundStatus);
+	// Show calculating for rounds that are not yet settled
+	const showCalculating = ['spinning', 'open', undefined].includes(roundStatus) && roundDetails !== undefined;
 
-	const ticketsWithCountedCoef: IRoundTicketWithWinningCoef[] = useMemo(() => {
+	const betsWithCountedCoef: IBetWithWinningCoef[] = useMemo(() => {
 		if (!winningLine) return [];
-		return tickets.map((ticket) => {
-			const linesWithCoef = ticket.lines.reduce((acc, line) => {
-				return acc + BigInt(compareLines(line, winningLine, ticket.lines.length >= 3));
+		return tickets.map((bet) => {
+			const ticketsWithCoef = bet.tickets.reduce((acc, t) => {
+				return acc + BigInt(compareTickets(t, winningLine));
 			}, 0n);
 
-			const ticketPrize = calculateTicketPrize(winningLine, ticket.lines, ticketPrice || 0n, ticket.lines.length > 2);
+			const betPrize = calculateBetPrize(winningLine, bet.tickets, ticketPrice || 0n);
 
 			return {
-				...ticket,
-				winningCoef: linesWithCoef,
-				winingAmount: linesWithCoef * BigInt(ticketPrice || 0),
-				prizeAmount: ticketPrize.prizeAmount,
-				freeTicketsCount: ticketPrize.freeTicketsCount,
-				placedAmount: BigInt(ticketPrice || 0) * BigInt(ticket.lines.length),
+				...bet,
+				winningCoef: ticketsWithCoef,
+				winingAmount: ticketsWithCoef * BigInt(ticketPrice || 0),
+				prizeAmount: betPrize.prizeAmount,
+				placedAmount: BigInt(ticketPrice || 0) * BigInt(bet.tickets.length),
 			};
 		});
 	}, [tickets, winningLine, ticketPrice]);
-	const playerWinningTicketsWithWinningLines = useMemo(() => {
-		if (!ticketsWithCountedCoef) return [];
-		return ticketsWithCountedCoef.reduce(
-			(acc, ticket) => {
-				if (ticket.winningCoef > 0n && winningLine) {
-					const ticketLines = ticket.lines.filter((line) => compareLines(line, winningLine, ticket.lines.length >= 3) > 0);
-					acc.push({ ...ticket, lines: ticketLines, totalLines: ticket.lines.length });
+	const playerWinningBetsWithWinningTickets = useMemo(() => {
+		if (!betsWithCountedCoef) return [];
+		return betsWithCountedCoef.reduce(
+			(acc, bet) => {
+				if (bet.winningCoef > 0n && winningLine) {
+					const winningTickets = bet.tickets.filter((t) => compareTickets(t, winningLine) > 0);
+					acc.push({ ...bet, tickets: winningTickets, totalTickets: bet.tickets.length });
 				}
 				return acc;
 			},
-			[] as (IRoundTicket & { totalLines: number })[],
+			[] as (IBet & { totalTickets: number })[],
 		);
-	}, [ticketsWithCountedCoef]);
+	}, [betsWithCountedCoef]);
 
-	const hasWinningTicket = ticketsWithCountedCoef.some((ticket) => ticket.winningCoef > 0);
-	const ticketStats = useMemo(
+	const hasWinningBet = betsWithCountedCoef.some((bet) => bet.winningCoef > 0);
+	const betStats = useMemo(
 		() =>
-			ticketsWithCountedCoef.reduce(
-				(acc, ticket) => {
-					acc.winingAmount += ticket.winingAmount;
-					acc.placedAmount += ticket.placedAmount;
-
-					acc.freeTicketsCount += ticket.freeTicketsCount;
-					acc.prizeAmount += ticket.prizeAmount;
+			betsWithCountedCoef.reduce(
+				(acc, bet) => {
+					acc.winingAmount += bet.winingAmount;
+					acc.placedAmount += bet.placedAmount;
+					acc.prizeAmount += bet.prizeAmount;
 					return acc;
 				},
-				{ placedAmount: 0n, winingAmount: 0n, freeTicketsCount: 0, prizeAmount: 0n },
+				{ placedAmount: 0n, winingAmount: 0n, prizeAmount: 0n },
 			),
-		[ticketsWithCountedCoef],
+		[betsWithCountedCoef],
 	);
 
-	const showPlayerDidNotWin = !showCalculating && !hasWinningTicket && ticketPrice && roundStatus && !isFetchingTickets;
-	const showPlayerWon = !showCalculating && playerHasBets && hasWinningTicket;
+	const showPlayerDidNotWin = !showCalculating && !hasWinningBet && ticketPrice && roundStatus && !isFetchingTickets;
+	const showPlayerWon = !showCalculating && playerHasBets && hasWinningBet;
 
 	if (roundStatus === undefined) {
 		return null;
 	}
 
-	if (roundStatus && showCalculating) {
+	if (showCalculating) {
 		return (
 			<div className="pb-8 h-full flex flex-col items-center justify-center">
 				<RoundNotCalculated />
@@ -103,13 +102,12 @@ export const PlayerStatusForRound: FC = () => {
 			<div className="flex flex-col items-center justify-center">
 				<div className="flex gap-5 flex-wrap justify-center">
 					<PlayerWon
-						freeTicketsCount={ticketStats.freeTicketsCount}
-						prizeAmount={ticketStats.prizeAmount}
-						placedAmount={ticketStats.placedAmount}
-						winingAmount={ticketStats.winingAmount}
+						prizeAmount={betStats.prizeAmount}
+						placedAmount={betStats.placedAmount}
+						winingAmount={betStats.winingAmount}
 						winningLine={winningLine}
-						winningCoef={ticketStats.winingAmount / ticketStats.placedAmount}
-						tickets={playerWinningTicketsWithWinningLines}
+						winningCoef={betStats.placedAmount > 0n ? betStats.winingAmount / betStats.placedAmount : 0n}
+						bets={playerWinningBetsWithWinningTickets}
 					/>
 					<PlayerTickets />
 				</div>

@@ -1,21 +1,24 @@
-import { LotteryRoundABI } from '@betfinio/abi';
+import { useQueryClient } from '@tanstack/react-query';
 import { useWatchContractEvent } from 'wagmi';
-import { useGetRoundFromParams, useRoundFinishedTimeStamp, useRoundStatus, useWinningLine } from '@/src/lib/query';
+import { LOTTERY } from '@/src/globals';
+import { LotteryGameABI } from '@/src/lib/abi/LotteryGameABI';
+import { useGetRoundFromParams, useRoundDetails, useWinningLine } from '@/src/lib/query';
 
 export const RoundWatchers = () => {
-	const roundAddress = useGetRoundFromParams();
+	const roundId = useGetRoundFromParams();
+	const queryClient = useQueryClient();
 
-	const { refetch: refetchRoundStatus } = useRoundStatus(roundAddress);
-	const { refetch: refetchWinningLine } = useWinningLine(roundAddress);
-	const { refetch: refetchRoundFinishedTimeStamp } = useRoundFinishedTimeStamp(roundAddress);
+	const { refetch: refetchWinningLine } = useWinningLine(roundId);
+	const { refetch: refetchRoundDetails } = useRoundDetails(roundId);
+
 	useWatchContractEvent({
-		address: roundAddress,
-		abi: LotteryRoundABI,
-		eventName: 'RoundFinished',
+		address: LOTTERY,
+		abi: LotteryGameABI,
+		eventName: 'RoundSettled',
 		onLogs: async () => {
 			await refetchWinningLine();
-			await refetchRoundStatus();
-			await refetchRoundFinishedTimeStamp();
+			await refetchRoundDetails();
+			queryClient.invalidateQueries({ queryKey: ['lottery'] });
 		},
 	});
 

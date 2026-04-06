@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Pagination from '@/src/components/shared/Pagination';
 import Ticket from '@/src/components/Ticket.tsx';
-import type { IRoundTicket } from '@/src/lib/types.ts';
+import type { IBet } from '@/src/lib/types.ts';
 
 export interface TicketsListProps {
-	tickets: IRoundTicket[];
+	tickets: IBet[];
 	old?: boolean;
 	itemsPerPage?: number;
 }
@@ -22,39 +22,39 @@ const ticketsToHide = {
 };
 
 function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsListProps) {
-	const [expanded, setExpanded] = useState<IRoundTicket | null>(null);
+	const [expanded, setExpanded] = useState<IBet | null>(null);
 
-	const handleToggleExpand = (ticket: IRoundTicket) => {
-		setExpanded(expanded?.token === ticket.token ? null : ticket);
+	const handleToggleExpand = (ticket: IBet) => {
+		setExpanded(expanded?.betAddress === ticket.betAddress ? null : ticket);
 	};
 
-	const renderItem = (ticket: IRoundTicket, index: number, ticketsInPage: IRoundTicket[]) => {
+	const renderItem = (ticket: IBet, index: number, ticketsInPage: IBet[]) => {
 		// Default compact view when nothing is expanded
 		if (expanded === null) {
-			return <Ticket old={old} ticket={ticket} key={index} mode="compact" onToggleExpand={() => handleToggleExpand(ticket)} />;
+			return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="compact" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Expanded ticket view
-		if (expanded.token === ticket.token) {
-			return <Ticket old={old} ticket={ticket} key={index} mode="expanded" onToggleExpand={() => handleToggleExpand(ticket)} />;
+		if (expanded.betAddress === ticket.betAddress) {
+			return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="expanded" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Minimal view for non-expanded tickets
-		const expandedLength = expanded.lines.length;
-		const otherTickets = ticketsInPage.filter((t) => t.token !== expanded.token);
+		const expandedLength = expanded.tickets.length;
+		const otherTickets = ticketsInPage.filter((t) => t.betAddress !== expanded.betAddress);
 
 		// Special handling for 2-3 lines
 		if (expandedLength <= 3) {
-			return <Ticket old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
+			return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
 		// Hide some tickets based on expanded ticket size
 		const hide = ticketsToHide[expandedLength as keyof typeof ticketsToHide] || 0;
-		if (otherTickets.slice(0, hide).find((t) => t.token === ticket.token)) {
-			return <Ticket old={old} ticket={ticket} key={index} mode="hidden" onToggleExpand={() => handleToggleExpand(ticket)} />;
+		if (otherTickets.slice(0, hide).find((t) => t.betAddress === ticket.betAddress)) {
+			return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="hidden" onToggleExpand={() => handleToggleExpand(ticket)} />;
 		}
 
-		return <Ticket old={old} ticket={ticket} key={index} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
+		return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="minimal" onToggleExpand={() => handleToggleExpand(ticket)} />;
 	};
 
 	return (

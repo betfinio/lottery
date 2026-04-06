@@ -2,50 +2,39 @@ import { BetValue } from '@betfinio/components/shared';
 import { Badge, Button } from '@betfinio/components/ui';
 import { LoaderIcon } from 'lucide-react';
 import { useMemo } from 'react';
-import { useRoundStatus, useTicketClaimed, useTicketPrice, useTicketResult, useTicketWinAmount, useWinningLine } from '@/src/lib/query';
-import { useClaimTicket } from '@/src/lib/query/mutations';
-import { EMPTY_LINE, type IRoundTicket, RoundStatus } from '@/src/lib/types';
-import { calculateTicketPrize } from '@/src/lib/utils';
-import { FreeTicketTooltip } from '../shared/FreeTicketTooltip';
+import { useBetClaimed, useBetPayout, useTicketPrice, useWinningLine } from '@/src/lib/query';
+import { useClaimBet } from '@/src/lib/query/mutations';
+import { EMPTY_TICKET, type IBet } from '@/src/lib/types';
+import { calculateBetPrize } from '@/src/lib/utils';
 
-function Claim({ ticket }: { ticket: IRoundTicket }) {
-	const { data: result = [0n, false], isPending } = useTicketResult(ticket.betAddress, ticket.round);
-	const { data: claimedAmount = 0n } = useTicketWinAmount(ticket.betAddress);
-	const { data: isClaimed, isPending: isClaimedPending } = useTicketClaimed(ticket.betAddress);
-	const { mutate: claim, isPending: isClaiming } = useClaimTicket();
-	const { data: roundStatus } = useRoundStatus(ticket.round);
-	const { data: ticketPrice = 0n } = useTicketPrice(ticket.round);
-	const { data: winningLine } = useWinningLine(ticket.round);
+function Claim({ ticket }: { ticket: IBet }) {
+	const { data: isClaimed, isPending: isClaimedPending } = useBetClaimed(ticket.betAddress);
+	const { data: payout = 0n } = useBetPayout(ticket.betAddress);
+	const { mutate: claim, isPending: isClaiming } = useClaimBet();
+	const { data: ticketPrice = 0n } = useTicketPrice();
+	const { data: winningLine } = useWinningLine(ticket.roundId);
 
 	const handleClaim = () => {
-		claim({ ticket: ticket.betAddress });
+		claim({ betAddress: ticket.betAddress });
 	};
 
-	const predictedWin = result[0] * ticketPrice;
-	const winAmount = claimedAmount || predictedWin;
 	const calculatedPrize = useMemo(() => {
-		return calculateTicketPrize(winningLine ?? EMPTY_LINE, ticket.lines, ticketPrice);
-	}, [winningLine, ticket.lines, ticketPrice]);
+		return calculateBetPrize(winningLine ?? EMPTY_TICKET, ticket.tickets, ticketPrice);
+	}, [winningLine, ticket.tickets, ticketPrice]);
 
-	const handleValidate = () => {
-		claim({ ticket: ticket.betAddress });
-	};
+	const winAmount = payout > 0n ? payout : calculatedPrize.prizeAmount;
 
-	if (!isPending && winAmount > 0n && roundStatus === RoundStatus.CLAIMING) {
+	// Show claim UI when ticket is resolved and has a prize
+	if (ticket.status === 'resolved' && winAmount > 0n) {
 		return (
-			<PrizeToClaim
-				freeTicketsCount={calculatedPrize.freeTicketsCount}
-				prizeAmount={calculatedPrize.prizeAmount}
-				handleClaim={handleClaim}
-				isClaimed={!!isClaimed}
-				isClaimedPending={isClaimedPending}
-				isClaiming={isClaiming}
-			/>
+			<PrizeToClaim prizeAmount={winAmount} handleClaim={handleClaim} isClaimed={!!isClaimed} isClaimedPending={isClaimedPending} isClaiming={isClaiming} />
 		);
 	}
-	if (!isPending && result[0] === 0n && roundStatus === RoundStatus.CLAIMING && !isClaimed) {
+
+	// Show validate button for resolved tickets with no computed prize yet
+	if (ticket.status === 'resolved' && winAmount === 0n && !isClaimed) {
 		return (
-			<div className={'flex flex-row items-center gap-2'} onClick={handleValidate}>
+			<div className={'flex flex-row items-center gap-2'} onClick={handleClaim}>
 				<Badge className="bg-primary text-primary-foreground">{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : 'Validate'}</Badge>
 			</div>
 		);
@@ -55,14 +44,12 @@ function Claim({ ticket }: { ticket: IRoundTicket }) {
 export default Claim;
 
 const PrizeToClaim = ({
-	freeTicketsCount,
 	prizeAmount,
 	handleClaim,
 	isClaimed,
 	isClaimedPending,
 	isClaiming,
 }: {
-	freeTicketsCount: number;
 	prizeAmount: bigint;
 	handleClaim: () => void;
 	isClaimed: boolean;
@@ -71,12 +58,6 @@ const PrizeToClaim = ({
 }) => {
 	return (
 		<div className={'flex flex-row items-center gap-2'}>
-			{freeTicketsCount > 0 && (
-				<div className="flex flex-row items-center gap-1">
-					{freeTicketsCount}
-					<FreeTicketTooltip />
-				</div>
-			)}
 			{prizeAmount > 0n && <BetValue className="text-sm" value={prizeAmount} withIcon iconClassName="w-3 h-3" />}
 			{!isClaimed && !isClaimedPending && (
 				<Button size="freeSize" shape="pill" onClick={handleClaim} className="w-16 h-5 justify-center">

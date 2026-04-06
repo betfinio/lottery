@@ -19,7 +19,7 @@ export const Route = createFileRoute('/games/lottery/lotto/')({
 
 export function LotteryPage() {
 	const { data: round } = useSelectedRound();
-	const { state } = useRoundState(round?.address);
+	const { state } = useRoundState(round);
 	const showPlaceBet = state === RoundState.PLACING;
 	const { isMobile, isTablet } = useMediaQuery();
 
