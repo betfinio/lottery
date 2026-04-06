@@ -38,7 +38,7 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 			cell: (props) => <Round roundId={props.getValue()} />,
 		}),
 		columnHelper.accessor('betsCount', {
-			header: isMy ? t('headers.myLinesCount') : t('headers.linesCount'),
+			header: isMy ? t('headers.myTicketsCount') : t('headers.ticketsCount'),
 			meta: {
 				className: 'min-w-[100px]',
 			},

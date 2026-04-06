@@ -46,7 +46,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 				<StatBox
 					className="w-full min-w-14"
 					isLoading={isLoading}
-					label={t('tickets')}
+					label={t('bets')}
 					value={millify(roundDetails?.betsCount ?? 0)}
 					icon={<TicketIcon className="w-4 h-4" />}
 				/>

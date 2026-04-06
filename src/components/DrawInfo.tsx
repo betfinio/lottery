@@ -18,8 +18,8 @@ const DrawInfo = () => {
 				<TabsList className={'w-full flex flex-row items-center justify-between'}>
 					<div className={'grid grid-cols-3 gap-2 w-full'}>
 						<TabsTrigger value={'draw'}>{t('currentDraw')}</TabsTrigger>
-						<TabsTrigger value={'active'}>{t('activeTickets')}</TabsTrigger>
-						<TabsTrigger value={'old'}>{t('oldTickets')}</TabsTrigger>
+						<TabsTrigger value={'active'}>{t('activeBets')}</TabsTrigger>
+						<TabsTrigger value={'old'}>{t('oldBets')}</TabsTrigger>
 					</div>
 				</TabsList>
 				<TabsContent value={'draw'} className={'w-full grow border border-border bg-background-light rounded-xl  overflow-hidden'}>

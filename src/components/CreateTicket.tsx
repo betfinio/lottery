@@ -173,7 +173,7 @@ const TicketList = () => {
 									isValid={filledTickets.length > 1}
 								>
 									<div className="flex flex-col">
-										<div className="text-lg font-semibold">{t('doYouReallyWantToDeleteAllDraftedLines')}</div>
+										<div className="text-lg font-semibold">{t('doYouReallyWantToDeleteAllDraftedTickets')}</div>
 										<div className="text-sm text-muted-foreground">{t('thisActionCannotBeUndone')}</div>
 									</div>
 								</Alert>

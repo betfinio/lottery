@@ -25,7 +25,7 @@ export function RoundTotalsDetails() {
 						withIcon
 					/>
 					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isRoundDetailsLoading })}>
-						{betsCount} {t('lines', { count: betsCount })}
+						{betsCount} {t('tickets', { count: betsCount })}
 					</div>
 				</div>
 			</div>
