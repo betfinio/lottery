@@ -1,15 +1,13 @@
-import { ZeroAddress } from '@betfinio/abi';
 import { SonnerToaster as Toaster } from '@betfinio/components/ui';
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
-import { useAccount } from 'wagmi';
 import { PlayerStatusRoundPrecheck } from '@/src/components/round/PlayerStatusForRound/PlayerStatusRoundPrecheck';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
 import { RoundTotalsDetails } from '@/src/components/round/RoundTotalsDetails';
 import { RoundWatchers } from '@/src/components/round/RoundWatchers';
 import ClaimingProgressBar from '@/src/components/shared/ClaimingProgress';
-import { usePlayerBetsByRound, useRoundDetails } from '@/src/lib/query';
+import { useRoundDetails } from '@/src/lib/query';
 
 /** Subgraph statuses that are allowed to view the round details page */
 export const statusesAllowedToSeeRound = ['spinning', 'settled', 'cancelled'];
@@ -26,10 +24,8 @@ export function useRoundIdFromParams(): bigint {
 
 export function HistoryRoundPage() {
 	const navigate = useNavigate();
-	const { address = ZeroAddress } = useAccount();
 	const roundId = useRoundIdFromParams();
 	const { data: roundDetails, isLoading } = useRoundDetails(roundId);
-	const { isFetching: isFetchingTickets } = usePlayerBetsByRound(roundId, address);
 
 	const roundStatus = roundDetails?.status;
 	const showChainDetails = roundStatus && ['settled'].includes(roundStatus);

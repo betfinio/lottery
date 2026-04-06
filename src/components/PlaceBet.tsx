@@ -262,7 +262,11 @@ const PlaceBet = () => {
 						{t('placeBet.proceedFor')}
 						{totalAmount > 0n && <BetValue value={totalAmount} withIcon iconClassName={'border border-[0.1px] rounded-full border-primary-foreground'} />}
 					</Button>
-					<BuySteps buy={{ tickets: draftTickets, recipient: realRecipient, roundIds: selectedRounds.map((e) => e.roundId) }} isOpen={isOpen} setIsOpen={setIsOpen} />
+					<BuySteps
+						buy={{ tickets: draftTickets, recipient: realRecipient, roundIds: selectedRounds.map((e) => e.roundId) }}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
+					/>
 				</div>
 			</div>
 		</motion.div>

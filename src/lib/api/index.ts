@@ -6,7 +6,7 @@ import { BetABI } from '@/src/lib/abi/BetABI';
 import { CoreBetABI } from '@/src/lib/abi/CoreBetABI';
 import { LotteryGameABI } from '@/src/lib/abi/LotteryGameABI';
 import { LotteryStrategyABI } from '@/src/lib/abi/LotteryStrategyABI';
-import type { GTicket, ITicket } from '@/src/lib/types';
+import type { ITicket } from '@/src/lib/types';
 import { encodeTickets } from '@/src/lib/utils';
 
 // ═══════════════════════════════════════════════════════════════════════════

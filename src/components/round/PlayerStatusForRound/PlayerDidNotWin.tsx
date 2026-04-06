@@ -19,7 +19,7 @@ export const PlayerDidNotWin: FC<{ playerHasBets: boolean }> = ({ playerHasBets 
 	const navigate = useNavigate();
 	const { data: roundDetails, isLoading } = useRoundDetails(roundId);
 	const { data: ticketPrice, isLoading: isTicketPriceLoading } = useTicketPrice();
-	const { data: tickets = [], isFetching: isFetchingTickets } = usePlayerBetsByRound(roundId, address);
+	const { isFetching: isFetchingTickets } = usePlayerBetsByRound(roundId, address);
 
 	const youCouldWinAmount = useMemo(() => {
 		if (!ticketPrice) return 0n;

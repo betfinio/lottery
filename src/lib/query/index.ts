@@ -15,7 +15,7 @@ import {
 	fetchWinningTicket,
 } from '@/src/lib/api';
 import { fetchPlayerBets, fetchPlayerBetsByRound, fetchPlayerRounds, fetchRoundBets, fetchRoundDetails, fetchRounds, fetchUnclaimedBets } from '@/src/lib/gql';
-import { EMPTY_TICKET, type IBet, type ITicket, type IRound } from '@/src/lib/types';
+import { EMPTY_TICKET, type IBet, type IRound, type ITicket } from '@/src/lib/types';
 import { decodeTicket } from '@/src/lib/utils';
 
 /**
@@ -131,7 +131,7 @@ export const usePlayerBetsByRound = (roundId: bigint, player: Address) => {
 export const usePlayerBets = (player?: Address) => {
 	return useQuery<IBet[]>({
 		queryKey: ['lottery', 'bets', player],
-		queryFn: () => fetchPlayerBets(player!),
+		queryFn: () => fetchPlayerBets(player),
 		enabled: !!player,
 	});
 };
@@ -139,7 +139,7 @@ export const usePlayerBets = (player?: Address) => {
 export const usePlayerRounds = (player?: Address) => {
 	return useQuery<IRound[]>({
 		queryKey: ['lottery', 'rounds', 'player', player],
-		queryFn: () => fetchPlayerRounds(player!),
+		queryFn: () => fetchPlayerRounds(player),
 		enabled: !!player,
 	});
 };

@@ -28,7 +28,7 @@ function TicketsList({ tickets = [], old = false, itemsPerPage = 4 }: TicketsLis
 		setExpanded(expanded?.betAddress === ticket.betAddress ? null : ticket);
 	};
 
-	const renderItem = (ticket: IBet, index: number, ticketsInPage: IBet[]) => {
+	const renderItem = (ticket: IBet, _index: number, ticketsInPage: IBet[]) => {
 		// Default compact view when nothing is expanded
 		if (expanded === null) {
 			return <Ticket old={old} ticket={ticket} key={ticket.betAddress} mode="compact" onToggleExpand={() => handleToggleExpand(ticket)} />;

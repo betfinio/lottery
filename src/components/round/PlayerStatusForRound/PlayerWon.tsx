@@ -2,7 +2,7 @@ import { cn } from '@betfinio/components';
 import { BetValue } from '@betfinio/components/shared';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ITicket, IBet } from '@/src/lib/types';
+import type { IBet, ITicket } from '@/src/lib/types';
 import { JackpotFrame } from '../../shared/JackpotTiara/JackpotFrame';
 import Pagination from '../../shared/Pagination';
 import { TicketCard } from '../../shared/TicketCard';

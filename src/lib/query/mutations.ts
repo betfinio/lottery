@@ -4,9 +4,9 @@ import { waitForTransactionReceipt } from '@wagmi/core';
 import { getTransactionLink } from 'betfinio_context/lib/helpers';
 import { useTranslation } from 'react-i18next';
 import type { Address, WriteContractErrorType, WriteContractReturnType } from 'viem';
-import { useAccount, useConfig } from 'wagmi';
+import { useConfig } from 'wagmi';
 import { useMutation } from 'wagmi/query';
-import { placeBet, cancelRound, claimBatchBets, claimBet, refundBatch, settleRound, spinRound } from '@/src/lib/api';
+import { cancelRound, claimBatchBets, claimBet, placeBet, refundBatch, settleRound, spinRound } from '@/src/lib/api';
 import type { ITicket } from '@/src/lib/types';
 
 export interface PlaceBetProps {

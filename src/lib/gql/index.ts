@@ -125,8 +125,9 @@ export const fetchPlayerBetsByRound = async (roundId: bigint, player: Address): 
 	return [];
 };
 
-export const fetchPlayerBets = async (player: Address): Promise<IBet[]> => {
+export const fetchPlayerBets = async (player?: Address): Promise<IBet[]> => {
 	logger.start('fetching player bets', player);
+	if (!player) return [];
 	const result: ExecutionResult<LotteryPlayerBetsQuery> = await execute(LotteryPlayerBetsDocument, {
 		address: LOTTERY.toLowerCase(),
 		player: player.toLowerCase(),
@@ -137,8 +138,9 @@ export const fetchPlayerBets = async (player: Address): Promise<IBet[]> => {
 	return [];
 };
 
-export const fetchPlayerRounds = async (player: Address): Promise<IRound[]> => {
+export const fetchPlayerRounds = async (player?: Address): Promise<IRound[]> => {
 	logger.start('fetching player rounds', player);
+	if (!player) return [];
 	const result: ExecutionResult<LotteryRoundsByPlayerQuery> = await execute(LotteryRoundsByPlayerDocument, {
 		address: LOTTERY.toLowerCase(),
 		player: player.toLowerCase(),

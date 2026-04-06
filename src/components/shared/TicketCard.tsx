@@ -3,7 +3,7 @@ import { cn } from '@betfinio/components';
 import type { FC } from 'react';
 import { useMemo } from 'react';
 import { ETHSCAN } from '@/src/globals';
-import type { ITicket, IBet } from '@/src/lib/types';
+import type { IBet, ITicket } from '@/src/lib/types';
 import { compareTickets, partlyEquals } from '@/src/lib/utils';
 import { NumberComponent, SymbolElement } from '../Line';
 
