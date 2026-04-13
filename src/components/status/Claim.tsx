@@ -24,6 +24,13 @@ function Claim({ ticket }: { ticket: IBet }) {
 
 	const winAmount = payout > 0n ? payout : calculatedPrize.prizeAmount;
 
+	// Show claim UI for pending tickets in settled rounds (not yet claimed on-chain)
+	if (ticket.status === 'pending' && winningLine && calculatedPrize.prizeAmount > 0n) {
+		return (
+			<PrizeToClaim prizeAmount={calculatedPrize.prizeAmount} handleClaim={handleClaim} isClaimed={false} isClaimedPending={false} isClaiming={isClaiming} />
+		);
+	}
+
 	// Show claim UI when ticket is resolved and has a prize
 	if (ticket.status === 'resolved' && winAmount > 0n) {
 		return (

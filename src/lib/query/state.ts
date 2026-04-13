@@ -123,11 +123,22 @@ export const useRoundFinishedNumbersSpitting = (roundId: bigint) => {
 	}, [winningLine]);
 
 	const [revealedNumbers, setRevealedNumbers] = useState<number[]>([]);
+	const [hasAnimated, setHasAnimated] = useState(false);
 
 	useEffect(() => {
 		setRevealedNumbers([]);
+		setHasAnimated(false);
+	}, [roundId]);
 
-		if (winningNumbers.length === 0) return;
+	useEffect(() => {
+		if (winningNumbers.length === 0 || hasAnimated) return;
+
+		// If data is already available (not fetching), show all numbers immediately
+		if (!isFetching) {
+			setRevealedNumbers(winningNumbers);
+			setHasAnimated(true);
+			return;
+		}
 
 		// Reveal all numbers progressively over 5 seconds
 		const totalNumbers = winningNumbers.length;
@@ -143,13 +154,14 @@ export const useRoundFinishedNumbersSpitting = (roundId: bigint) => {
 			);
 			timers.push(timer);
 		}
+		setHasAnimated(true);
 
 		return () => {
 			for (const timer of timers) {
 				clearTimeout(timer);
 			}
 		};
-	}, [winningNumbers]);
+	}, [winningNumbers, isFetching, hasAnimated]);
 
 	return {
 		revealedNumbers,

@@ -26,7 +26,9 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, old = false, isExpan
 	const { data: winningLine } = useWinningLine(ticket.roundId);
 	const [tickets, setTickets] = useState(ticket.tickets);
 
-	const showWinningNumbers = ticket.status === 'resolved';
+	const showWinningNumbers = !!winningLine;
+	const isLost = winningLine && ticket.tickets.every((t) => compareTickets(t, winningLine) === 0);
+	const isWon = winningLine && ticket.tickets.some((t) => compareTickets(t, winningLine) > 0);
 
 	// Update tickets when bet changes
 	useEffect(() => {
@@ -57,7 +59,10 @@ function Ticket({ ticket, mode = 'compact', onToggleExpand, old = false, isExpan
 					height: 0,
 					opacity: 0,
 				}}
-				className={cn('border border-purple-box rounded-xl flex flex-col overflow-hidden', className, {
+				className={cn('border rounded-xl flex flex-col overflow-hidden', className, {
+					'border-destructive': isLost,
+					'border-success': isWon,
+					'border-purple-box': !isLost && !isWon,
 					'bg-linear-to-b from-background to-background via-primary/20 via-60% grid': isExpanded,
 					'grid-rows-4': isExpanded && ticketsCount === 1,
 					'grid-rows-5': isExpanded && ticketsCount === 2,

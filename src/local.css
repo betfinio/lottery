@@ -5,6 +5,10 @@
 	--aura: hsl(48, 100%, 89%);
 }
 
+* {
+	font-family: Quicksand, Manrope, sans-serif;
+}
+
 @utility symbol-number {
 	stroke: hsla(33, 67%, 48%, 1);
 	color: hsla(33, 67%, 48%, 0.3);
@@ -21,4 +25,8 @@
 
 .create-shadow {
 	box-shadow: 0 0 40px -10px #c6a152;
+}
+
+.stroke-success {
+	stroke: rgb(17, 159, 55);
 }

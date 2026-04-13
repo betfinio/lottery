@@ -1,12 +1,11 @@
-import { Bag, PayTable } from '@betfinio/components/icons';
-import { BetValue } from '@betfinio/components/shared';
+import { PayTable } from '@betfinio/components/icons';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useChatbot } from 'betfinio_context/lib/context';
 import { BookIcon, HeadsetIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getRoundTimes, useCurrentRoundId, useInterval, useRoundBank, useRoundOffset, useSelectedRound } from '@/src/lib/query';
+import { getRoundTimes, useCurrentRoundId, useInterval, useRoundOffset, useSelectedRound } from '@/src/lib/query';
 import Countdown from '../Countdown';
 import Ticket from '../icons/Ticket';
 import PayoutContent from './PayoutContent';
@@ -15,7 +14,6 @@ const Header = () => {
 	const { t } = useTranslation('lottery');
 	const { data: selectedRoundId } = useSelectedRound();
 	const roundId = selectedRoundId ?? 0n;
-	const { data: bank = 0n } = useRoundBank(roundId);
 	const { data: interval = 0n } = useInterval();
 	const { data: offset = 0n } = useRoundOffset();
 	const { refetch: refetchCurrentRoundId } = useCurrentRoundId();
@@ -41,13 +39,6 @@ const Header = () => {
 				<div className="flex flex-col gap-0">
 					<div>{t('lotto5of25')}</div>
 					<div className="text-sm text-muted-foreground">{t('tuesdayAndFriday')}</div>
-				</div>
-				<div className="md:flex flex-row items-center justify-center gap-2 hidden">
-					<Bag className="w-10 h-10 text-primary" />
-					<div className="flex flex-col gap-0">
-						<div className="">{t('bank')}</div>
-						<BetValue className="text-muted-foreground text-sm" value={bank} withIcon />
-					</div>
 				</div>
 			</div>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">

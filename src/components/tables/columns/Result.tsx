@@ -22,7 +22,7 @@ function Result({ roundId, status }: { roundId: bigint; status: string }) {
 
 	if (status === 'open') {
 		if (roundEnded) {
-			return <div className={'text-muted-foreground'}>{t('waitingForDraw')}</div>;
+			return <div className={'text-muted-foreground'}>{t('placeBet.waitingForDraw')}</div>;
 		}
 		return (
 			<div className={'text-muted-foreground flex items-start '}>

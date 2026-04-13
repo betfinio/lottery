@@ -1,7 +1,7 @@
 import { ZeroAddress } from '@betfinio/abi';
 import { DataTable } from '@betfinio/components/shared';
 import { useNavigate } from '@tanstack/react-router';
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { getRoundTimes, useInterval, usePlayerRounds, useRoundOffset } from '@/src/lib/query';
@@ -24,6 +24,7 @@ const MyDraws: FC<MyDrawsProps> = ({ includeFutureDraws }) => {
 	const { t: sharedT } = useTranslation('shared', { keyPrefix: 'tables' });
 	const navigate = useNavigate();
 	const { address = ZeroAddress } = useAccount();
+	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
 	const columns = defineColumns(t, true);
 	const { data: rounds = [] } = usePlayerRounds(address);
@@ -55,7 +56,17 @@ const MyDraws: FC<MyDrawsProps> = ({ includeFutureDraws }) => {
 				});
 	}, [rounds, includeFutureDraws, interval, offset]);
 
-	return <DataTable enableSorting={true} data={filteredRounds} columns={columns} onRowClick={handleRowClick} t={sharedT} />;
+	return (
+		<DataTable
+			enableSorting={true}
+			data={filteredRounds}
+			columns={columns}
+			onRowClick={handleRowClick}
+			pagination={pagination}
+			onPaginationChange={setPagination}
+			t={sharedT}
+		/>
+	);
 };
 
 export default MyDraws;

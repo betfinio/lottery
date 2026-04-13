@@ -1,4 +1,5 @@
 import { Badge, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@betfinio/components/ui';
+import { LoaderIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useWinningLine } from '@/src/lib/query';
 import { useClaimBet } from '@/src/lib/query/mutations';
@@ -8,7 +9,7 @@ import { compareTickets } from '@/src/lib/utils';
 function Lost({ ticket }: { ticket: IBet }) {
 	const { t } = useTranslation('lottery');
 	const { data: winningLine } = useWinningLine(ticket.roundId);
-	const { mutate: claim } = useClaimBet();
+	const { mutate: claim, isPending: isClaiming } = useClaimBet();
 
 	const handleClaim = () => {
 		claim({
@@ -40,7 +41,7 @@ function Lost({ ticket }: { ticket: IBet }) {
 				<Tooltip delayDuration={0}>
 					<TooltipTrigger>
 						<Badge className="bg-muted/10 text-muted-foreground hover:scale-105 transition-all flex flex-row gap-1" onClick={handleClaim}>
-							{t('lost')}
+							{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t('lost')}
 						</Badge>
 					</TooltipTrigger>
 					<TooltipContent>{t('thisStatusIsNotYetValidatedByBlockchain')}</TooltipContent>
@@ -49,8 +50,17 @@ function Lost({ ticket }: { ticket: IBet }) {
 		);
 	}
 
-	// Waiting state
-	if (ticket.status === 'pending') {
+	// Pending with winning tickets in settled round — show claim button
+	if (ticket.status === 'pending' && winningLine && !allTicketsCoef) {
+		return (
+			<Badge className="bg-primary text-primary-foreground cursor-pointer hover:scale-105 transition-all" onClick={handleClaim}>
+				{isClaiming ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t('claim')}
+			</Badge>
+		);
+	}
+
+	// Waiting state — only when round is not yet settled
+	if (ticket.status === 'pending' && !winningLine) {
 		return <Badge className="bg-muted/10 text-muted-foreground">{t('waiting')}</Badge>;
 	}
 }

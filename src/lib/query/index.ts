@@ -71,12 +71,17 @@ export const useRounds = () => {
  * Future rounds without bets get an empty skeleton so the UI can show them for betting.
  */
 const EMPTY_ROUNDS: IRound[] = [];
+
+function sortRoundsEarliestFirst(rounds: IRound[]): IRound[] {
+	return [...rounds].sort((a, b) => (a.roundId < b.roundId ? -1 : a.roundId > b.roundId ? 1 : 0));
+}
+
 export const useAvailableRounds = (futureCount = 10) => {
 	const { data: currentRoundId } = useCurrentRoundId();
 	const { data: subgraphRounds = EMPTY_ROUNDS } = useRounds();
 
 	return useMemo(() => {
-		if (currentRoundId === undefined) return subgraphRounds;
+		if (currentRoundId === undefined) return sortRoundsEarliestFirst(subgraphRounds);
 
 		const merged = new Map<string, IRound>();
 
@@ -103,7 +108,7 @@ export const useAvailableRounds = (futureCount = 10) => {
 			}
 		}
 
-		return Array.from(merged.values());
+		return sortRoundsEarliestFirst(Array.from(merged.values()));
 	}, [currentRoundId, subgraphRounds, futureCount]);
 };
 

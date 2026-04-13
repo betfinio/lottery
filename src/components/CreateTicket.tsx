@@ -223,6 +223,7 @@ const TicketList = () => {
 							className={cn('border-primary text-secondary-foreground gap-1 hover:scale-105 transition-all', {
 								'col-span-2': state !== RoundState.FILLING,
 							})}
+							disabled={draftTickets.length >= 9}
 							onClick={handleAddTicket}
 						>
 							<PlusCircleIcon className={'w-4 h-4'} />

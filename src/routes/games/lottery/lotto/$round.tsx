@@ -1,6 +1,7 @@
 import { SonnerToaster as Toaster } from '@betfinio/components/ui';
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router';
 import { useEffect, useMemo } from 'react';
+import { JackpotTable } from '@/src/components/round/JackpotTable';
 import { PlayerStatusRoundPrecheck } from '@/src/components/round/PlayerStatusForRound/PlayerStatusRoundPrecheck';
 import { RoundChainDetails } from '@/src/components/round/RoundChainDetails';
 import { RoundHeader } from '@/src/components/round/RoundHeader';
@@ -50,6 +51,7 @@ export function HistoryRoundPage() {
 				<PlayerStatusRoundPrecheck />
 				{showProgressBar && <ClaimingProgressBar />}
 				{showChainDetails && <RoundChainDetails />}
+				{showChainDetails && <JackpotTable />}
 			</div>
 			<Toaster />
 		</>
