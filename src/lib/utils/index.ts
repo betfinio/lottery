@@ -125,6 +125,18 @@ export const COMBINATIONS_MAP = Object.freeze({
 	'0': { coeficient: 0, combination: '0' },
 } as const);
 
+export const TIER_ORDER = ['5+1', '5', '4+1', '4', '3+1', '3', '2+1'] as const;
+
+export const TIER_POSSIBLE_WINNERS = Object.freeze({
+	'5+1': 1n,
+	'5': 4n,
+	'4+1': 100n,
+	'4': 400n,
+	'3+1': 1_900n,
+	'3': 7_600n,
+	'2+1': 11_400n,
+} as const);
+
 export const COMBINATIONS_HEX_MAP = Object.freeze({
 	'0x322b31': '2+1',
 	'0x33': '3',

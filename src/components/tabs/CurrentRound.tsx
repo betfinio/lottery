@@ -2,12 +2,13 @@ import { Certik, Polygon } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { TicketIcon } from 'lucide-react';
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Countdown from '@/src/components/Countdown.tsx';
 import { ETHSCAN, LOTTERY } from '@/src/globals.ts';
-import { getRoundTimes, useInterval, useRoundDetails, useRoundOffset } from '@/src/lib/query';
+import { getRoundTimes, useInterval, useLotteryCoefficients, useRoundDetails, useRoundOffset, useTicketPrice } from '@/src/lib/query';
 import type { IRound } from '@/src/lib/types.ts';
+import { TIER_ORDER, TIER_POSSIBLE_WINNERS } from '@/src/lib/utils';
 import { JackpotFrame } from '../shared/JackpotTiara/JackpotFrame';
 import PayoutContent from '../shared/PayoutContent';
 import { StatBox } from '../shared/StatBox';
@@ -21,8 +22,14 @@ const CurrentRound: FC<CurrentRoundProps> = ({ roundId }) => {
 	const { data: round } = useRoundDetails(roundId);
 	const { data: interval = 0n } = useInterval();
 	const { data: offset = 0n } = useRoundOffset();
+	const { data: ticketPrice = 0n } = useTicketPrice();
+	const { data: coefficients = [] } = useLotteryCoefficients();
 
 	const finish = interval > 0n ? getRoundTimes(roundId, interval, offset).end : 0;
+	const totalPossibleWinnings = useMemo(
+		() => TIER_ORDER.reduce((sum, tier, index) => sum + ticketPrice * (coefficients[index] ?? 0n) * TIER_POSSIBLE_WINNERS[tier], 0n),
+		[coefficients, ticketPrice],
+	);
 
 	const [displayedVolume, setDisplayedVolume] = useState(0n);
 	const animationRef = useRef<NodeJS.Timeout>(undefined);
@@ -34,7 +41,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ roundId }) => {
 		}
 
 		const startValue = displayedVolume;
-		const endValue = round.betsAmount;
+		const endValue = totalPossibleWinnings;
 		const diff = endValue - startValue;
 		const steps = 100;
 		const stepValue = diff / BigInt(steps || 1);
@@ -55,7 +62,7 @@ const CurrentRound: FC<CurrentRoundProps> = ({ roundId }) => {
 				clearTimeout(animationRef.current);
 			}
 		};
-	}, [round?.betsAmount]);
+	}, [round, totalPossibleWinnings]);
 
 	if (!round) return null;
 

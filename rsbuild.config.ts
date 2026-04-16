@@ -39,9 +39,9 @@ export default defineConfig({
 					betfinio_context: `betfinio_context@${process.env.PUBLIC_CONTEXT_URL}/mf-manifest.json`,
 				},
 				exposes: {
-					'./styles': './src/styles.ts',
-					'./routes/index': './src/routes/games/lottery/lotto/index.tsx',
-					'./routes/$round': './src/routes/games/lottery/lotto/$round.tsx',
+					'./style': './src/local.css',
+					'./route/lotto': './src/routes/games/lottery/lotto/index.tsx',
+					'./route/lotto/round': './src/routes/games/lottery/lotto/$round.tsx',
 					'./i18n': './src/i18n.ts',
 				},
 				manifest: true,

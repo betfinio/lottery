@@ -7,6 +7,7 @@ import { LOTTERY } from '@/src/globals';
 import {
 	fetchBetClaimed,
 	fetchBetPayout,
+	fetchCoefficient,
 	fetchCurrentRoundId,
 	fetchInterval,
 	fetchRoundBank,
@@ -47,6 +48,14 @@ export const useRoundOffset = () => {
 	return useQuery<bigint>({
 		queryKey: ['lottery', 'roundOffset'],
 		queryFn: () => fetchRoundOffset(config),
+	});
+};
+
+export const useLotteryCoefficients = () => {
+	const config = useConfig();
+	return useQuery<bigint[]>({
+		queryKey: ['lottery', 'coefficients'],
+		queryFn: () => Promise.all([1, 2, 3, 4, 5, 6, 7].map((tier) => fetchCoefficient(tier, config))),
 	});
 };
 

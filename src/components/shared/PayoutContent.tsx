@@ -13,30 +13,35 @@ import {
 	TooltipTrigger,
 } from '@betfinio/components/ui';
 import { HelpCircleIcon, XIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTicketPrice } from '@/src/lib/query';
+import { useLotteryCoefficients, useTicketPrice } from '@/src/lib/query';
 import type { ITicket } from '@/src/lib/types';
-import { partlyEquals } from '@/src/lib/utils';
+import { partlyEquals, TIER_ORDER, TIER_POSSIBLE_WINNERS } from '@/src/lib/utils';
 import { NumberComponent, SymbolElement } from '../Line';
 import { JackpotFrame } from './JackpotTiara/JackpotFrame';
 
 function PayoutContent() {
 	const { t } = useTranslation('lottery');
 	const { data: price = 0n } = useTicketPrice();
+	const { data: coefficients = [] } = useLotteryCoefficients();
 	const { isMobile } = useMediaQuery();
 	const correctLine: ITicket = {
 		numbers: [1, 2, 3, 4, 5],
 		symbol: 1,
 	};
-	const jackpots = [
-		{ coef: 40000n, line: correctLine, name: t('jackpot1'), subtitle: '1 : 265,650' },
-		{ coef: 15000n, line: { numbers: [1, 2, 3, 4, 5], symbol: 2 }, name: t('jackpot2'), subtitle: '1 : 66,412' },
-		{ coef: 400n, line: { numbers: [1, 2, 3, 4, 6], symbol: 1 }, name: t('jackpot3'), subtitle: '1 : 2,656' },
-		{ coef: 50n, line: { numbers: [1, 2, 3, 4, 6], symbol: 2 }, name: t('jackpot4'), subtitle: '1 : 664' },
-		{ coef: 5n, line: { numbers: [1, 2, 3, 6, 7], symbol: 1 }, name: t('jackpot5'), subtitle: '1 : 140' },
-		{ coef: 1n, line: { numbers: [1, 2, 3, 6, 7], symbol: 2 }, name: t('jackpot6'), subtitle: '1 : 35' },
-		{ coef: 1n, line: { numbers: [1, 2, 6, 7, 8], symbol: 1 }, name: t('jackpot7'), subtitle: '1 : 23' },
-	];
+	const jackpots = useMemo(
+		() => [
+			{ tier: TIER_ORDER[0], coef: coefficients[0] ?? 0n, line: correctLine, name: t('jackpot1'), subtitle: '1 : 265,650' },
+			{ tier: TIER_ORDER[1], coef: coefficients[1] ?? 0n, line: { numbers: [1, 2, 3, 4, 5], symbol: 2 }, name: t('jackpot2'), subtitle: '1 : 66,412' },
+			{ tier: TIER_ORDER[2], coef: coefficients[2] ?? 0n, line: { numbers: [1, 2, 3, 4, 6], symbol: 1 }, name: t('jackpot3'), subtitle: '1 : 2,656' },
+			{ tier: TIER_ORDER[3], coef: coefficients[3] ?? 0n, line: { numbers: [1, 2, 3, 4, 6], symbol: 2 }, name: t('jackpot4'), subtitle: '1 : 664' },
+			{ tier: TIER_ORDER[4], coef: coefficients[4] ?? 0n, line: { numbers: [1, 2, 3, 6, 7], symbol: 1 }, name: t('jackpot5'), subtitle: '1 : 140' },
+			{ tier: TIER_ORDER[5], coef: coefficients[5] ?? 0n, line: { numbers: [1, 2, 3, 6, 7], symbol: 2 }, name: t('jackpot6'), subtitle: '1 : 35' },
+			{ tier: TIER_ORDER[6], coef: coefficients[6] ?? 0n, line: { numbers: [1, 2, 6, 7, 8], symbol: 1 }, name: t('jackpot7'), subtitle: '1 : 23' },
+		],
+		[coefficients, t],
+	);
 	return (
 		<DialogContent>
 			<div className={'w-[98vw] max-w-[384px] md:max-w-[650px] p-2 overflow-y-scroll max-h-[90vh]'}>
@@ -97,6 +102,7 @@ function PayoutContent() {
 									</div>
 									<div className={'flex flex-col items-center justify-center'}>
 										<BetValue value={price * jackpot.coef} withIcon withMillify={isMobile} />
+										<div className="text-xs text-muted-foreground">x{TIER_POSSIBLE_WINNERS[jackpot.tier]}</div>
 										<TooltipProvider>
 											<Tooltip>
 												<TooltipTrigger>

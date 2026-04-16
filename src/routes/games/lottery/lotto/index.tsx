@@ -86,3 +86,5 @@ export function LotteryPage() {
 		</div>
 	);
 }
+
+export { LotteryPage as LottoPage };

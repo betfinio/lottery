@@ -57,3 +57,5 @@ export function HistoryRoundPage() {
 		</>
 	);
 }
+
+export { HistoryRoundPage as LottoRoundPage };
