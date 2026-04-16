@@ -1,39 +1,37 @@
-import { Bag, PayTable } from '@betfinio/components/icons';
-import { BetValue } from '@betfinio/components/shared';
+import { PayTable } from '@betfinio/components/icons';
 import { Dialog, DialogTrigger } from '@betfinio/components/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { useChatbot } from 'betfinio_context/lib/context';
-import { useBalance } from 'betfinio_context/lib/query';
 import { BookIcon, HeadsetIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DYNAMIC_STAKING_ADDRESS } from '@/src/globals';
-import { useActiveRounds, useRoundFinish, useRoundStatus, useSelectedRound } from '@/src/lib/query';
+import { getRoundTimes, useCurrentRoundId, useInterval, useRoundOffset, useSelectedRound } from '@/src/lib/query';
 import Countdown from '../Countdown';
 import Ticket from '../icons/Ticket';
 import PayoutContent from './PayoutContent';
 
 const Header = () => {
 	const { t } = useTranslation('lottery');
-	const { data: round, refetch: refetchRound } = useSelectedRound();
-	const { refetch: refetchStatus } = useRoundStatus(round?.address);
-	const { refetch: refetchActiveRounds } = useActiveRounds();
-	const { data: finish } = useRoundFinish(round?.address);
+	const { data: selectedRoundId } = useSelectedRound();
+	const roundId = selectedRoundId ?? 0n;
+	const { data: interval = 0n } = useInterval();
+	const { data: offset = 0n } = useRoundOffset();
+	const { refetch: refetchCurrentRoundId } = useCurrentRoundId();
 	const { toggle } = useChatbot();
-	const { data: bank = 0n } = useBalance(DYNAMIC_STAKING_ADDRESS);
 	const navigate = useNavigate();
+
+	const { end: finish } = getRoundTimes(roundId, interval, offset);
+
 	const handleReport = () => {
 		toggle();
 	};
 	const handleCountdownFinish = useCallback(async () => {
-		await refetchStatus();
-		await refetchActiveRounds();
+		await refetchCurrentRoundId();
 		await navigate({
 			to: '/games/lottery/lotto/$round',
-			params: { round: round?.address },
+			params: { round: roundId.toString() },
 		});
-		await refetchRound();
-	}, [refetchRound, refetchStatus, refetchActiveRounds, navigate, round?.address]);
+	}, [refetchCurrentRoundId, navigate, roundId]);
 	return (
 		<div className={'w-full border border-border rounded-lg bg-background-lighter p-2 md:p-3 lg:p-4 flex flex-row justify-between min-h-[70px] items-center'}>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">
@@ -41,13 +39,6 @@ const Header = () => {
 				<div className="flex flex-col gap-0">
 					<div>{t('lotto5of25')}</div>
 					<div className="text-sm text-muted-foreground">{t('tuesdayAndFriday')}</div>
-				</div>
-				<div className="md:flex flex-row items-center justify-center gap-2 hidden">
-					<Bag className="w-10 h-10 text-primary" />
-					<div className="flex flex-col gap-0">
-						<div className="">{t('bank')}</div>
-						<BetValue className="text-muted-foreground text-sm" value={bank} withIcon />
-					</div>
 				</div>
 			</div>
 			<div className="flex flex-row items-center justify-center gap-2 lg:gap-3">

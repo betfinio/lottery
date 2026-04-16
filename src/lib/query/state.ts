@@ -1,40 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Address } from 'viem';
-import { ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP } from '@/src/globals';
 import { type DrawTab, RoundState, type TicketsTab } from '../types';
-import { useRoundFinishedTimeStamp, useWinningLine } from '.';
+import { useWinningLine } from '.';
 
-// use query that saves state of round
-
-export interface IUseRoundState {
-	state: RoundState;
-	updateState: (state: RoundState) => void;
-}
-
-export const useRoundState = (address?: Address): IUseRoundState => {
-	const queryClient = useQueryClient();
-
-	const query = useQuery<RoundState>({
-		queryKey: ['state', 'round', address],
-		initialData: RoundState.FILLING,
-	});
-
-	const updateState = (state: RoundState) => {
-		queryClient.setQueryData(['state', 'round', address], state);
-	};
-
-	return {
-		state: query.data ?? RoundState.FILLING,
-		updateState,
-	};
-};
-
-interface UseLocalStorageOptions<T> {
-	defaultValue?: T;
-}
-
-export const useLocalStorage = <T>(key: string, options: UseLocalStorageOptions<T> = {}) => {
+export const useLocalStorage = <T>(key: string, options: { defaultValue?: T } = {}) => {
 	const queryClient = useQueryClient();
 
 	const fetchValue = useCallback(() => {
@@ -78,9 +47,7 @@ export const useDrawInfoTab = () => {
 	});
 
 	const setTab = (tab: DrawTab) => {
-		if (tab === 'draw' || tab === 'active' || tab === 'old' || tab === 'bonus') {
-			queryClient.setQueryData(['drawInfoTab'], tab);
-		}
+		queryClient.setQueryData(['drawInfoTab'], tab);
 	};
 
 	return {
@@ -110,12 +77,12 @@ export const useTicketsTab = () => {
 
 export const useHighlightedTickets = () => {
 	const queryClient = useQueryClient();
-	const query = useQuery<number[]>({
+	const query = useQuery<string[]>({
 		queryKey: ['highlightedTickets'],
 		initialData: [],
 	});
 
-	const setHighlightedTickets = (tickets: number[]) => {
+	const setHighlightedTickets = (tickets: string[]) => {
 		queryClient.setQueryData(['highlightedTickets'], tickets);
 	};
 
@@ -125,88 +92,81 @@ export const useHighlightedTickets = () => {
 	};
 };
 
-export const useRoundFinishedNumbersSpitting = (round: Address) => {
-	const { data: finishedTimeStamp } = useRoundFinishedTimeStamp(round);
-	const { data: winningLine, isFetching } = useWinningLine(round);
+/** UI state for managing the ticket creation flow (filling lines vs placing bet). Keyed by roundId. */
+export const useRoundState = (roundId?: bigint) => {
+	const queryClient = useQueryClient();
+	const key = ['roundState', roundId?.toString() ?? 'none'];
+	const query = useQuery<RoundState>({
+		queryKey: key,
+		initialData: RoundState.FILLING,
+	});
 
-	const revealGap = ROUND_REVEAL_AFTER_GENERATION_DELAY_GAP; // 30 seconds
+	const updateState = useCallback(
+		(state: RoundState) => {
+			queryClient.setQueryData(key, state);
+		},
+		[queryClient, roundId],
+	);
 
-	// Extract the winning numbers from the winningLine if available
+	return {
+		state: query.data ?? RoundState.FILLING,
+		updateState,
+	};
+};
+
+export const useRoundFinishedNumbersSpitting = (roundId: bigint) => {
+	const { data: winningLine, isFetching } = useWinningLine(roundId);
+
 	const winningNumbers = useMemo(() => {
 		if (!winningLine) return [];
-		return [...winningLine.numbers, winningLine.symbol]; // Assuming numbers is an array in the winningLine object
+		return [...winningLine.numbers, winningLine.symbol];
 	}, [winningLine]);
 
-	// State to track currently revealed numbers
 	const [revealedNumbers, setRevealedNumbers] = useState<number[]>([]);
+	const [hasAnimated, setHasAnimated] = useState(false);
 
 	useEffect(() => {
-		// Reset revealed numbers when winning line changes
 		setRevealedNumbers([]);
+		setHasAnimated(false);
+	}, [roundId]);
 
-		// If we don't have the finished timestamp or winning numbers yet, exit early
-		if (!finishedTimeStamp || winningNumbers.length === 0) return;
+	useEffect(() => {
+		if (winningNumbers.length === 0 || hasAnimated) return;
 
-		// Calculate the intervals to distribute numbers evenly across the entire gap
-		// We have (totalNumbers) intervals to cover, from 0 to revealGap
-		const totalNumbers = winningNumbers.length;
-
-		// If there's only 1 number, show it immediately
-		if (totalNumbers === 1) {
+		// If data is already available (not fetching), show all numbers immediately
+		if (!isFetching) {
 			setRevealedNumbers(winningNumbers);
+			setHasAnimated(true);
 			return;
 		}
 
-		// Calculate interval duration to spread numbers evenly with the last one at exactly revealGap
-		// For N numbers, we need N-1 intervals that span the entire reveal gap
-		const intervalDuration = revealGap / (totalNumbers - 1);
+		// Reveal all numbers progressively over 5 seconds
+		const totalNumbers = winningNumbers.length;
+		const intervalDuration = 5 / (totalNumbers - 1 || 1);
 
-		// Get current time and calculate elapsed time since round finished
-		const now = Math.floor(Date.now() / 1000);
-		const elapsedTime = now - finishedTimeStamp;
-
-		// If the reveal period is over, show all numbers immediately
-		if (elapsedTime >= revealGap) {
-			setRevealedNumbers([...winningNumbers]);
-			return;
-		}
-
-		// Calculate how many numbers should be visible now based on elapsed time
-		// We use Math.floor(elapsedTime / intervalDuration) to get fully completed intervals
-		// Add 1 to show the number at the beginning (0th second)
-		const numbersToShow = Math.min(Math.floor(elapsedTime / intervalDuration) + 1, totalNumbers);
-
-		// Immediately show the numbers that should be visible by now
-		setRevealedNumbers(winningNumbers.slice(0, numbersToShow));
-
-		// Set up intervals for revealing the remaining numbers
-		const timers: NodeJS.Timeout[] = [];
-
-		for (let i = numbersToShow; i < totalNumbers; i++) {
-			// Calculate when this number should appear
-			// For index i, the reveal time is i * intervalDuration seconds after the round finish
-			const revealTime = finishedTimeStamp + i * intervalDuration;
-			const delay = (revealTime - now) * 1000; // Convert to milliseconds
-
-			const timer = setTimeout(() => {
-				setRevealedNumbers((prev) => [...prev, winningNumbers[i]]);
-			}, delay) as unknown as NodeJS.Timeout;
+		const timers: ReturnType<typeof setTimeout>[] = [];
+		for (let i = 0; i < totalNumbers; i++) {
+			const timer = setTimeout(
+				() => {
+					setRevealedNumbers((prev) => [...prev, winningNumbers[i]]);
+				},
+				i * intervalDuration * 1000,
+			);
 			timers.push(timer);
 		}
+		setHasAnimated(true);
 
-		// Cleanup timers on unmount or when dependencies change
 		return () => {
 			for (const timer of timers) {
 				clearTimeout(timer);
 			}
 		};
-	}, [finishedTimeStamp, winningNumbers, revealGap]);
+	}, [winningNumbers, isFetching, hasAnimated]);
 
 	return {
 		revealedNumbers,
 		allNumbers: winningNumbers,
 		isComplete: revealedNumbers.length === winningNumbers.length && winningNumbers.length > 0,
-		isLoading: isFetching || !finishedTimeStamp,
-		finishedTimeStamp,
+		isLoading: isFetching,
 	};
 };

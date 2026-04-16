@@ -1,32 +1,18 @@
 import { cn } from '@betfinio/components';
 import { Bag } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGetRoundFromParams, useLinesCount, useRoundDetails, useRoundJackpots, useTicketPrice } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundBank, useRoundDetails } from '@/src/lib/query';
 import Ticket from '../icons/Ticket.tsx';
 import { LuckyNumbers } from './LuckyNumbers.tsx';
 
 export function RoundTotalsDetails() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
-	const round = useGetRoundFromParams();
-	const { data: lines = 10n, isLoading: isLinesLoading } = useLinesCount(round);
-	const { isLoading: isPriceLoading } = useTicketPrice(round);
-	const { data: roundDetails } = useRoundDetails(round);
-	const { data: jackpots, isLoading: isJackpotsLoading } = useRoundJackpots(round);
-	const bank = roundDetails?.bank ?? 0n;
-
-	const claimedJackpot = useMemo(() => {
-		if (!jackpots) return 0n;
-
-		return Object.values(jackpots).reduce((acc, jackpot) => {
-			return acc + BigInt(jackpot?.[0]?.claimed || 0n);
-		}, 0n);
-	}, [jackpots]);
-
-	const paidToStaking = useMemo(() => {
-		return bank - claimedJackpot;
-	}, [bank, claimedJackpot]);
+	const roundId = useGetRoundFromParams();
+	const { data: roundDetails, isLoading: isRoundDetailsLoading } = useRoundDetails(roundId);
+	const { data: roundBank = 0n, isLoading: isBankLoading } = useRoundBank(roundId);
+	const betsAmount = roundDetails?.betsAmount ?? 0n;
+	const betsCount = roundDetails?.betsCount ?? 0;
 
 	return (
 		<div className="grid grid-cols-6 w-full gap-2 md:gap-4">
@@ -34,19 +20,19 @@ export function RoundTotalsDetails() {
 				<Ticket className="w-12 h-12 md:w-16 md:h-16 text-primary" />
 				<div className="flex flex-col items-center">
 					<BetValue
-						className={cn('text-xl', { 'blur-xs animated-pulse': isLinesLoading || isPriceLoading || isJackpotsLoading || bank === undefined })}
-						value={bank || 123n}
+						className={cn('text-xl', { 'blur-xs animated-pulse': isRoundDetailsLoading || betsAmount === undefined })}
+						value={betsAmount || 0n}
 						withIcon
 					/>
-					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isLinesLoading || isJackpotsLoading })}>
-						{Number(lines)} {t('lines', { count: Number(lines) })}
+					<div className={cn('hidden md:block', { 'blur-xs animated-pulse': isRoundDetailsLoading })}>
+						{betsCount} {t('tickets', { count: betsCount })}
 					</div>
 				</div>
 			</div>
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-6 md:col-span-2 md:col-start-3 md:row-start-1">
 				<div className="flex flex-col items-center gap-2">
 					<div className="text-tertiary-foreground mb-2">{t('luckyNumbers')}</div>
-					<LuckyNumbers round={round} />
+					<LuckyNumbers roundId={roundId} />
 				</div>
 			</div>
 			<div className="border border-border rounded-lg p-2 py-4 md:py-6 flex flex-row items-center justify-center gap-4 col-span-3  md:col-span-2 row-start-1">
@@ -54,11 +40,10 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur-xs animated-pulse': isLinesLoading || isPriceLoading || paidToStaking === undefined,
-							'text-success': paidToStaking && paidToStaking > 0n,
-							'text-destructive': paidToStaking && paidToStaking < 0n,
+							'blur-xs animated-pulse': isBankLoading,
+							'text-success': roundBank > 0n,
 						})}
-						value={paidToStaking}
+						value={roundBank}
 						withIcon
 					/>
 					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>

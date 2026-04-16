@@ -1,24 +1,29 @@
 import { useTranslation } from 'react-i18next';
-import type { Address } from 'viem';
 import WinningLine from '@/src/components/tables/columns/WinningLine.tsx';
-import { useRoundFinish, useRoundStatus } from '@/src/lib/query';
-import { RoundStatus } from '@/src/lib/types';
+import { getRoundTimes, useInterval, useRoundOffset } from '@/src/lib/query';
 import Countdown from '../../Countdown';
 
-function Result({ round }: { round: Address }) {
+function Result({ roundId, status }: { roundId: bigint; status: string }) {
 	const { t } = useTranslation('lottery');
-	const { data = 0 } = useRoundStatus(round);
-	const { data: finish = 0 } = useRoundFinish(round);
+	const { data: interval } = useInterval();
+	const { data: offset } = useRoundOffset();
 
-	if (data === RoundStatus.ENDED_WITHOUT_BETS) {
-		return <div className={'text-muted-foreground'}>{t('ended')}</div>;
+	const finish = interval ? getRoundTimes(roundId, interval, offset ?? 0n).end : 0;
+	const now = Math.floor(Date.now() / 1000);
+	const roundEnded = finish > 0 && finish <= now;
+
+	if (status === 'cancelled') {
+		return <div className={'text-muted-foreground'}>{t('refunded')}</div>;
 	}
 
-	if (data === RoundStatus.PENDING) {
+	if (status === 'spinning') {
 		return <div className={'text-muted-foreground'}>{t('waitingForResult')}</div>;
 	}
 
-	if (data === RoundStatus.BETTING) {
+	if (status === 'open') {
+		if (roundEnded) {
+			return <div className={'text-muted-foreground'}>{t('placeBet.waitingForDraw')}</div>;
+		}
 		return (
 			<div className={'text-muted-foreground flex items-start '}>
 				<Countdown finish={finish} className="h-0" />
@@ -26,12 +31,10 @@ function Result({ round }: { round: Address }) {
 		);
 	}
 
-	if (data === RoundStatus.CLAIMING || data === RoundStatus.DONE) {
-		return <WinningLine round={round} />;
+	if (status === 'settled') {
+		return <WinningLine roundId={roundId} />;
 	}
-	if (data === RoundStatus.REFUND) {
-		return <div className={'text-muted-foreground'}>{t('refunded')}</div>;
-	}
+
 	return <div className={'text-muted-foreground'}>{t('waiting')}</div>;
 }
 

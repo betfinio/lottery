@@ -1,22 +1,22 @@
 import { Badge } from '@betfinio/components/ui';
 import { useTranslation } from 'react-i18next';
-import { useRoundStatus, useTicketClaimed, useTicketStatus } from '@/src/lib/query';
-import { useClaimTicket } from '@/src/lib/query/mutations';
-import { type IRoundTicket, RoundStatus } from '@/src/lib/types';
+import { useBetClaimed } from '@/src/lib/query';
+import { useClaimBet } from '@/src/lib/query/mutations';
+import type { IBet } from '@/src/lib/types';
 
-function Refunded({ ticket }: { ticket: IRoundTicket }) {
+function Refunded({ ticket }: { ticket: IBet }) {
 	const { t } = useTranslation('lottery');
-	const { data: status } = useTicketStatus(ticket.betAddress);
-	const { data: roundStatus } = useRoundStatus(ticket.round);
-	const { data: isClaimed } = useTicketClaimed(ticket.betAddress);
-	const { mutate: claimTicket } = useClaimTicket();
+	const { data: isClaimed } = useBetClaimed(ticket.betAddress);
+	const { mutate: claimBet } = useClaimBet();
 
 	const handleClaim = () => {
-		claimTicket({
-			ticket: ticket.betAddress,
+		claimBet({
+			betAddress: ticket.betAddress,
 		});
 	};
-	if ((status === 6n || roundStatus === RoundStatus.REFUNDING) && !isClaimed) {
+
+	// Refunded but not yet claimed
+	if (ticket.status === 'refunded' && !isClaimed) {
 		return (
 			<div className={'flex flex-row items-center gap-2'}>
 				<Badge className="bg-muted/10 text-muted-foreground" onClick={handleClaim}>
@@ -26,11 +26,8 @@ function Refunded({ ticket }: { ticket: IRoundTicket }) {
 		);
 	}
 
-	if (status === 1n && roundStatus === RoundStatus.READY_FOR_REFUND) {
-		return <Badge className="bg-muted/10 text-muted-foreground">{t('waitingForRefund')}</Badge>;
-	}
-
-	if (isClaimed && status === 6n) {
+	// Refunded and claimed
+	if (ticket.status === 'refunded' && isClaimed) {
 		return <Badge variant="destructive">{t('refunded')}</Badge>;
 	}
 }

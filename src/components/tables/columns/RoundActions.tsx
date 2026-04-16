@@ -1,82 +1,74 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@betfinio/components/ui';
 import { MoreHorizontal } from 'lucide-react';
 import { type MouseEvent, useMemo } from 'react';
-import type { Address } from 'viem';
-import { useRoundStatus } from '@/src/lib/query';
-import { useManualDistributeJackpot, useManualDistributeRefund, useManualRefund, useManualRequest } from '@/src/lib/query/mutations';
-import { RoundStatus } from '@/src/lib/types';
+import { getRoundTimes, useInterval, useRoundOffset } from '@/src/lib/query';
+import { useCancelRound, useSettleRound, useSpinRound } from '@/src/lib/query/mutations';
+
+const REFUND_TIMEOUT = 24 * 60 * 60; // 24 hours in seconds
 
 interface RoundActionsProps {
 	handler: (e: MouseEvent) => void;
 	title: string;
 }
 
-function RoundActions({ round }: { round: Address }) {
-	const { data = 0 } = useRoundStatus(round);
+function RoundActions({ roundId, status }: { roundId: bigint; status: string }) {
+	const { mutate: spin } = useSpinRound();
+	const { mutate: settle } = useSettleRound();
+	const { mutate: cancel } = useCancelRound();
+	const { data: interval } = useInterval();
+	const { data: offset } = useRoundOffset();
 
-	const { mutate: request } = useManualRequest();
-	const { mutate: refund } = useManualRefund();
-	const { mutate: distributeRefund } = useManualDistributeRefund();
-	const { mutate: distributeJackpot } = useManualDistributeJackpot();
-
-	const handleRequest = (e: MouseEvent) => {
+	const handleSpin = (e: MouseEvent) => {
 		e.stopPropagation();
-		const result = confirm('Are you sure you want to request the result?');
+		const result = confirm('Are you sure you want to request the spin?');
 		if (result) {
-			request({ round });
+			spin({ roundId });
 		}
 	};
-	const handleRefund = (e: MouseEvent) => {
+	const handleSettle = (e: MouseEvent) => {
 		e.stopPropagation();
-		const result = confirm('Are you sure you want to refund the round?');
+		const result = confirm('Are you sure you want to settle the round?');
 		if (result) {
-			refund({ round });
+			settle({ roundId });
 		}
 	};
-	const handleDistributeRefund = (e: MouseEvent) => {
+	const handleCancel = (e: MouseEvent) => {
 		e.stopPropagation();
-		const result = confirm('Are you sure you want to distribute the refund?');
+		const result = confirm('Are you sure you want to cancel the round?');
 		if (result) {
-			distributeRefund({ round });
-		}
-	};
-	const handleJackpot = (e: MouseEvent) => {
-		e.stopPropagation();
-		const result = confirm('Are you sure you want to distribute the jackpot?');
-		if (result) {
-			distributeJackpot({ round });
+			cancel({ roundId });
 		}
 	};
 
 	const actions: RoundActionsProps[] = useMemo(() => {
 		const options: RoundActionsProps[] = [];
-		if (data === RoundStatus.READY_FOR_REFUND) {
-			options.push({
-				handler: handleRefund,
-				title: 'Refund',
-			});
-		}
-		if (data === RoundStatus.WAITING_FOR_REQUEST) {
-			options.push({
-				handler: handleRequest,
-				title: 'Request',
-			});
-		}
-		if (data === RoundStatus.REFUNDING) {
-			options.push({
-				handler: handleDistributeRefund,
-				title: 'Distribute Refund',
-			});
-		}
-		if (data === RoundStatus.DONE) {
-			options.push({
-				handler: handleJackpot,
-				title: 'Distribute Jackpot',
-			});
-		}
+		const now = Math.floor(Date.now() / 1000);
+		const roundEnd = interval ? getRoundTimes(roundId, interval, offset ?? 0n).end : 0;
+		const roundEnded = roundEnd > 0 && roundEnd <= now;
 
+		// "open" round that has ended can be spun
+		if (status === 'open' && roundEnded) {
+			options.push({
+				handler: handleSpin,
+				title: 'Spin',
+			});
+		}
+		// Cancel only available after REFUND_TIMEOUT past round end
+		if (status === 'open' && roundEnd > 0 && now >= roundEnd + REFUND_TIMEOUT) {
+			options.push({
+				handler: handleCancel,
+				title: 'Cancel',
+			});
+		}
+		// "spinning" round with result ready can be settled
+		if (status === 'spinning') {
+			options.push({
+				handler: handleSettle,
+				title: 'Settle',
+			});
+		}
 		return options;
-	}, [data, handleDistributeRefund, handleJackpot, handleRequest, handleRefund]);
+	}, [status, interval, offset, roundId]);
 
 	if (actions.length === 0) {
 		return null;

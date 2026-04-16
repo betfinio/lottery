@@ -4,10 +4,9 @@ import { CheckCircle, ChevronLeft, ShuffleIcon, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { type FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Address } from 'viem';
-import type { ILine } from '@/src/lib/types.ts';
-import { useDraftLines, useLinesAvailability, useSelectedRound } from '../lib/query';
-import { equals, isDuplicate, randomize } from '../lib/utils';
+import type { ITicket } from '@/src/lib/types.ts';
+import { useDraftTickets } from '../lib/query';
+import { isDuplicate, randomize } from '../lib/utils';
 import { AnimatedGridOfNumbners } from './shared/AnimatedGridOfNumbners';
 import { TicketGridOfSymbols } from './shared/TicketGridOfSymbols';
 
@@ -15,28 +14,16 @@ const animationDuration = 1000;
 const animationInterval = 100;
 
 const EditMode: FC<{
-	ticket: ILine;
-	round?: Address;
-	onSave?: (ticket: ILine) => void;
+	ticket: ITicket;
+	roundId?: bigint;
+	onSave?: (ticket: ITicket) => void;
 	order: number;
 	editMode: boolean;
-	shouldValidateAvaliability?: boolean;
-}> = ({ order, ticket, onSave, editMode, round, shouldValidateAvaliability = false }) => {
+}> = ({ order, ticket, onSave, editMode }) => {
 	const { t } = useTranslation('lottery');
 	const [symbol, setSymbol] = useState(ticket.symbol);
 	const [numbers, setNumbers] = useState(ticket.numbers);
-	const { data: draftLines = [] } = useDraftLines();
-	const { data: selectedRound } = useSelectedRound();
-
-	const linesHasChanged = useMemo(() => {
-		return !equals(ticket, { numbers, symbol });
-	}, [ticket, numbers, symbol]);
-
-	const { data: availability, isFetched } = useLinesAvailability(
-		round ?? selectedRound?.address,
-		[{ numbers, symbol }],
-		linesHasChanged && shouldValidateAvaliability,
-	);
+	const { data: draftTickets = [] } = useDraftTickets();
 
 	useEffect(() => {
 		setNumbers(ticket.numbers);
@@ -78,13 +65,13 @@ const EditMode: FC<{
 	};
 	const validation: string = useMemo(() => {
 		const sum = numbers.reduce((acc, curr) => acc + curr, 0);
-		const newLine = { numbers: numbers, symbol };
-		// check if edited line is the same as the ticket
+		const newTicket = { numbers: numbers, symbol };
+		// check if edited ticket is the same as the ticket
 		const isSame = ticket.numbers.length === numbers.length && ticket.numbers.every((n, index) => n === numbers[index]) && ticket.symbol === symbol;
 
-		const filledLines = draftLines.filter((line) => line.numbers.every((n) => n > 0) && line.symbol > 0);
+		const filledTickets = draftTickets.filter((t) => t.numbers.every((n) => n > 0) && t.symbol > 0);
 
-		const duplicates = isSame ? false : isDuplicate([...filledLines, newLine]);
+		const duplicates = isSame ? false : isDuplicate([...filledTickets, newTicket]);
 
 		const actualNumbers = numbers.filter((n) => n !== 0);
 		// validate numbers are 5
@@ -99,11 +86,8 @@ const EditMode: FC<{
 		if (actualNumbers.length > 5) return t('validatation.5numbers');
 		// validate duplicates
 		if (duplicates) return t('validatation.duplicates');
-		// validate availability
-		if (shouldValidateAvaliability && linesHasChanged && isFetched && availability && availability.length === 1 && availability[0] === false)
-			return t('validatation.notAvailable');
 		return '';
-	}, [symbol, numbers, ticket, availability, linesHasChanged]);
+	}, [symbol, numbers, ticket]);
 
 	const cardPosition = order % 3 === 1 ? -123 : order % 3 === 2 ? 0 : 123;
 
@@ -122,7 +106,7 @@ const EditMode: FC<{
 			<nav className={'flex justify-between w-full items-center'}>
 				<Button variant={'ghost'} className={'text-foreground'} size={'sm'} onClick={handleBack}>
 					<ChevronLeft className={'w-5 h-5'} />
-					{t('backToAllLines')}
+					{t('backToAllTickets')}
 				</Button>
 				<div
 					className={cn(
@@ -138,7 +122,7 @@ const EditMode: FC<{
 				</div>
 				<div className={'gap-2 md:gap-4 flex flex-col justify-between w-full max-w-[360px]'}>
 					<AnimatedGridOfNumbners numbers={numbers} toggleNumber={toggleNumber} />
-					<div className="flex flex-row justify-center text-sm text-muted-foreground">{t('symbolActivatesWith3FilledLines')}</div>
+					<div className="flex flex-row justify-center text-sm text-muted-foreground">{t('symbolActivatesWith3FilledTickets')}</div>
 					<TicketGridOfSymbols symbol={symbol} numbers={numbers} changeSymbol={changeSymbol} />
 				</div>
 				<div className={'text-destructive h-6 text-sm py-1'}>{validation}</div>

@@ -5,14 +5,14 @@ import { motion } from 'motion/react';
 import { type FC, type PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import EditMode from '@/src/components/EditMode.tsx';
-import type { ILine } from '@/src/lib/types.ts';
+import type { ITicket } from '@/src/lib/types.ts';
 import { randomize } from '@/src/lib/utils';
 import SharedLine from './shared/SharedLine';
 
 export interface LineProps {
-	line: ILine;
+	line: ITicket;
 	onDelete?: () => void;
-	onEdit?: (ticket: ILine) => void;
+	onEdit?: (ticket: ITicket) => void;
 	order: number;
 	symbolUnlocked?: boolean;
 	isNew?: boolean;
@@ -33,7 +33,7 @@ const Line: FC<LineProps> = ({ line: ticket, order, onEdit, onDelete, symbolUnlo
 		if (isDisabled) return;
 		setEditMode((prev) => !prev);
 	};
-	const handleSave = (ticket: ILine) => {
+	const handleSave = (ticket: ITicket) => {
 		onEdit?.(ticket);
 		setEditMode(false);
 	};
@@ -82,7 +82,7 @@ const ViewMode: FC<LineProps & { onRandomize: () => void; onEditMode: () => void
 		return (
 			<div className={'grid grid-cols-3 px-2 '}>
 				<Button shape={'pill'} size={'sm'} className={'px-4 text-sm py-0 h-auto hover:scale-105 transition-all'} onClick={onEditMode}>
-					{t('fillLine')}
+					{t('fillTicket')}
 				</Button>
 				<Button variant={'outline'} className={'gap-1 font-light px-0 py-0 h-auto border-none hover:scale-105 transition-all'} onClick={onRandomize}>
 					<ShuffleIcon className={'w-3.5 h-3.5'} />

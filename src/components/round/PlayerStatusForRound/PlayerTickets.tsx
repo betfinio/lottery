@@ -4,14 +4,14 @@ import { useMediaQuery } from '@betfinio/components/hooks';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
-import { useGetRoundFromParams, useRoundTicketsByPlayer } from '@/src/lib/query';
+import { useGetRoundFromParams, usePlayerBetsByRound } from '@/src/lib/query';
 import TicketsList from '../../tabs/TicketsList';
 
 const PlayerTickets: FC<{ className?: string }> = ({ className }) => {
 	const { t } = useTranslation('lottery');
-	const round = useGetRoundFromParams();
+	const roundId = useGetRoundFromParams();
 	const { address = ZeroAddress } = useAccount();
-	const { data: tickets = [] } = useRoundTicketsByPlayer(round, address);
+	const { data: tickets = [] } = usePlayerBetsByRound(roundId, address);
 	const { isMobile } = useMediaQuery();
 	return (
 		<div
