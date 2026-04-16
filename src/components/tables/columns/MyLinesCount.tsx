@@ -7,7 +7,7 @@ import Count from './Count';
 function MyLinesCount({ roundId }: { roundId: bigint }) {
 	const { address = ZeroAddress } = useAccount();
 	const { data: bets = [] } = usePlayerBetsByRound(roundId, address);
-	const totalLines = useMemo(() => bets.reduce((sum, bet) => sum + bet.lines.length, 0), [bets]);
+	const totalLines = useMemo(() => bets.reduce((sum, bet) => sum + bet.tickets.length, 0), [bets]);
 	return <Count count={totalLines} />;
 }
 
