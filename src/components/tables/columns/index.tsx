@@ -14,12 +14,13 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 	const columnHelper = createColumnHelper<IRound>();
 
 	return [
-		columnHelper.accessor('finish', {
+		columnHelper.display({
+			id: 'finish',
 			header: t('headers.finish'),
 			meta: {
 				className: 'min-w-[100px] whitespace-nowrap',
 			},
-			cell: (props) => <Finish timestamp={props.getValue()} />,
+			cell: (props) => <Finish roundId={props.row.original.roundId} />,
 		}),
 
 		columnHelper.display({
@@ -27,35 +28,31 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 			meta: {
 				className: 'min-w-[300px]',
 			},
-			cell: (props) => <Result round={props.row.original.address} />,
+			cell: (props) => <Result roundId={props.row.original.roundId} status={props.row.original.status} />,
 		}),
-		columnHelper.accessor('address', {
+		columnHelper.accessor('roundId', {
 			header: t('headers.round'),
 			meta: {
 				className: 'h-[50px] min-w-[100px]',
 			},
-			cell: (props) => <Round address={props.getValue()} />,
+			cell: (props) => <Round roundId={props.getValue()} />,
 		}),
-		columnHelper.accessor('linesCount', {
-			header: isMy ? t('headers.myLinesCount') : t('headers.linesCount'),
+		columnHelper.accessor('betsCount', {
+			header: isMy ? t('headers.myTicketsCount') : t('headers.ticketsCount'),
 			meta: {
 				className: 'min-w-[100px]',
 			},
 			cell: (props) => (
-				<div className="flex items-center gap-1">{isMy ? <MyLinesCount round={props.row.original.address} /> : <Count count={props.getValue()} />}</div>
+				<div className="flex items-center gap-1">{isMy ? <MyLinesCount roundId={props.row.original.roundId} /> : <Count count={props.getValue()} />}</div>
 			),
 		}),
-		columnHelper.accessor('bank', {
+		columnHelper.accessor('betsAmount', {
 			header: t('headers.bank'),
 			meta: {
 				className: 'min-w-[100px]',
 			},
 			cell: (props) => {
-				return isMy ? (
-					<MyLinesBank round={props.row.original.address} ticketPrice={props.row.original.ticketPrice} />
-				) : (
-					<BetValue value={(props.row.original.ticketPrice ?? 0n) * BigInt(props.row.original.linesCount)} withIcon />
-				);
+				return isMy ? <MyLinesBank roundId={props.row.original.roundId} /> : <BetValue value={props.row.original.betsAmount} withIcon />;
 			},
 		}),
 		columnHelper.display({
@@ -63,7 +60,7 @@ export const defineColumns = (t: TFunction<'lottery', 'tables'>, isMy = false): 
 			meta: {
 				className: 'w-[30px]',
 			},
-			cell: (props) => <RoundActions round={props.row.original.address} />,
+			cell: (props) => <RoundActions roundId={props.row.original.roundId} status={props.row.original.status} />,
 		}),
 	];
 };

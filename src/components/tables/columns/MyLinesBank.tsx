@@ -1,13 +1,14 @@
 import { ZeroAddress } from '@betfinio/abi';
 import { BetValue } from '@betfinio/components/shared';
-import type { Address } from 'viem';
+import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { useMyLinesSold } from '@/src/lib/query';
+import { usePlayerBetsByRound } from '@/src/lib/query';
 
-function MyLinesBank({ round, ticketPrice }: { round: Address; ticketPrice: bigint }) {
+function MyLinesBank({ roundId }: { roundId: bigint }) {
 	const { address = ZeroAddress } = useAccount();
-	const { data = 0 } = useMyLinesSold(round, address);
-	return <BetValue value={(ticketPrice ?? 0n) * BigInt(data)} withIcon />;
+	const { data: bets = [] } = usePlayerBetsByRound(roundId, address);
+	const totalAmount = useMemo(() => bets.reduce((sum, bet) => sum + bet.amount, 0n), [bets]);
+	return <BetValue value={totalAmount} withIcon />;
 }
 
 export default MyLinesBank;

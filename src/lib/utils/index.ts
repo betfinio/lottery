@@ -1,7 +1,7 @@
 import confetti from 'canvas-confetti';
 import { DateTime } from 'luxon';
 import { type Address, decodeAbiParameters } from 'viem';
-import type { GTicket, ILine } from '@/src/lib/types.ts';
+import type { GTicket, ITicket } from '@/src/lib/types.ts';
 export interface TimeDiff {
 	days: number;
 	hours: number;
@@ -17,37 +17,37 @@ export const getDiff = (start: number, end: number): TimeDiff => {
 	return { days, hours, minutes, seconds };
 };
 
-export const encodeLines = (lines: ILine[]): GTicket[] => {
-	return lines.map(encodeLine);
+export const encodeTickets = (tickets: ITicket[]): GTicket[] => {
+	return tickets.map(encodeTicket);
 };
 
-export const encodeLine = (line: ILine): GTicket => {
+export const encodeTicket = (ticket: ITicket): GTicket => {
 	return {
-		symbol: line.symbol,
-		numbers: Number(line.numbers.reduce((acc, num) => acc + 2n ** BigInt(num), BigInt(0))),
+		symbol: ticket.symbol,
+		numbers: Number(ticket.numbers.reduce((acc, num) => acc + 2n ** BigInt(num), BigInt(0))),
 	};
 };
 
-export const decodeLine = (line: GTicket): ILine => {
+export const decodeTicket = (ticket: GTicket): ITicket => {
 	return {
-		symbol: line.symbol,
-		numbers: Array.from({ length: 25 }, (_, i) => i + 1).filter((num) => (line.numbers & (2 ** num)) !== 0),
+		symbol: ticket.symbol,
+		numbers: Array.from({ length: 25 }, (_, i) => i + 1).filter((num) => (ticket.numbers & (2 ** num)) !== 0),
 	};
 };
 
-export const decodeLines = (lines: GTicket[]): ILine[] => {
-	return lines.map(decodeLine);
+export const decodeTickets = (tickets: GTicket[]): ITicket[] => {
+	return tickets.map(decodeTicket);
 };
 
-export const parseLine = (line: Address): ILine => {
-	const decoded = decodeAbiParameters([{ type: 'uint8' }, { type: 'uint32' }], line);
-	return decodeLine({
+export const parseTicket = (raw: Address): ITicket => {
+	const decoded = decodeAbiParameters([{ type: 'uint8' }, { type: 'uint32' }], raw);
+	return decodeTicket({
 		symbol: decoded[0],
 		numbers: decoded[1],
 	});
 };
 
-export const randomize = (from = 1): ILine => {
+export const randomize = (from = 1): ITicket => {
 	// Fisher-Yates shuffle algorithm for better randomization
 	const numbers = Array.from({ length: 25 - from + 1 }, (_, i) => i + from); // [from, from+1, ..., 25]
 	for (let i = numbers.length - 1; i > 0; i--) {
@@ -62,79 +62,51 @@ export const randomize = (from = 1): ILine => {
 	return { symbol, numbers: selectedNumbers };
 };
 
-export const equals = (a: ILine, b: ILine): boolean => {
+export const equals = (a: ITicket, b: ITicket): boolean => {
 	return a.symbol === b.symbol && a.numbers.length === b.numbers.length && a.numbers.every((n, i) => n === b.numbers[i]);
 };
-export const partlyEquals = (a: ILine, b: ILine, numberIndex: number): boolean => {
+export const partlyEquals = (a: ITicket, b: ITicket, numberIndex: number): boolean => {
 	const sortedA = [...a.numbers].sort((a, b) => a - b);
 	return b.numbers.includes(sortedA[numberIndex]);
 };
 
-export const compareLines = (a: ILine, b: ILine, symbolUnlocked: boolean): number => {
+export const compareTickets = (a: ITicket, b: ITicket): number => {
 	// count same numbers
 	const sameBits = a.numbers.filter((n) => b.numbers.includes(n)).length;
-	// check if 5 numbers are same
 	if (sameBits === 5) {
-		// check if symbol is same
-		if (a.symbol === b.symbol && symbolUnlocked) {
-			return 40_000; // COMBINATION: 5+1
-		}
-		return 15_000; // COMBINATION: 5
+		if (a.symbol === b.symbol) return 40_000; // 5+1
+		return 15_000; // 5
 	}
-	// check if 4 numbers are same
 	if (sameBits === 4) {
-		// check if symbol is same
-		if (a.symbol === b.symbol && symbolUnlocked) {
-			return 400; // COMBINATION: 4+1
-		}
-		return 50; // COMBINATION: 4
+		if (a.symbol === b.symbol) return 400; // 4+1
+		return 50; // 4
 	}
-	// check if 3 numbers are same
 	if (sameBits === 3) {
-		// check if symbol is same
-		if (a.symbol === b.symbol && symbolUnlocked) {
-			return 5; // COMBINATION: 3+1
-		}
-		return 1; // COMBINATION: 3
+		if (a.symbol === b.symbol) return 5; // 3+1
+		return 1; // 3
 	}
-	// check if 2 numbers are same
 	if (sameBits === 2) {
-		// check if symbol is same
-		if (a.symbol === b.symbol && symbolUnlocked) {
-			return 1; // COMBINATION: 2+1
-		}
+		if (a.symbol === b.symbol) return 1; // 2+1
 	}
-	// return 0 if no combination
 	return 0;
 };
 
-export const calculateTicketPrize = (winningLine: ILine, ticketLines: ILine[], ticketPrice: bigint, symbolUnlocked = true) => {
-	let freeTicketsCount = 0;
+export const calculateBetPrize = (winningTicket: ITicket, betTickets: ITicket[], ticketPrice: bigint) => {
 	let prizeAmount = 0n;
 
-	// Check each line against the winning line
-	for (const line of ticketLines) {
-		const result = compareLines(line, winningLine, symbolUnlocked);
-
-		// Count combinations
-		if (result === 1) {
-			// Either "3" or "2+1" combination (free ticket)
-			freeTicketsCount++;
-		} else if (result > 1) {
-			// Higher value combination (money prize)
+	for (const ticket of betTickets) {
+		const result = compareTickets(ticket, winningTicket);
+		if (result > 0) {
 			prizeAmount += BigInt(result) * ticketPrice;
 		}
 	}
 
-	return {
-		freeTicketsCount,
-		prizeAmount,
-	};
+	return { prizeAmount };
 };
 
-export const isDuplicate = (lines: ILine[]): boolean => {
-	return lines.some((line: ILine) =>
-		lines.some((l: ILine) => l !== line && l.symbol === line.symbol && [...l.numbers].sort().join(',') === [...line.numbers].sort().join(',')),
+export const isDuplicate = (tickets: ITicket[]): boolean => {
+	return tickets.some((ticket: ITicket) =>
+		tickets.some((t: ITicket) => t !== ticket && t.symbol === ticket.symbol && [...t.numbers].sort().join(',') === [...ticket.numbers].sort().join(',')),
 	);
 };
 
@@ -151,6 +123,18 @@ export const COMBINATIONS_MAP = Object.freeze({
 	'3': { coeficient: 1, combination: '3' },
 	'2+1': { coeficient: 1, combination: '2 + 1' },
 	'0': { coeficient: 0, combination: '0' },
+} as const);
+
+export const TIER_ORDER = ['5+1', '5', '4+1', '4', '3+1', '3', '2+1'] as const;
+
+export const TIER_POSSIBLE_WINNERS = Object.freeze({
+	'5+1': 1n,
+	'5': 4n,
+	'4+1': 100n,
+	'4': 400n,
+	'3+1': 1_900n,
+	'3': 7_600n,
+	'2+1': 11_400n,
 } as const);
 
 export const COMBINATIONS_HEX_MAP = Object.freeze({
@@ -195,5 +179,3 @@ export const shootConfetti = () => {
 		origin: { x: 0.5, y: 0.4 },
 	});
 };
-
-export const JACKPOT_LINES_IN_TABLE_TO_SHOW = 25;

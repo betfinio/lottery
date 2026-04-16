@@ -2,8 +2,8 @@ import { cn } from '@betfinio/components';
 import { AnimatePresence, motion, useAnimation } from 'motion/react';
 import { useEffect, useMemo } from 'react';
 import { NumberComponent, SymbolElement } from '@/src/components/Line.tsx';
-import { useDraftLines } from '@/src/lib/query';
-import type { ILine } from '@/src/lib/types.ts';
+import { useDraftTickets } from '@/src/lib/query';
+import type { ITicket } from '@/src/lib/types.ts';
 
 function SharedLine({
 	line,
@@ -15,7 +15,7 @@ function SharedLine({
 	disableSymbol = false,
 	onClick,
 }: {
-	line: ILine;
+	line: ITicket;
 	numberClassName?: string;
 	dynamicNumberClassName?: (number: number, index: number) => string;
 	symbolClassName?: string;
@@ -25,11 +25,11 @@ function SharedLine({
 	onClick?: () => void;
 }) {
 	const symbolControls = useAnimation();
-	const { data: draftLines = [] } = useDraftLines();
+	const { data: draftTickets = [] } = useDraftTickets();
 
-	const filledLines = useMemo(() => draftLines.filter((line) => line.numbers.every((n) => n !== 0)), [draftLines]);
+	const filledTickets = useMemo(() => draftTickets.filter((t) => t.numbers.every((n) => n !== 0)), [draftTickets]);
 
-	const filled3 = useMemo(() => filledLines.length >= 3, [filledLines]);
+	const filled3 = useMemo(() => filledTickets.length >= 3, [filledTickets]);
 
 	useEffect(() => {
 		if (symbolUnlocked && filled3 && line.symbol !== 0) {

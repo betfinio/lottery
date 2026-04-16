@@ -1,168 +1,163 @@
-import { ZeroAddress } from '@betfinio/abi';
 import type { ExecutionResult } from 'graphql/execution';
 import type { Address } from 'viem';
 import {
 	execute,
-	GetActiveRoundsDocument,
-	type GetActiveRoundsQuery,
-	GetOldRoundsDocument,
-	type GetOldRoundsQuery,
-	GetPlayerRoundsDocument,
-	type GetPlayerRoundsQuery,
-	GetPlayerTicketByRoundDocument,
-	type GetPlayerTicketByRoundQuery,
-	GetPlayerTicketsDocument,
-	type GetPlayerTicketsQuery,
-	GetRoundDetailsDocument,
-	type GetRoundDetailsQuery,
-	GetRoundJackpotsDocument,
-	type GetRoundJackpotsQuery,
-	GetTicketsDocument,
-	type GetTicketsQuery,
-	GetUnclaimedTicketsDocument,
-	type GetUnclaimedTicketsQuery,
-	type Line,
-	type Round,
-	type RoundFragment,
-	type Ticket,
+	LotteryPlayerBetsByRoundDocument,
+	type LotteryPlayerBetsByRoundQuery,
+	LotteryPlayerBetsDocument,
+	type LotteryPlayerBetsQuery,
+	LotteryRoundBetsDocument,
+	type LotteryRoundBetsQuery,
+	LotteryRoundDetailsDocument,
+	type LotteryRoundDetailsQuery,
+	LotteryRoundsByPlayerDocument,
+	type LotteryRoundsByPlayerQuery,
+	LotteryRoundsDocument,
+	type LotteryRoundsQuery,
+	LotteryUnclaimedBetsDocument,
+	type LotteryUnclaimedBetsQuery,
 } from '@/.graphclient';
 import logger from '@/src/config/logger';
-import type { IRound, IRoundTicket } from '@/src/lib/types.ts';
-import { decodeLines, JACKPOT_LINES_IN_TABLE_TO_SHOW } from '@/src/lib/utils';
+import { LOTTERY } from '@/src/globals';
+import type { IBet, IRound } from '@/src/lib/types';
+import { decodeTicket } from '@/src/lib/utils';
 
-export const fetchActiveRounds = async (): Promise<IRound[]> => {
-	logger.start('fetching active rounds');
-	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetActiveRoundsQuery> = await execute(GetActiveRoundsDocument, { now: now.toString() });
-	logger.success('fetched active rounds', result.data?.rounds);
-	if (result.data?.rounds) {
-		return result.data.rounds.map(populateRound);
-	}
-	return [];
-};
-
-export const fetchOldRounds = async (): Promise<IRound[]> => {
-	logger.start('fetching old rounds');
-	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetOldRoundsQuery> = await execute(GetOldRoundsDocument, { now: now.toString() });
-	logger.success('fetched old rounds', result.data?.rounds);
-	if (result.data?.rounds) {
-		return result.data.rounds.map(populateRound);
-	}
-	return [];
-};
-export const fetchActiveTickets = async (address?: Address): Promise<IRoundTicket[]> => {
-	if (!address || address === ZeroAddress) {
-		return [];
-	}
-	logger.start('fetching tickets');
-	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
-	logger.success('fetched tickets', result.data?.active, result.data?.old);
-	if (result.data) {
-		return result.data.active.map(populateTickets);
-	}
-	return [];
-};
-
-export const fetchPlayerRounds = async (address?: Address): Promise<IRound[]> => {
-	if (!address || address === ZeroAddress) {
-		return [];
-	}
-	logger.start('fetching player rounds');
-	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetPlayerRoundsQuery> = await execute(GetPlayerRoundsDocument, { now: now.toString(), player: address });
-	logger.success('fetched player rounds', result.data?.rounds);
-	if (result.data) {
-		return result.data.rounds.map(populateRound);
-	}
-	return [];
-};
-
-export const fetchOldTickets = async (address?: Address): Promise<IRoundTicket[]> => {
-	if (!address || address === ZeroAddress) {
-		return [];
-	}
-	logger.start('fetching tickets');
-	const now = BigInt(Math.floor(Date.now() / 1000));
-	const result: ExecutionResult<GetTicketsQuery> = await execute(GetTicketsDocument, { now: now.toString(), player: address });
-	logger.success('fetched tickets', result.data?.active, result.data?.old);
-	if (result.data) {
-		return result.data.old.map(populateTickets);
-	}
-	return [];
-};
-
-export const fetchMyLinesSold = async (round: Address, player: Address): Promise<number> => {
-	logger.start('fetching my lines sold');
-	const result: ExecutionResult<GetPlayerTicketsQuery> = await execute(GetPlayerTicketsDocument, { round: round, player: player });
-	logger.success('fetched my lines sold', result.data?.tickets);
-	if (result.data) {
-		return result.data.tickets.reduce((acc, ticket) => acc + Number(ticket.linesCount), 0);
-	}
-	return 0;
-};
-
-const populateRound = (round: RoundFragment): IRound => {
+const populateRound = (round: {
+	round: string;
+	address: string;
+	status: string;
+	started: string;
+	betsCount: string;
+	betsAmount: string;
+	winNumbers: string | null;
+	winSymbol: number | null;
+}): IRound => {
 	return {
-		address: round.round.toLowerCase() as Address,
-		finish: Number(round.timestamp),
-		ticketCount: Number(round.ticketsCount),
-		linesCount: Number(round.linesCount),
-		bank: BigInt(round.bank),
-		ticketPrice: BigInt(round.ticketPrice),
-		ticketClaimedCount: Number(round.ticketClaimedCount),
+		roundId: BigInt(round.round),
+		address: round.address.toLowerCase() as Address,
+		status: round.status,
+		started: Number(round.started),
+		betsCount: Number(round.betsCount),
+		betsAmount: BigInt(round.betsAmount),
+		winNumbers: round.winNumbers !== null ? Number(round.winNumbers) : null,
+		winSymbol: round.winSymbol !== null ? Number(round.winSymbol) : null,
 	};
 };
 
-const populateTickets = (
-	ticket: Pick<Ticket, 'id' | 'owner' | 'tokenId' | 'betAddress' | 'linesCount' | 'created' | 'updated' | 'amount' | 'symbolUnlocked'> & {
-		round: Pick<Round, 'id' | 'round' | 'timestamp' | 'blockNumber'>;
-		lines: Array<Pick<Line, 'id' | 'numbers' | 'symbol'>>;
-	},
-): IRoundTicket => {
-	const round = ticket.round.round.toLowerCase() as Address;
-	const player = ticket.owner as Address;
+const populateBet = (bet: {
+	player: string;
+	amount: string;
+	betAddress: string;
+	status: string;
+	prize: string | null;
+	blockTimestamp: string;
+	tickets: Array<{ numbers: string; symbol: number }>;
+	round?: { round: string; status?: string; started?: string; betsAmount?: string; winNumbers?: string | null; winSymbol?: number | null };
+}): IBet => {
 	return {
-		round,
-		player,
-		betAddress: ticket.betAddress.toLowerCase() as Address,
-		token: Number(ticket.tokenId),
-		lines: decodeLines(ticket.lines.map((e) => ({ numbers: Number(e.numbers), symbol: Number(e.symbol) }))),
+		roundId: bet.round ? BigInt(bet.round.round) : 0n,
+		player: bet.player.toLowerCase() as Address,
+		betAddress: bet.betAddress.toLowerCase() as Address,
+		amount: BigInt(bet.amount),
+		status: bet.status,
+		prize: bet.prize !== null ? BigInt(bet.prize) : null,
+		tickets: bet.tickets.map((t) => decodeTicket({ symbol: Number(t.symbol), numbers: Number(t.numbers) })),
 	};
 };
 
-export const fetchRoundTicketsByPlayer = async (round: Address, address: Address): Promise<IRoundTicket[]> => {
-	const result: ExecutionResult<GetPlayerTicketByRoundQuery> = await execute(GetPlayerTicketByRoundDocument, { round: round, player: address });
-	logger.success('fetched tickets', result.data?.tickets);
-	if (result.data) {
-		return result.data.tickets.map(populateTickets);
-	}
-	return [];
-};
-
-export const fetchRoundDetails = async (round: Address) => {
-	const result: ExecutionResult<GetRoundDetailsQuery> = await execute(GetRoundDetailsDocument, { round: round });
-	logger.success('fetched round details', result.data?.rounds);
-	if (result.data) {
-		return result.data.rounds.map(populateRound)[0];
-	}
-};
-
-export const fetchRoundJackpots = async (round: Address) => {
-	const result: ExecutionResult<GetRoundJackpotsQuery> = await execute(GetRoundJackpotsDocument, {
-		round: round,
-		ticketsFirst: JACKPOT_LINES_IN_TABLE_TO_SHOW,
+export const fetchRounds = async (): Promise<IRound[]> => {
+	logger.start('fetching rounds');
+	const result: ExecutionResult<LotteryRoundsQuery> = await execute(LotteryRoundsDocument, {
+		address: LOTTERY.toLowerCase(),
 	});
-	return result.data;
+	console.log(result.data);
+
+	if (result.data?.rounds) {
+		return result.data.rounds.map(populateRound);
+	}
+	return [];
 };
 
-export const fetchUnclaimedTickets = async (): Promise<bigint[]> => {
-	logger.start('fetching unclaimed tickets');
-	const result: ExecutionResult<GetUnclaimedTicketsQuery> = await execute(GetUnclaimedTicketsDocument, {});
-	logger.success('fetched unclaimed tickets', result.data?.tickets);
-	if (result.data) {
-		return result.data.tickets.map((e) => BigInt(e.tokenId));
+export const fetchRoundDetails = async (roundId: bigint): Promise<IRound> => {
+	logger.start('fetching round details', roundId);
+	const result: ExecutionResult<LotteryRoundDetailsQuery> = await execute(LotteryRoundDetailsDocument, {
+		address: LOTTERY.toLowerCase(),
+		round: roundId.toString(),
+	});
+	if (result.data?.rounds?.[0]) {
+		return populateRound(result.data.rounds[0]);
+	}
+	// Round has no bets yet — return a skeleton
+	return {
+		roundId,
+		address: LOTTERY,
+		status: 'open',
+		started: 0,
+		betsCount: 0,
+		betsAmount: 0n,
+		winNumbers: null,
+		winSymbol: null,
+	};
+};
+
+export const fetchRoundBets = async (roundId: bigint): Promise<IBet[]> => {
+	logger.start('fetching round bets', roundId);
+	const result: ExecutionResult<LotteryRoundBetsQuery> = await execute(LotteryRoundBetsDocument, {
+		address: LOTTERY.toLowerCase(),
+		round: roundId.toString(),
+	});
+	if (result.data?.bets) {
+		return result.data.bets.map((bet) => populateBet({ ...bet, round: { round: roundId.toString() } }));
+	}
+	return [];
+};
+
+export const fetchPlayerBetsByRound = async (roundId: bigint, player: Address): Promise<IBet[]> => {
+	logger.start('fetching player bets by round', roundId, player);
+	const result: ExecutionResult<LotteryPlayerBetsByRoundQuery> = await execute(LotteryPlayerBetsByRoundDocument, {
+		address: LOTTERY.toLowerCase(),
+		round: roundId.toString(),
+		player: player.toLowerCase(),
+	});
+	if (result.data?.bets) {
+		return result.data.bets.map(populateBet);
+	}
+	return [];
+};
+
+export const fetchPlayerBets = async (player?: Address): Promise<IBet[]> => {
+	logger.start('fetching player bets', player);
+	if (!player) return [];
+	const result: ExecutionResult<LotteryPlayerBetsQuery> = await execute(LotteryPlayerBetsDocument, {
+		address: LOTTERY.toLowerCase(),
+		player: player.toLowerCase(),
+	});
+	if (result.data?.bets) {
+		return result.data.bets.map(populateBet);
+	}
+	return [];
+};
+
+export const fetchPlayerRounds = async (player?: Address): Promise<IRound[]> => {
+	logger.start('fetching player rounds', player);
+	if (!player) return [];
+	const result: ExecutionResult<LotteryRoundsByPlayerQuery> = await execute(LotteryRoundsByPlayerDocument, {
+		address: LOTTERY.toLowerCase(),
+		player: player.toLowerCase(),
+	});
+	if (result.data?.rounds) {
+		return result.data.rounds.map(populateRound);
+	}
+	return [];
+};
+
+export const fetchUnclaimedBets = async (): Promise<Address[]> => {
+	logger.start('fetching unclaimed bets');
+	const result: ExecutionResult<LotteryUnclaimedBetsQuery> = await execute(LotteryUnclaimedBetsDocument, {
+		address: LOTTERY.toLowerCase(),
+	});
+	if (result.data?.bets) {
+		return result.data.bets.map((b) => b.betAddress.toLowerCase() as Address);
 	}
 	return [];
 };

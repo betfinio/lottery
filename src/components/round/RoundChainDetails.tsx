@@ -1,42 +1,25 @@
-import { truncateEthAddress, ZeroAddress } from '@betfinio/abi';
 import { cn } from '@betfinio/components';
-import { useMediaQuery } from '@betfinio/components/hooks';
 import { ShieldCheckIcon } from 'lucide-react';
 import type { FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ETHSCAN } from '@/src/globals';
-import { useFinishedRoundTransactionByRoundAddress, useGetRoundFromParams } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundDetails } from '@/src/lib/query';
 
 export const RoundChainDetails: FC = () => {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
-	const round = useGetRoundFromParams();
+	const roundId = useGetRoundFromParams();
+	const { data: roundDetails } = useRoundDetails(roundId);
 
-	const { data: roundFinished, isLoading } = useFinishedRoundTransactionByRoundAddress(round);
+	// Only show for settled rounds
+	const isSettled = roundDetails?.status === 'settled';
+	if (!isSettled) return null;
 
-	const transactionHash = roundFinished?.[0]?.transactionHash;
-
-	const { isMobile } = useMediaQuery();
 	return (
-		<div
-			className={cn('my-5', {
-				hidden: transactionHash === undefined,
-			})}
-		>
-			<div className={cn('flex items-center justify-center gap-2  flex-col')}>
+		<div className={cn('my-5')}>
+			<div className={cn('flex items-center justify-center gap-2 flex-col')}>
 				<div className={'text-tertiary-foreground font-semibold flex items-center gap-2'}>
 					{t('proofOfRandom')} <ShieldCheckIcon className={'text-success w-5 h-5'} />
 				</div>
-
-				<a
-					href={`${ETHSCAN}/tx/${transactionHash}`}
-					target={'_blank'}
-					className={cn('block text-center underline cursor-pointer hover:text-secondary-foreground duration-300', {
-						' blur-xs': isLoading,
-					})}
-					rel="noreferrer"
-				>
-					{isMobile ? truncateEthAddress(transactionHash || ZeroAddress) : transactionHash}
-				</a>
+				<div className={'text-center text-muted-foreground text-sm'}>Round #{roundId.toString()} settled on-chain</div>
 			</div>
 			<div className={'text-xs mt-1 text-center '}>
 				<a

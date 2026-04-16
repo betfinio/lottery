@@ -1,5 +1,5 @@
 import { type FC, useEffect, useMemo, useState } from 'react';
-import { useGetRoundFromParams, useRoundStatus } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundDetails } from '@/src/lib/query';
 import { useRoundFinishedNumbersSpitting } from '@/src/lib/query/state';
 import { randomize } from '@/src/lib/utils';
 import { AnimatedGridOfNumbners } from '../../shared/AnimatedGridOfNumbners';
@@ -8,9 +8,9 @@ import PlayerTickets from './PlayerTickets';
 export const RoundNotCalculated: FC = () => {
 	const [symbol, setSymbol] = useState(0);
 	const [numbers, setNumbers] = useState<number[]>([]);
-	const round = useGetRoundFromParams();
-	const { refetch: refetchRoundStatus } = useRoundStatus(round);
-	const winningNumbers = useRoundFinishedNumbersSpitting(round);
+	const roundId = useGetRoundFromParams();
+	const { refetch: refetchRoundDetails } = useRoundDetails(roundId);
+	const winningNumbers = useRoundFinishedNumbersSpitting(roundId);
 
 	useEffect(() => {
 		const animateRandomValues = () => {
@@ -28,13 +28,13 @@ export const RoundNotCalculated: FC = () => {
 		if (winningNumbers.isComplete) {
 			// Add a 6-second delay before triggering the refetch
 			const timer = setTimeout(() => {
-				refetchRoundStatus();
+				refetchRoundDetails();
 			}, 6000);
 
 			// Clean up the timer if the component unmounts
 			return () => clearTimeout(timer);
 		}
-	}, [winningNumbers.isComplete, refetchRoundStatus]);
+	}, [winningNumbers.isComplete, refetchRoundDetails]);
 
 	const winningNumbersToShow = useMemo(() => {
 		return winningNumbers.revealedNumbers.slice(0, 5);

@@ -5,7 +5,7 @@ import { JackpotStarsSpread } from './JackpotStarsSpread';
 export interface JackpotFrameProps extends React.ComponentPropsWithoutRef<'svg'> {
 	animateStars?: boolean;
 }
-export const JackpotFrame = ({ className = 'text-gold', animateStars = false, ...props }: JackpotFrameProps) => {
+export const JackpotFrame = ({ className = 'text-[var(--gold)]', animateStars = false, ...props }: JackpotFrameProps) => {
 	return (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

@@ -1,13 +1,14 @@
 import { ZeroAddress } from '@betfinio/abi';
-import type { Address } from 'viem';
+import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { useMyLinesSold } from '@/src/lib/query';
+import { usePlayerBetsByRound } from '@/src/lib/query';
 import Count from './Count';
 
-function MyLinesCount({ round }: { round: Address }) {
+function MyLinesCount({ roundId }: { roundId: bigint }) {
 	const { address = ZeroAddress } = useAccount();
-	const { data = 0 } = useMyLinesSold(round, address);
-	return <Count count={data} />;
+	const { data: bets = [] } = usePlayerBetsByRound(roundId, address);
+	const totalLines = useMemo(() => bets.reduce((sum, bet) => sum + bet.lines.length, 0), [bets]);
+	return <Count count={totalLines} />;
 }
 
 export default MyLinesCount;
