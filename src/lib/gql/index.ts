@@ -100,16 +100,31 @@ export const fetchRoundDetails = async (roundId: bigint): Promise<IRound> => {
 	};
 };
 
+const ROUND_BETS_PAGE_SIZE = 1000;
+
 export const fetchRoundBets = async (roundId: bigint): Promise<IBet[]> => {
 	logger.start('fetching round bets', roundId);
-	const result: ExecutionResult<LotteryRoundBetsQuery> = await execute(LotteryRoundBetsDocument, {
-		address: LOTTERY.toLowerCase(),
-		round: roundId.toString(),
-	});
-	if (result.data?.bets) {
-		return result.data.bets.map((bet) => populateBet({ ...bet, round: { round: roundId.toString() } }));
+	const allBets: IBet[] = [];
+	let skip = 0;
+
+	while (true) {
+		const result: ExecutionResult<LotteryRoundBetsQuery> = await execute(LotteryRoundBetsDocument, {
+			address: LOTTERY.toLowerCase(),
+			round: roundId.toString(),
+			first: ROUND_BETS_PAGE_SIZE,
+			skip,
+		});
+
+		const page = result.data?.bets ?? [];
+		if (page.length === 0) break;
+
+		allBets.push(...page.map((bet) => populateBet({ ...bet, round: { round: roundId.toString() } })));
+
+		if (page.length < ROUND_BETS_PAGE_SIZE) break;
+		skip += ROUND_BETS_PAGE_SIZE;
 	}
-	return [];
+
+	return allBets;
 };
 
 export const fetchPlayerBetsByRound = async (roundId: bigint, player: Address): Promise<IBet[]> => {

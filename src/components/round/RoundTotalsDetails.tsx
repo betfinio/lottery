@@ -2,7 +2,7 @@ import { cn } from '@betfinio/components';
 import { Bag } from '@betfinio/components/icons';
 import { BetValue } from '@betfinio/components/shared';
 import { useTranslation } from 'react-i18next';
-import { useGetRoundFromParams, useRoundBank, useRoundDetails } from '@/src/lib/query';
+import { useGetRoundFromParams, useRoundDetails, useRoundPaidToStaking } from '@/src/lib/query';
 import Ticket from '../icons/Ticket.tsx';
 import { LuckyNumbers } from './LuckyNumbers.tsx';
 
@@ -10,7 +10,7 @@ export function RoundTotalsDetails() {
 	const { t } = useTranslation('lottery', { keyPrefix: 'round' });
 	const roundId = useGetRoundFromParams();
 	const { data: roundDetails, isLoading: isRoundDetailsLoading } = useRoundDetails(roundId);
-	const { data: roundBank = 0n, isLoading: isBankLoading } = useRoundBank(roundId);
+	const { data: paidToStaking = 0n, isLoading: isPaidToStakingLoading } = useRoundPaidToStaking(roundId);
 	const betsAmount = roundDetails?.betsAmount ?? 0n;
 	const betsCount = roundDetails?.betsCount ?? 0;
 
@@ -40,10 +40,10 @@ export function RoundTotalsDetails() {
 				<div className="flex flex-col items-center">
 					<BetValue
 						className={cn('text-xl', {
-							'blur-xs animated-pulse': isBankLoading,
-							'text-success': roundBank > 0n,
+							'blur-xs animated-pulse': isPaidToStakingLoading,
+							'text-success': paidToStaking > 0n,
 						})}
-						value={roundBank}
+						value={paidToStaking}
 						withIcon
 					/>
 					<div className="text-tertiary-foreground whitespace-nowrap">{t('paidToStaking')}</div>

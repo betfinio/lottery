@@ -11,8 +11,8 @@ query LotteryRounds($address: Bytes) {
 	}
 }
 
-query LotteryRoundBets($address: Bytes, $round: BigInt) {
-	bets(where: { address: $address, round_: { round: $round } }, first: 1000, orderBy: blockTimestamp, orderDirection: asc) {
+query LotteryRoundBets($address: Bytes, $round: BigInt, $first: Int = 1000, $skip: Int = 0) {
+	bets(where: { address: $address, round_: { round: $round } }, first: $first, skip: $skip, orderBy: blockTimestamp, orderDirection: asc) {
 		player
 		recipient
 		amount
