@@ -17,7 +17,7 @@ import {
 } from '@/src/lib/api';
 import { fetchPlayerBets, fetchPlayerBetsByRound, fetchPlayerRounds, fetchRoundBets, fetchRoundDetails, fetchRounds, fetchUnclaimedBets } from '@/src/lib/gql';
 import { EMPTY_TICKET, type IBet, type IRound, type ITicket } from '@/src/lib/types';
-import { decodeTicket } from '@/src/lib/utils';
+import { calculateBetPrize, decodeTicket } from '@/src/lib/utils';
 
 /**
  * Parse the `$round` route param (a bigint-as-string) into a bigint.
@@ -206,6 +206,28 @@ export const useRoundBank = (roundId: bigint) => {
 		queryKey: ['lottery', 'round', roundId.toString(), 'bank'],
 		queryFn: () => fetchRoundBank(roundId, config),
 	});
+};
+
+export const useRoundPaidToStaking = (roundId: bigint) => {
+	const { data: roundDetails, isLoading: isRoundLoading } = useRoundDetails(roundId);
+	const { data: bets = [], isLoading: isBetsLoading } = useRoundBets(roundId);
+	const { data: winningLine, isLoading: isWinningLineLoading } = useWinningLine(roundId);
+	const { data: ticketPrice = 0n } = useTicketPrice();
+
+	const data = useMemo(() => {
+		const betsAmount = roundDetails?.betsAmount ?? 0n;
+		if (!winningLine) return 0n;
+
+		const totalPrizes = bets.reduce((sum, bet) => sum + calculateBetPrize(winningLine, bet.tickets, ticketPrice).prizeAmount, 0n);
+		const remainder = betsAmount - totalPrizes;
+
+		return remainder > 0n ? remainder : 0n;
+	}, [roundDetails?.betsAmount, bets, winningLine, ticketPrice]);
+
+	return {
+		data,
+		isLoading: isRoundLoading || isBetsLoading || isWinningLineLoading,
+	};
 };
 
 export const useBetClaimed = (betAddress: Address) => {
